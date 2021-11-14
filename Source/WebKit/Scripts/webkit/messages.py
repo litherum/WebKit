@@ -320,6 +320,7 @@ def types_that_cannot_be_forward_declared():
         'WebKit::DownloadID',
         'WebKit::FileSystemStorageError',
         'WebKit::FormSubmitListenerIdentifier',
+        'WebKit::GPUIdentifier',
         'WebKit::GeolocationIdentifier',
         'WebKit::GraphicsContextGLIdentifier',
         'WebKit::ImageBufferBackendHandle',

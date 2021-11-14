@@ -378,6 +378,8 @@
 		1C0A19571C90068F00FE0EBB /* WebAutomationSessionMessageReceiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C0A19551C90068F00FE0EBB /* WebAutomationSessionMessageReceiver.cpp */; };
 		1C0A19581C90068F00FE0EBB /* WebAutomationSessionMessages.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C0A19561C90068F00FE0EBB /* WebAutomationSessionMessages.h */; };
 		1C0A195C1C916E1B00FE0EBB /* WebAutomationSessionProxyScriptSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C0A195B1C916E1B00FE0EBB /* WebAutomationSessionProxyScriptSource.h */; };
+		1C19E6D22740DEE2004B17B0 /* RemoteGPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C19E6D02740DE34004B17B0 /* RemoteGPU.cpp */; };
+		1C19E6D32740DEE8004B17B0 /* RemoteGPUProxy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C19E6CB2740CAAE004B17B0 /* RemoteGPUProxy.cpp */; };
 		1C20936022318CB000026A39 /* NSAttributedString.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C20935E22318CB000026A39 /* NSAttributedString.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1C2184022233872800BAC700 /* NSAttributedStringPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C2184012233872800BAC700 /* NSAttributedStringPrivate.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1C891D6619B124FF00BA79DD /* WebInspectorUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C891D6319B124FF00BA79DD /* WebInspectorUI.h */; };
@@ -2875,6 +2877,12 @@
 		1C0A19591C9006EA00FE0EBB /* WebAutomationSession.messages.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = WebAutomationSession.messages.in; sourceTree = "<group>"; };
 		1C0A195A1C91669500FE0EBB /* WebAutomationSessionProxy.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = WebAutomationSessionProxy.js; sourceTree = "<group>"; };
 		1C0A195B1C916E1B00FE0EBB /* WebAutomationSessionProxyScriptSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WebAutomationSessionProxyScriptSource.h; path = DerivedSources/WebKit2/WebAutomationSessionProxyScriptSource.h; sourceTree = BUILT_PRODUCTS_DIR; };
+		1C19E6CB2740CAAE004B17B0 /* RemoteGPUProxy.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RemoteGPUProxy.cpp; sourceTree = "<group>"; };
+		1C19E6CC2740CAAE004B17B0 /* RemoteGPUProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RemoteGPUProxy.h; sourceTree = "<group>"; };
+		1C19E6CD2740D99C004B17B0 /* RemoteGPUProxy.messages.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = RemoteGPUProxy.messages.in; sourceTree = "<group>"; };
+		1C19E6CE2740DBE9004B17B0 /* GPUIdentifier.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GPUIdentifier.h; sourceTree = "<group>"; };
+		1C19E6D02740DE34004B17B0 /* RemoteGPU.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RemoteGPU.cpp; sourceTree = "<group>"; };
+		1C19E6D12740DE34004B17B0 /* RemoteGPU.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RemoteGPU.h; sourceTree = "<group>"; };
 		1C20935E22318CB000026A39 /* NSAttributedString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSAttributedString.h; sourceTree = "<group>"; };
 		1C20935F22318CB000026A39 /* NSAttributedString.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = NSAttributedString.mm; sourceTree = "<group>"; };
 		1C2184012233872800BAC700 /* NSAttributedStringPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSAttributedStringPrivate.h; sourceTree = "<group>"; };
@@ -7073,6 +7081,26 @@
 			path = Automation;
 			sourceTree = "<group>";
 		};
+		1C19E6CA2740CA44004B17B0 /* WebGPU */ = {
+			isa = PBXGroup;
+			children = (
+				1C19E6CB2740CAAE004B17B0 /* RemoteGPUProxy.cpp */,
+				1C19E6CC2740CAAE004B17B0 /* RemoteGPUProxy.h */,
+				1C19E6CD2740D99C004B17B0 /* RemoteGPUProxy.messages.in */,
+				1C19E6CE2740DBE9004B17B0 /* GPUIdentifier.h */,
+			);
+			path = WebGPU;
+			sourceTree = "<group>";
+		};
+		1C19E6CF2740DE10004B17B0 /* WebGPU */ = {
+			isa = PBXGroup;
+			children = (
+				1C19E6D02740DE34004B17B0 /* RemoteGPU.cpp */,
+				1C19E6D12740DE34004B17B0 /* RemoteGPU.h */,
+			);
+			path = WebGPU;
+			sourceTree = "<group>";
+		};
 		1D0ECEA923FC84BB00D172F6 /* cocoa */ = {
 			isa = PBXGroup;
 			children = (
@@ -8789,6 +8817,7 @@
 		5506409C240715AA00AAE045 /* graphics */ = {
 			isa = PBXGroup;
 			children = (
+				1C19E6CA2740CA44004B17B0 /* WebGPU */,
 				727A7F3324078527004D2931 /* cocoa */,
 				F4094CBA2553047E003D73E3 /* DisplayListWriterHandle.cpp */,
 				F4094CB92553047E003D73E3 /* DisplayListWriterHandle.h */,
@@ -8818,6 +8847,7 @@
 		550640A124071A2900AAE045 /* graphics */ = {
 			isa = PBXGroup;
 			children = (
+				1C19E6CF2740DE10004B17B0 /* WebGPU */,
 				F4094CBC255304AF003D73E3 /* DisplayListReaderHandle.cpp */,
 				F4094CBB255304AF003D73E3 /* DisplayListReaderHandle.h */,
 				7B1619132719AE7600C40EAC /* GPUProcessGraphicsContextGL.h */,
@@ -14299,6 +14329,7 @@
 				2D11B76E2126A282006F8878 /* UnifiedSource15.cpp in Sources */,
 				2D11B76F2126A282006F8878 /* UnifiedSource16-mm.mm in Sources */,
 				2D11B7702126A282006F8878 /* UnifiedSource16.cpp in Sources */,
+				1C19E6D22740DEE2004B17B0 /* RemoteGPU.cpp in Sources */,
 				2D11B7712126A282006F8878 /* UnifiedSource17-mm.mm in Sources */,
 				2D11B7722126A282006F8878 /* UnifiedSource17.cpp in Sources */,
 				2D11B7732126A282006F8878 /* UnifiedSource18-mm.mm in Sources */,
@@ -14496,6 +14527,7 @@
 				A181A79821ACC74B0059A316 /* WebKitAdditions.mm in Sources */,
 				CDF1B91B267025550007EC10 /* WebKitSwiftSoftLink.mm in Sources */,
 				51F060E11654318500F3282F /* WebMDNSRegisterMessageReceiver.cpp in Sources */,
+				1C19E6D32740DEE8004B17B0 /* RemoteGPUProxy.cpp in Sources */,
 				2D92A78C212B6AB100F493FD /* WebMouseEvent.cpp in Sources */,
 				31BA924D148831260062EDB5 /* WebNotificationManagerMessageReceiver.cpp in Sources */,
 				2DF6FE52212E110900469030 /* WebPage.cpp in Sources */,

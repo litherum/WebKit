@@ -59,6 +59,7 @@ VPATH = \
     $(WebKit2)/WebProcess/Geolocation \
     $(WebKit2)/WebProcess/GPU \
     $(WebKit2)/WebProcess/GPU/graphics \
+    $(WebKit2)/WebProcess/GPU/graphics/WebGPU \
     $(WebKit2)/WebProcess/GPU/media \
     $(WebKit2)/WebProcess/GPU/media/ios \
     $(WebKit2)/WebProcess/GPU/webrtc \
@@ -186,6 +187,7 @@ MESSAGE_RECEIVERS = \
 	WebProcess/GPU/GPUProcessConnection \
 	WebProcess/GPU/graphics/RemoteRenderingBackendProxy \
 	WebProcess/GPU/graphics/RemoteGraphicsContextGLProxy \
+	WebProcess/GPU/graphics/WebGPU/RemoteGPUProxy \
 	WebProcess/GPU/webrtc/LibWebRTCCodecs \
 	WebProcess/GPU/webrtc/SampleBufferDisplayLayer \
 	WebProcess/GPU/media/MediaPlayerPrivateRemote \

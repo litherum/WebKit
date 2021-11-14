@@ -29,9 +29,11 @@
 
 #include "Connection.h"
 #include "GPUConnectionToWebProcessMessages.h"
+#include "GPUIdentifier.h"
 #include "MessageReceiverMap.h"
 #include "RemoteAudioHardwareListenerIdentifier.h"
 #include "RemoteAudioSessionIdentifier.h"
+#include "RemoteGPU.h"
 #include "RemoteRemoteCommandListenerIdentifier.h"
 #include "RenderingBackendIdentifier.h"
 #include "ScopedActiveMessageReceiveQueue.h"
@@ -265,6 +267,8 @@ private:
     void dispatchDisplayWasReconfigured();
 #endif
 
+    void createGPU(WebKit::GPUIdentifier);
+
     static uint64_t gObjectCountForTesting;
 
     RefPtr<Logger> m_logger;
@@ -344,6 +348,9 @@ private:
 #if ENABLE(ROUTING_ARBITRATION) && HAVE(AVAUDIO_ROUTING_ARBITER)
     UniqueRef<LocalAudioSessionRoutingArbitrator> m_routingArbitrator;
 #endif
+
+    using RemoteGPUMap = HashMap<GPUIdentifier, IPC::ScopedActiveMessageReceiveQueue<RemoteGPU>>;
+    RemoteGPUMap m_remoteGPUMap;
 };
 
 } // namespace WebKit

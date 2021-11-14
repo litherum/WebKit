@@ -921,6 +921,15 @@ void GPUConnectionToWebProcess::enableVP9Decoders(bool shouldEnableVP8Decoder, b
 }
 #endif
 
+
+void GPUConnectionToWebProcess::createGPU(WebKit::GPUIdentifier gpuIdentifier)
+{
+    auto addResult = m_remoteGPUMap.ensure(gpuIdentifier, [&]() {
+        return IPC::ScopedActiveMessageReceiveQueue { RemoteGPU::create() };
+    });
+    ASSERT_UNUSED(addResult, addResult.isNewEntry);
+}
+
 } // namespace WebKit
 
 #endif // ENABLE(GPU_PROCESS)
