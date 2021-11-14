@@ -22,8 +22,8 @@
 
 #if ENABLE(GPU_PROCESS)
 
-messages -> RemoteGPUProxy {
-    void WasCreated(IPC::Semaphore streamWakeUpSemaphore)
+messages -> RemoteGPU NotRefCounted Stream {
+    RequestAdapter() -> () Synchronous
 }
 
 #endif

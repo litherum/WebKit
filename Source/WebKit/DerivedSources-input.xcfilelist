@@ -24,6 +24,7 @@ $(PROJECT_DIR)/GPUProcess/graphics/RemoteDisplayListRecorder.messages.in
 $(PROJECT_DIR)/GPUProcess/graphics/RemoteGraphicsContext.messages.in
 $(PROJECT_DIR)/GPUProcess/graphics/RemoteGraphicsContextGL.messages.in
 $(PROJECT_DIR)/GPUProcess/graphics/RemoteRenderingBackend.messages.in
+$(PROJECT_DIR)/GPUProcess/graphics/WebGPU/RemoteGPU.messages.in
 $(PROJECT_DIR)/GPUProcess/mac/com.apple.WebKit.GPUProcess.sb.in
 $(PROJECT_DIR)/GPUProcess/media/RemoteAudioDestinationManager.messages.in
 $(PROJECT_DIR)/GPUProcess/media/RemoteAudioSessionProxy.messages.in

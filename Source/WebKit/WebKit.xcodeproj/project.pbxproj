@@ -2883,6 +2883,7 @@
 		1C19E6CE2740DBE9004B17B0 /* GPUIdentifier.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GPUIdentifier.h; sourceTree = "<group>"; };
 		1C19E6D02740DE34004B17B0 /* RemoteGPU.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RemoteGPU.cpp; sourceTree = "<group>"; };
 		1C19E6D12740DE34004B17B0 /* RemoteGPU.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RemoteGPU.h; sourceTree = "<group>"; };
+		1C19E6D42740FF2D004B17B0 /* RemoteGPU.messages.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = RemoteGPU.messages.in; sourceTree = "<group>"; };
 		1C20935E22318CB000026A39 /* NSAttributedString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSAttributedString.h; sourceTree = "<group>"; };
 		1C20935F22318CB000026A39 /* NSAttributedString.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = NSAttributedString.mm; sourceTree = "<group>"; };
 		1C2184012233872800BAC700 /* NSAttributedStringPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSAttributedStringPrivate.h; sourceTree = "<group>"; };
@@ -6793,6 +6794,7 @@
 				C0337DD0127A2980008FF4F4 /* WebWheelEvent.cpp */,
 				0F4000FD2527D69D00E91DA7 /* WebWheelEvent.h */,
 				0F5403002531006E00082BB9 /* WebWheelEventCoalescer.cpp */,
+				1C19E6CE2740DBE9004B17B0 /* GPUIdentifier.h */,
 				0F5403012531006E00082BB9 /* WebWheelEventCoalescer.h */,
 			);
 			path = Shared;
@@ -7087,7 +7089,6 @@
 				1C19E6CB2740CAAE004B17B0 /* RemoteGPUProxy.cpp */,
 				1C19E6CC2740CAAE004B17B0 /* RemoteGPUProxy.h */,
 				1C19E6CD2740D99C004B17B0 /* RemoteGPUProxy.messages.in */,
-				1C19E6CE2740DBE9004B17B0 /* GPUIdentifier.h */,
 			);
 			path = WebGPU;
 			sourceTree = "<group>";
@@ -7097,6 +7098,7 @@
 			children = (
 				1C19E6D02740DE34004B17B0 /* RemoteGPU.cpp */,
 				1C19E6D12740DE34004B17B0 /* RemoteGPU.h */,
+				1C19E6D42740FF2D004B17B0 /* RemoteGPU.messages.in */,
 			);
 			path = WebGPU;
 			sourceTree = "<group>";

@@ -29,11 +29,12 @@
 
 #include "GPUIdentifier.h"
 #include "GPUProcessConnection.h"
+#include "StreamClientConnection.h"
 #include <pal/graphics/WebGPU/WebGPU.h>
 
 namespace WebKit {
 
-class RemoteGPUProxy final : public PAL::WebGPU::GPU {
+class RemoteGPUProxy final : public PAL::WebGPU::GPU, private IPC::MessageReceiver, private GPUProcessConnection::Client {
 public:
     static Ref<RemoteGPUProxy> create(GPUProcessConnection& gpuProcessConnection)
     {
@@ -42,15 +43,25 @@ public:
 
     virtual ~RemoteGPUProxy();
 
-    void requestAdapter(const PAL::WebGPU::RequestAdapterOptions&, std::function<void(RefPtr<PAL::WebGPU::Adapter>&&)>&&) final;
-
 private:
     RemoteGPUProxy(GPUProcessConnection& gpuProcessConnection);
 
-    IPC::Connection& connection() const { return m_gpuProcessConnection.connection(); }
+    // IPC::MessageReceiver overrides.
+    void didReceiveMessage(IPC::Connection&, IPC::Decoder&) final;
 
-    GPUProcessConnection& m_gpuProcessConnection;
+    // Messages to be received.
+    void wasCreated(IPC::Semaphore&&);
+
+    // GPUProcessConnection::Client overrides.
+    void gpuProcessConnectionDidClose(GPUProcessConnection&) final;
+
+    void requestAdapter(const PAL::WebGPU::RequestAdapterOptions&, std::function<void(RefPtr<PAL::WebGPU::Adapter>&&)>&&) final;
+
+    IPC::Connection& connection() const { return m_gpuProcessConnection->connection(); }
+
+    GPUProcessConnection* m_gpuProcessConnection { nullptr };
     GPUIdentifier m_gpuIdentifier { GPUIdentifier::generate() };
+    IPC::StreamClientConnection m_streamConnection;
 };
 
 } // namespace WebKit

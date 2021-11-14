@@ -921,13 +921,19 @@ void GPUConnectionToWebProcess::enableVP9Decoders(bool shouldEnableVP8Decoder, b
 }
 #endif
 
-
-void GPUConnectionToWebProcess::createGPU(WebKit::GPUIdentifier gpuIdentifier)
+void GPUConnectionToWebProcess::createGPU(GPUIdentifier gpuIdentifier, IPC::StreamConnectionBuffer&& stream)
 {
     auto addResult = m_remoteGPUMap.ensure(gpuIdentifier, [&]() {
-        return IPC::ScopedActiveMessageReceiveQueue { RemoteGPU::create() };
+        return IPC::ScopedActiveMessageReceiveQueue { RemoteGPU::create(*this, gpuIdentifier, WTFMove(stream)) };
     });
     ASSERT_UNUSED(addResult, addResult.isNewEntry);
+}
+
+void GPUConnectionToWebProcess::releaseGPU(GPUIdentifier gpuIdentifier)
+{
+    m_remoteGPUMap.remove(gpuIdentifier);
+    if (m_remoteGraphicsContextGLMap.isEmpty())
+        gpuProcess().tryExitIfUnusedAndUnderMemoryPressure();
 }
 
 } // namespace WebKit

@@ -267,7 +267,8 @@ private:
     void dispatchDisplayWasReconfigured();
 #endif
 
-    void createGPU(WebKit::GPUIdentifier);
+    void createGPU(GPUIdentifier, IPC::StreamConnectionBuffer&&);
+    void releaseGPU(GPUIdentifier);
 
     static uint64_t gObjectCountForTesting;
 

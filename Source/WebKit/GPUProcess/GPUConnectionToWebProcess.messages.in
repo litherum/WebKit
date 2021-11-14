@@ -55,7 +55,8 @@ messages -> GPUConnectionToWebProcess WantsDispatchMessage {
     CreateWCLayerTreeHost(WebKit::WCLayerTreeHostIdentifier identifier, uint64_t nativeWindow)
     ReleaseWCLayerTreeHost(WebKit::WCLayerTreeHostIdentifier identifier)
 #endif
-    void CreateGPU(WebKit::GPUIdentifier gpuIdentifier)
+    void CreateGPU(WebKit::GPUIdentifier gpuIdentifier, IPC::StreamConnectionBuffer stream)
+    void ReleaseGPU(WebKit::GPUIdentifier gpuIdentifier)
 }
 
 #endif // ENABLE(GPU_PROCESS)

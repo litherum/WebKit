@@ -32,15 +32,29 @@
 
 namespace WebKit {
 
+static constexpr size_t defaultStreamSize = 1 << 21;
+
 RemoteGPUProxy::RemoteGPUProxy(GPUProcessConnection& gpuProcessConnection)
-    : m_gpuProcessConnection(gpuProcessConnection)
+    : m_gpuProcessConnection(&gpuProcessConnection)
+    , m_streamConnection(gpuProcessConnection.connection(), defaultStreamSize)
 {
-    connection().send(Messages::GPUConnectionToWebProcess::CreateGPU(m_gpuIdentifier), 0, IPC::SendOption::DispatchMessageEvenWhenWaitingForSyncReply);
+    connection().send(Messages::GPUConnectionToWebProcess::CreateGPU(m_gpuIdentifier, m_streamConnection.streamBuffer()), 0, IPC::SendOption::DispatchMessageEvenWhenWaitingForSyncReply);
 }
 
 RemoteGPUProxy::~RemoteGPUProxy()
 {
 
+}
+
+void RemoteGPUProxy::wasCreated(IPC::Semaphore&& semaphore)
+{
+    m_streamConnection.setWakeUpSemaphore(WTFMove(semaphore));
+}
+
+void RemoteGPUProxy::gpuProcessConnectionDidClose(GPUProcessConnection& gpuProcessConnection)
+{
+    ASSERT(&gpuProcessConnection == m_gpuProcessConnection);
+    m_gpuProcessConnection = nullptr;
 }
 
 void RemoteGPUProxy::requestAdapter(const PAL::WebGPU::RequestAdapterOptions&, std::function<void(RefPtr<PAL::WebGPU::Adapter>&&)>&&)

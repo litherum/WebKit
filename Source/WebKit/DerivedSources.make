@@ -249,6 +249,7 @@ MESSAGE_RECEIVERS = \
 	GPUProcess/graphics/RemoteDisplayListRecorder \
 	GPUProcess/graphics/RemoteRenderingBackend \
 	GPUProcess/graphics/RemoteGraphicsContextGL \
+	GPUProcess/graphics/WebGPU/RemoteGPU \
 	GPUProcess/webrtc/LibWebRTCCodecsProxy \
 	GPUProcess/webrtc/RemoteSampleBufferDisplayLayerManager \
 	GPUProcess/webrtc/RemoteMediaRecorderManager \

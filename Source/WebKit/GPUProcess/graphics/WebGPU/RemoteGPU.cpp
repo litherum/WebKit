@@ -26,11 +26,20 @@
 #include "config.h"
 #include "RemoteGPU.h"
 
+#include "GPUConnectionToWebProcess.h"
+#include "RemoteGPUMessages.h"
+#include "RemoteGPUProxyMessages.h"
+
 #if ENABLE(GPU_PROCESS)
 
 namespace WebKit {
 
-RemoteGPU::RemoteGPU()
+RemoteGPU::RemoteGPU(GPUConnectionToWebProcess& gpuConnectionToWebProcess, WebKit::GPUIdentifier gpuIdentifier, IPC::StreamConnectionBuffer&& stream)
+    : m_remoteGPUStreamWorkQueue("WebGPU")
+    , m_gpuConnectionToWebProcess(gpuConnectionToWebProcess)
+    , m_streamConnection(IPC::StreamServerConnection::create(gpuConnectionToWebProcess.connection(), WTFMove(stream), m_remoteGPUStreamWorkQueue))
+    , m_gpuIdentifier(gpuIdentifier)
+    , m_webProcessIdentifier(gpuConnectionToWebProcess.webProcessIdentifier())
 {
 }
 
@@ -41,12 +50,41 @@ RemoteGPU::~RemoteGPU()
 
 void RemoteGPU::stopListeningForIPC(Ref<RemoteGPU>&& refFromConnection)
 {
-    UNUSED_PARAM(refFromConnection);
+    assertIsMainRunLoop();
+    m_streamConnection->stopReceivingMessages(Messages::RemoteGPU::messageReceiverName(), m_gpuIdentifier.toUInt64());
+    remoteGPUStreamWorkQueue().dispatch([protectedThis = WTFMove(refFromConnection)]() {
+        protectedThis->workQueueUninitialize();
+    });
 }
 
-void RemoteGPU::requestAdapter(const PAL::WebGPU::RequestAdapterOptions&, std::function<void(RefPtr<PAL::WebGPU::Adapter>&&)>&&)
+void RemoteGPU::initialize()
 {
+    assertIsMainRunLoop();
+    remoteGPUStreamWorkQueue().dispatch([protectedThis = Ref { *this }]() mutable {
+        protectedThis->workQueueInitialize();
+    });
+    m_streamConnection->startReceivingMessages(*this, Messages::RemoteGPU::messageReceiverName(), m_gpuIdentifier.toUInt64());
+}
 
+void RemoteGPU::workQueueInitialize()
+{
+    m_streamThread.reset();
+    assertIsCurrent(m_streamThread);
+    send(Messages::RemoteGPUProxy::WasCreated(remoteGPUStreamWorkQueue().wakeUpSemaphore()));
+}
+
+void RemoteGPU::workQueueUninitialize()
+{
+    assertIsCurrent(m_streamThread);
+    m_streamConnection = nullptr;
+}
+
+void RemoteGPU::requestAdapter(CompletionHandler<void()>&& completionHandler)
+{
+    assertIsCurrent(m_streamThread);
+    m_gpu->requestAdapter({ }, [completionHandler = std::make_shared<CompletionHandler<void()>>(WTFMove(completionHandler))] (RefPtr<PAL::WebGPU::Adapter>&&) mutable {
+        (*completionHandler)();
+    });
 }
 
 } // namespace WebKit

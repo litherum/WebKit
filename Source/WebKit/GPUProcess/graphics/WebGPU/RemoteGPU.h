@@ -27,25 +27,55 @@
 
 #if ENABLE(GPU_PROCESS)
 
+#include "GPUIdentifier.h"
+#include "StreamConnectionWorkQueue.h"
+#include "StreamServerConnection.h"
+#include <WebCore/ProcessIdentifier.h>
 #include <pal/graphics/WebGPU/WebGPU.h>
+#include <wtf/RefPtr.h>
+#include <wtf/ThreadAssertions.h>
+#include <wtf/WeakPtr.h>
 
 namespace WebKit {
 
-class RemoteGPU final : public PAL::WebGPU::GPU {
+class GPUConnectionToWebProcess;
+
+class RemoteGPU final : public IPC::StreamMessageReceiver {
 public:
-    static Ref<RemoteGPU> create()
+    static Ref<RemoteGPU> create(GPUConnectionToWebProcess& gpuConnectionToWebProcess, WebKit::GPUIdentifier gpuIdentifier, IPC::StreamConnectionBuffer&& stream)
     {
-        return adoptRef(*new RemoteGPU());
+        return adoptRef(*new RemoteGPU(gpuConnectionToWebProcess, gpuIdentifier, WTFMove(stream)));
     }
 
     virtual ~RemoteGPU();
 
     void stopListeningForIPC(Ref<RemoteGPU>&& refFromConnection);
 
-    void requestAdapter(const PAL::WebGPU::RequestAdapterOptions&, std::function<void(RefPtr<PAL::WebGPU::Adapter>&&)>&&) final;
+    IPC::StreamConnectionWorkQueue& remoteGPUStreamWorkQueue() { return m_remoteGPUStreamWorkQueue; }
 
 private:
-    RemoteGPU();
+    RemoteGPU(GPUConnectionToWebProcess&, WebKit::GPUIdentifier, IPC::StreamConnectionBuffer&&);
+
+    void initialize();
+    void workQueueInitialize();
+    void workQueueUninitialize();
+
+    // IPC::StreamMessageReceiver
+    void didReceiveStreamMessage(IPC::StreamServerConnectionBase&, IPC::Decoder&) final;
+
+    template<typename T>
+    bool send(T&& message) const { return m_streamConnection->connection().send(WTFMove(message), m_gpuIdentifier); }
+
+    // Messages to be received.
+    void requestAdapter(CompletionHandler<void()>&&);
+
+    IPC::StreamConnectionWorkQueue m_remoteGPUStreamWorkQueue;
+    WeakPtr<GPUConnectionToWebProcess> m_gpuConnectionToWebProcess;
+    RefPtr<IPC::StreamServerConnection> m_streamConnection;
+    RefPtr<PAL::WebGPU::GPU> m_gpu WTF_GUARDED_BY_LOCK(m_streamThread);
+    GPUIdentifier m_gpuIdentifier;
+    NO_UNIQUE_ADDRESS ThreadAssertion m_streamThread;
+    WebCore::ProcessIdentifier m_webProcessIdentifier;
 };
 
 } // namespace WebKit
