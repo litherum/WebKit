@@ -453,6 +453,9 @@ void Queue::writeTexture(const WGPUImageCopyTexture& destination, const void* da
 void Queue::synchronizeResource(id<MTLResource> resource)
 {
 #if PLATFORM(MAC) || PLATFORM(MACCATALYST)
+    if (resource.storageMode != MTLStorageModeManaged)
+        return;
+
     ensureBlitCommandEncoder();
     [m_blitCommandEncoder synchronizeResource:resource];
 #else
@@ -462,6 +465,9 @@ void Queue::synchronizeResource(id<MTLResource> resource)
 
 void Queue::clearBuffer(id<MTLBuffer> buffer, NSRange range)
 {
+    if (!range.length)
+        return;
+
     ensureBlitCommandEncoder();
     [m_blitCommandEncoder fillBuffer:buffer range:range value:0];
 }
