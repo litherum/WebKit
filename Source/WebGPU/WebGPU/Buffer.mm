@@ -267,8 +267,10 @@ void Buffer::mapAsync(WGPUMapModeFlags mode, size_t offset, size_t size, Complet
 
     m_mapMode = mode;
 
-    if (mode & WGPUMapMode_Write)
-        m_device->getQueue().clearBuffer(m_buffer, NSMakeRange(offset, rangeSize));
+    // See https://github.com/gpuweb/gpuweb/pull/2926. Doing this is pretty important, but the
+    // spec doesn't actually allow it, and the CTS checks to make sure this doesn't happen.
+    // if (mode & WGPUMapMode_Write)
+    //     m_device->getQueue().clearBuffer(m_buffer, NSMakeRange(offset, rangeSize));
 
     if (mode & WGPUMapMode_Read)
         m_device->getQueue().synchronizeResource(m_buffer);
@@ -327,7 +329,7 @@ void Buffer::unmap()
     // FIXME: Handle array buffer detaching.
 
 #if PLATFORM(MAC) || PLATFORM(MACCATALYST)
-    if (m_state == State::MappedAtCreation && m_buffer.storageMode == MTLStorageModeManaged) {
+    if (m_buffer.storageMode == MTLStorageModeManaged) {
         for (const auto& mappedRange : m_mappedRanges)
             [m_buffer didModifyRange:NSMakeRange(static_cast<NSUInteger>(mappedRange.begin()), static_cast<NSUInteger>(mappedRange.end() - mappedRange.begin()))];
     }
