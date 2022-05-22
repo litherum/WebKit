@@ -26,6 +26,7 @@
 #include "config.h"
 #include "GPUBuffer.h"
 
+#include <JavaScriptCore/JSGlobalObject.h>
 #include <wtf/SharedTask.h>
 
 namespace WebCore {
@@ -52,18 +53,29 @@ ExceptionOr<Ref<JSC::ArrayBuffer>> GPUBuffer::getMappedRange(std::optional<GPUSi
     auto mappedRange = m_backing->getMappedRange(offset.value_or(0), size);
     if (!mappedRange.source)
         return Exception { OperationError };
-    // FIXME: We need some kind of "detach" logic, in case someone calls destroy()
-    // on the buffer and then continues to use the ArrayBuffer.
-    return ArrayBuffer::createFromBytes(mappedRange.source, mappedRange.byteLength, createSharedTask<void(void*)>([backing = m_backing.copyRef()](void*) { }));
+    auto result = ArrayBuffer::createFromBytes(mappedRange.source, mappedRange.byteLength, createSharedTask<void(void*)>([backing = m_backing.copyRef()](void*) { }));
+    m_activeMappedRanges.append(result.copyRef());
+    return result;
 }
 
-void GPUBuffer::unmap()
+void GPUBuffer::detachAndClearActiveMappings(JSC::VM& vm)
 {
+    for (auto& activeMappedRange : m_activeMappedRanges) {
+        JSC::ArrayBufferContents unused;
+        activeMappedRange->transferTo(vm, unused);
+    }
+    m_activeMappedRanges.clear();
+}
+
+void GPUBuffer::unmap(JSC::JSGlobalObject& globalObject)
+{
+    detachAndClearActiveMappings(globalObject.vm());
     m_backing->unmap();
 }
 
-void GPUBuffer::destroy()
+void GPUBuffer::destroy(JSC::JSGlobalObject& globalObject)
 {
+    detachAndClearActiveMappings(globalObject.vm());
     m_backing->destroy();
 }
 

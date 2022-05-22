@@ -36,6 +36,10 @@
 #include <wtf/RefCounted.h>
 #include <wtf/text/WTFString.h>
 
+namespace JSC {
+class JSGlobalObject;
+}
+
 namespace WebCore {
 
 class GPUBuffer : public RefCounted<GPUBuffer> {
@@ -51,9 +55,9 @@ public:
     using MapAsyncPromise = DOMPromiseDeferred<IDLNull>;
     void mapAsync(GPUMapModeFlags, std::optional<GPUSize64> offset, std::optional<GPUSize64> sizeForMap, MapAsyncPromise&&);
     ExceptionOr<Ref<JSC::ArrayBuffer>> getMappedRange(std::optional<GPUSize64> offset, std::optional<GPUSize64> rangeSize);
-    void unmap();
+    void unmap(JSC::JSGlobalObject&);
 
-    void destroy();
+    void destroy(JSC::JSGlobalObject&);
 
     PAL::WebGPU::Buffer& backing() { return m_backing; }
     const PAL::WebGPU::Buffer& backing() const { return m_backing; }
@@ -64,7 +68,11 @@ private:
     {
     }
 
+    void detachAndClearActiveMappings(JSC::VM&);
+
     Ref<PAL::WebGPU::Buffer> m_backing;
+
+    Vector<Ref<ArrayBuffer>> m_activeMappedRanges;
 };
 
 }
