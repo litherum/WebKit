@@ -1300,11 +1300,13 @@ private:
                     code = SerializationReturnCode::ValidationError;
                     return true;
                 }
-                auto index = m_transferredArrayBuffers.find(obj);
-                if (index != m_transferredArrayBuffers.end()) {
-                    write(ArrayBufferTransferTag);
-                    write(index->value);
-                    return true;
+                if (!arrayBuffer->createdFromBytes()) {
+                    auto index = m_transferredArrayBuffers.find(obj);
+                    if (index != m_transferredArrayBuffers.end()) {
+                        write(ArrayBufferTransferTag);
+                        write(index->value);
+                        return true;
+                    }
                 }
                 if (!startObjectInternal(obj)) // handle duplicates
                     return true;

@@ -92,6 +92,8 @@ public:
     size_t sizeInBytes() const { return m_sizeInBytes; }
     
     bool isShared() const { return m_shared; }
+
+    bool hasArrayBufferDestructorFunction() const { return m_destructor; }
     
 private:
     void destroy();
@@ -168,6 +170,8 @@ public:
     InlineWatchpointSet& detachingWatchpointSet() { return m_detachingWatchpointSet; }
 
     static ptrdiff_t offsetOfData() { return OBJECT_OFFSETOF(ArrayBuffer, m_contents) + OBJECT_OFFSETOF(ArrayBufferContents, m_data); }
+
+    bool createdFromBytes() const { return m_contents.hasArrayBufferDestructorFunction(); }
 
     ~ArrayBuffer() { }
 
