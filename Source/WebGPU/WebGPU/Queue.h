@@ -63,6 +63,7 @@ public:
     void writeBuffer(const Buffer&, uint64_t bufferOffset, const void* data, size_t);
     void writeTexture(const WGPUImageCopyTexture& destination, const void* data, size_t dataSize, const WGPUTextureDataLayout&, const WGPUExtent3D& writeSize);
     void synchronizeResource(id<MTLResource>);
+    void clearBuffer(id<MTLBuffer>, NSRange);
     void setLabel(String&&);
 
     bool isValid() const { return m_commandQueue; }

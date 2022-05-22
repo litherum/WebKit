@@ -460,6 +460,12 @@ void Queue::synchronizeResource(id<MTLResource> resource)
 #endif
 }
 
+void Queue::clearBuffer(id<MTLBuffer> buffer, NSRange range)
+{
+    ensureBlitCommandEncoder();
+    [m_blitCommandEncoder fillBuffer:buffer range:range value:0];
+}
+
 void Queue::setLabel(String&& label)
 {
     m_commandQueue.label = label;

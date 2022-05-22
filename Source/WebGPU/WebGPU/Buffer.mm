@@ -267,6 +267,9 @@ void Buffer::mapAsync(WGPUMapModeFlags mode, size_t offset, size_t size, Complet
 
     m_mapMode = mode;
 
+    if (mode & WGPUMapMode_Write)
+        m_device->getQueue().clearBuffer(m_buffer, NSMakeRange(offset, rangeSize));
+
     if (mode & WGPUMapMode_Read)
         m_device->getQueue().synchronizeResource(m_buffer);
 
