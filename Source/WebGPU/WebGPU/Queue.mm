@@ -450,6 +450,16 @@ void Queue::writeTexture(const WGPUImageCopyTexture& destination, const void* da
     }
 }
 
+void Queue::synchronizeResource(id<MTLResource> resource)
+{
+#if PLATFORM(MAC) || PLATFORM(MACCATALYST)
+    ensureBlitCommandEncoder();
+    [m_blitCommandEncoder synchronizeResource:resource];
+#else
+    UNUSED_PARAM(resource);
+#endif
+}
+
 void Queue::setLabel(String&& label)
 {
     m_commandQueue.label = label;
