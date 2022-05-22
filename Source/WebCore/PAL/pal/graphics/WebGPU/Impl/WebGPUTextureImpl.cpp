@@ -53,6 +53,13 @@ Ref<TextureView> TextureImpl::createView(const std::optional<TextureViewDescript
 {
     CString label = descriptor ? descriptor->label.utf8() : CString("");
 
+    if ((descriptor && descriptor->mipLevelCount == WGPU_MIP_LEVEL_COUNT_UNDEFINED)
+        || (descriptor && descriptor->arrayLayerCount == WGPU_ARRAY_LAYER_COUNT_UNDEFINED)) {
+        // FIXME: We should probably represent invalid objects by having the TextureViewImpl's m_backing just be nullptr.
+        return TextureViewImpl::create(wgpuTextureCreateInvalidView(m_backing), m_convertToBackingContext);
+    }
+        
+
     WGPUTextureViewDescriptor backingDescriptor {
         nullptr,
         label.data(),

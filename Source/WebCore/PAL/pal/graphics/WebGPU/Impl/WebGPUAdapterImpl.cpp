@@ -179,6 +179,7 @@ void AdapterImpl::requestDevice(const DeviceDescriptor& descriptor, CompletionHa
     };
 
     auto requestInvalidDevice = [this, &callback]() {
+        // FIXME: We should probably represent invalid objects by having the DeviceImpl's m_backing just be nullptr.
         wgpuAdapterRequestInvalidDeviceWithBlock(m_backing, makeBlockPtr([protectedThis = Ref { *this }, convertToBackingContext = m_convertToBackingContext.copyRef(), callback = WTFMove(callback)](WGPUDevice device) mutable {
             callback(DeviceImpl::create(device, Ref { protectedThis->features() }, Ref { protectedThis->limits() }, convertToBackingContext));
         }).get());

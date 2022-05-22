@@ -183,6 +183,10 @@ WGPU_EXPORT void wgpuSamplerSetLabel(WGPUSampler sampler, char const * label);
 WGPU_EXPORT void wgpuTextureSetLabel(WGPUTexture sampler, char const * label);
 WGPU_EXPORT void wgpuTextureViewSetLabel(WGPUTextureView sampler, char const * label);
 
+WGPU_EXPORT WGPUBindGroup wgpuDeviceCreateInvalidBindGroup(WGPUDevice device);
+WGPU_EXPORT WGPURenderPipeline wgpuDeviceCreateInvalidRenderPipeline(WGPUDevice device);
+WGPU_EXPORT WGPUTextureView wgpuTextureCreateInvalidView(WGPUTexture texture);
+
 WGPU_EXPORT void wgpuAdapterRequestDeviceWithBlock(WGPUAdapter adapter, WGPUDeviceDescriptor const * descriptor, WGPURequestDeviceBlockCallback callback);
 WGPU_EXPORT void wgpuAdapterRequestInvalidDeviceWithBlock(WGPUAdapter adapter, WGPURequestInvalidDeviceBlockCallback callback);
 WGPU_EXPORT void wgpuBufferMapAsyncWithBlock(WGPUBuffer buffer, WGPUMapModeFlags mode, size_t offset, size_t size, WGPUBufferMapBlockCallback callback);

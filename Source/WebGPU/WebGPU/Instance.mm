@@ -308,6 +308,10 @@ WGPUProc wgpuGetProcAddress(WGPUDevice, const char* procName)
         return reinterpret_cast<WGPUProc>(&wgpuDeviceCreateComputePipelineAsync);
     if (!strcmp(procName, "wgpuDeviceCreateComputePipelineAsyncWithBlock"))
         return reinterpret_cast<WGPUProc>(&wgpuDeviceCreateComputePipelineAsyncWithBlock);
+    if (!strcmp(procName, "wgpuDeviceCreateInvalidBindGroup"))
+        return reinterpret_cast<WGPUProc>(&wgpuDeviceCreateInvalidBindGroup);
+    if (!strcmp(procName, "wgpuDeviceCreateInvalidRenderPipeline"))
+        return reinterpret_cast<WGPUProc>(&wgpuDeviceCreateInvalidRenderPipeline);
     if (!strcmp(procName, "wgpuDeviceCreatePipelineLayout"))
         return reinterpret_cast<WGPUProc>(&wgpuDeviceCreatePipelineLayout);
     if (!strcmp(procName, "wgpuDeviceCreateQuerySet"))
@@ -458,6 +462,8 @@ WGPUProc wgpuGetProcAddress(WGPUDevice, const char* procName)
         return reinterpret_cast<WGPUProc>(&wgpuSwapChainPresent);
     if (!strcmp(procName, "wgpuTextureCreateView"))
         return reinterpret_cast<WGPUProc>(&wgpuTextureCreateView);
+    if (!strcmp(procName, "wgpuTextureCreateInvalidView"))
+        return reinterpret_cast<WGPUProc>(&wgpuTextureCreateInvalidView);
     if (!strcmp(procName, "wgpuTextureDestroy"))
         return reinterpret_cast<WGPUProc>(&wgpuTextureDestroy);
     return nullptr;

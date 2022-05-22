@@ -291,6 +291,16 @@ WGPUComputePipeline wgpuDeviceCreateComputePipeline(WGPUDevice device, const WGP
     return WebGPU::releaseToAPI(WebGPU::fromAPI(device).createComputePipeline(*descriptor));
 }
 
+WGPUBindGroup wgpuDeviceCreateInvalidBindGroup(WGPUDevice device)
+{
+    return WebGPU::releaseToAPI(WebGPU::fromAPI(device).createInvalidBindGroup());
+}
+
+WGPURenderPipeline wgpuDeviceCreateInvalidRenderPipeline(WGPUDevice device)
+{
+    return WebGPU::releaseToAPI(WebGPU::fromAPI(device).createInvalidRenderPipeline());
+}
+
 void wgpuDeviceCreateComputePipelineAsync(WGPUDevice device, const WGPUComputePipelineDescriptor* descriptor, WGPUCreateComputePipelineAsyncCallback callback, void* userdata)
 {
     WebGPU::fromAPI(device).createComputePipelineAsync(*descriptor, [callback, userdata](WGPUCreatePipelineAsyncStatus status, Ref<WebGPU::ComputePipeline>&& pipeline, String&& message) {

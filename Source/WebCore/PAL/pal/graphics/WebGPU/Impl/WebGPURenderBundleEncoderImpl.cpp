@@ -55,11 +55,17 @@ void RenderBundleEncoderImpl::setPipeline(const RenderPipeline& renderPipeline)
 
 void RenderBundleEncoderImpl::setIndexBuffer(const Buffer& buffer, IndexFormat indexFormat, Size64 offset, std::optional<Size64> size)
 {
+    if (size == WGPU_WHOLE_SIZE)
+        return;
+
     wgpuRenderBundleEncoderSetIndexBuffer(m_backing, m_convertToBackingContext->convertToBacking(buffer), m_convertToBackingContext->convertToBacking(indexFormat), offset, size.value_or(WGPU_WHOLE_SIZE));
 }
 
 void RenderBundleEncoderImpl::setVertexBuffer(Index32 slot, const Buffer& buffer, Size64 offset, std::optional<Size64> size)
 {
+    if (size == WGPU_WHOLE_SIZE)
+        return;
+
     wgpuRenderBundleEncoderSetVertexBuffer(m_backing, slot, m_convertToBackingContext->convertToBacking(buffer), offset, size.value_or(WGPU_WHOLE_SIZE));
 }
 

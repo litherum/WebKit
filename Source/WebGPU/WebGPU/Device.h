@@ -76,6 +76,8 @@ public:
     Ref<CommandEncoder> createCommandEncoder(const WGPUCommandEncoderDescriptor&);
     Ref<ComputePipeline> createComputePipeline(const WGPUComputePipelineDescriptor&);
     void createComputePipelineAsync(const WGPUComputePipelineDescriptor&, CompletionHandler<void(WGPUCreatePipelineAsyncStatus, Ref<ComputePipeline>&&, String&& message)>&& callback);
+    Ref<BindGroup> createInvalidBindGroup();
+    Ref<RenderPipeline> createInvalidRenderPipeline();
     Ref<PipelineLayout> createPipelineLayout(const WGPUPipelineLayoutDescriptor&);
     Ref<QuerySet> createQuerySet(const WGPUQuerySetDescriptor&);
     Ref<RenderBundleEncoder> createRenderBundleEncoder(const WGPURenderBundleEncoderDescriptor&);

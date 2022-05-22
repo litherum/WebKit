@@ -235,6 +235,9 @@ void CommandEncoderImpl::clearBuffer(
     Size64 offset,
     std::optional<Size64> size)
 {
+    if (size == WGPU_WHOLE_SIZE)
+        return;
+
     wgpuCommandEncoderClearBuffer(m_backing, m_convertToBackingContext->convertToBacking(buffer), offset, size.value_or(WGPU_WHOLE_SIZE));
 }
 

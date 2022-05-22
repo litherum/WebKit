@@ -219,6 +219,14 @@ Ref<BindGroup> DeviceImpl::createBindGroup(const BindGroupDescriptor& descriptor
 {
     auto label = descriptor.label.utf8();
 
+    for (const auto& bindGroupEntry : descriptor.entries) {
+        if (std::holds_alternative<BufferBinding>(bindGroupEntry.resource)
+            && std::get<BufferBinding>(bindGroupEntry.resource).size == WGPU_WHOLE_SIZE) {
+            // FIXME: We should probably represent invalid objects by having the BindGroupImpl's m_backing just be nullptr.
+            return BindGroupImpl::create(wgpuDeviceCreateInvalidBindGroup(backing()), m_convertToBackingContext);
+        }
+    }
+
     auto backingEntries = descriptor.entries.map([this] (const auto& bindGroupEntry) {
         return WGPUBindGroupEntry {
             nullptr,
@@ -372,6 +380,8 @@ static auto convertToBacking(const RenderPipelineDescriptor& descriptor, Convert
     backingBuffers.reserveInitialCapacity(descriptor.vertex.buffers.size());
     for (size_t i = 0; i < descriptor.vertex.buffers.size(); ++i) {
         const auto& buffer = descriptor.vertex.buffers[i];
+        if (buffer && buffer->arrayStride == WGPU_COPY_STRIDE_UNDEFINED)
+            return callback(nullptr);
         backingBuffers.uncheckedAppend(WGPUVertexBufferLayout {
             buffer ? buffer->arrayStride : WGPU_COPY_STRIDE_UNDEFINED,
             buffer ? convertToBackingContext.convertToBacking(buffer->stepMode) : WGPUVertexStepMode_Vertex,
@@ -503,13 +513,16 @@ static auto convertToBacking(const RenderPipelineDescriptor& descriptor, Convert
         descriptor.fragment ? &fragmentState : nullptr,
     };
 
-    return callback(backingDescriptor);
+    return callback(&backingDescriptor);
 }
 
 Ref<RenderPipeline> DeviceImpl::createRenderPipeline(const RenderPipelineDescriptor& descriptor)
 {
-    return convertToBacking(descriptor, m_convertToBackingContext, [this] (const WGPURenderPipelineDescriptor& backingDescriptor) {
-        return RenderPipelineImpl::create(wgpuDeviceCreateRenderPipeline(backing(), &backingDescriptor), m_convertToBackingContext);
+    return convertToBacking(descriptor, m_convertToBackingContext, [this] (const WGPURenderPipelineDescriptor* backingDescriptor) {
+        if (backingDescriptor)
+            return RenderPipelineImpl::create(wgpuDeviceCreateRenderPipeline(backing(), backingDescriptor), m_convertToBackingContext);
+        // FIXME: We should probably represent invalid objects by having the RenderPipelineImpl's m_backing just be nullptr.
+        return RenderPipelineImpl::create(wgpuDeviceCreateInvalidRenderPipeline(backing()), m_convertToBackingContext);
     });
 }
 
@@ -524,10 +537,15 @@ void DeviceImpl::createComputePipelineAsync(const ComputePipelineDescriptor& des
 
 void DeviceImpl::createRenderPipelineAsync(const RenderPipelineDescriptor& descriptor, CompletionHandler<void(Ref<RenderPipeline>&&)>&& callback)
 {
-    convertToBacking(descriptor, m_convertToBackingContext, [this, callback = WTFMove(callback)] (const WGPURenderPipelineDescriptor& backingDescriptor) mutable {
-        wgpuDeviceCreateRenderPipelineAsyncWithBlock(backing(), &backingDescriptor, makeBlockPtr([convertToBackingContext = m_convertToBackingContext.copyRef(), callback = WTFMove(callback)](WGPUCreatePipelineAsyncStatus, WGPURenderPipeline pipeline, const char*) mutable {
-            callback(RenderPipelineImpl::create(pipeline, convertToBackingContext));
-        }).get());
+    convertToBacking(descriptor, m_convertToBackingContext, [this, callback = WTFMove(callback)] (const WGPURenderPipelineDescriptor* backingDescriptor) mutable {
+        if (backingDescriptor) {
+            wgpuDeviceCreateRenderPipelineAsyncWithBlock(backing(), backingDescriptor, makeBlockPtr([convertToBackingContext = m_convertToBackingContext.copyRef(), callback = WTFMove(callback)](WGPUCreatePipelineAsyncStatus, WGPURenderPipeline pipeline, const char*) mutable {
+                callback(RenderPipelineImpl::create(pipeline, convertToBackingContext));
+            }).get());
+        } else {
+            // FIXME: We should probably represent invalid objects by having the RenderPipelineImpl's m_backing just be nullptr.
+            callback(RenderPipelineImpl::create(wgpuDeviceCreateInvalidRenderPipeline(backing()), m_convertToBackingContext));
+        }
     });
 }
 

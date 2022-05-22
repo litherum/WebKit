@@ -38,6 +38,11 @@ Ref<RenderPipeline> Device::createRenderPipeline(const WGPURenderPipelineDescrip
     return RenderPipeline::createInvalid(*this);
 }
 
+Ref<RenderPipeline> Device::createInvalidRenderPipeline()
+{
+    return RenderPipeline::createInvalid(*this);
+}
+
 void Device::createRenderPipelineAsync(const WGPURenderPipelineDescriptor& descriptor, CompletionHandler<void(WGPUCreatePipelineAsyncStatus, Ref<RenderPipeline>&&, String&& message)>&& callback)
 {
     // FIXME: Implement this.

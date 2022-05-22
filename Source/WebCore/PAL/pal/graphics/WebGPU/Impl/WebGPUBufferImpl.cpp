@@ -50,6 +50,11 @@ void BufferImpl::mapAsync(MapModeFlags mapModeFlags, Size64 offset, std::optiona
 {
     auto backingMapModeFlags = m_convertToBackingContext->convertMapModeFlagsToBacking(mapModeFlags);
 
+    if (size == WGPU_WHOLE_MAP_SIZE) {
+        callback();
+        return;
+    }
+
     auto usedSize = size.value_or(WGPU_WHOLE_MAP_SIZE);
 
     // FIXME: Check the casts.

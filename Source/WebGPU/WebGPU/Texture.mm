@@ -2361,6 +2361,11 @@ Ref<TextureView> Texture::createView(const WGPUTextureViewDescriptor& inputDescr
     return TextureView::create(texture, *descriptor, renderExtent, m_device);
 }
 
+Ref<TextureView> Texture::createInvalidView()
+{
+    return TextureView::createInvalid(m_device);
+}
+
 void Texture::destroy()
 {
     // https://gpuweb.github.io/gpuweb/#dom-gputexture-destroy
@@ -2821,6 +2826,11 @@ void wgpuTextureRelease(WGPUTexture texture)
 WGPUTextureView wgpuTextureCreateView(WGPUTexture texture, const WGPUTextureViewDescriptor* descriptor)
 {
     return WebGPU::releaseToAPI(WebGPU::fromAPI(texture).createView(*descriptor));
+}
+
+WGPUTextureView wgpuTextureCreateInvalidView(WGPUTexture texture)
+{
+    return WebGPU::releaseToAPI(WebGPU::fromAPI(texture).createInvalidView());
 }
 
 void wgpuTextureDestroy(WGPUTexture texture)
