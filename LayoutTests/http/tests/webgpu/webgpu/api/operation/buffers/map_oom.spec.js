@@ -104,7 +104,7 @@ an out-of-memory error if allocation fails.
     if (oom) {
       // getMappedRange is normally valid on OOM buffers, but this one fails because the
       // (default) range is too large to create the returned ArrayBuffer.
-      t.shouldThrow('RangeError', f);
+      t.shouldThrow('OperationError', f);
     } else {
       mapping = f();
     }

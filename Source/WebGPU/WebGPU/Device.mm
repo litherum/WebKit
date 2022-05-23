@@ -205,7 +205,6 @@ void Device::generateAValidationError(String&& message)
     generateAnError(WGPUErrorType_Validation, WGPUErrorFilter_Validation, WTFMove(message));
 }
 
-
 void Device::generateAnOutOfMemoryError(String&& message)
 {
     generateAnError(WGPUErrorType_OutOfMemory, WGPUErrorFilter_OutOfMemory, WTFMove(message));

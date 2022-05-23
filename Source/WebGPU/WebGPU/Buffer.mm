@@ -323,6 +323,9 @@ void Buffer::unmap()
 {
     // https://gpuweb.github.io/gpuweb/#dom-gpubuffer-unmap
 
+    if (!isValid())
+        return;
+
     if (!validateUnmap()) {
         m_device->generateAValidationError("Validation failure."_s);
         return;

@@ -44,9 +44,9 @@ namespace WebCore {
 
 class GPUBuffer : public RefCounted<GPUBuffer> {
 public:
-    static Ref<GPUBuffer> create(Ref<PAL::WebGPU::Buffer>&& backing)
+    static Ref<GPUBuffer> create(Ref<PAL::WebGPU::Buffer>&& backing, GPUSize64 size, bool mappedAtCreation)
     {
-        return adoptRef(*new GPUBuffer(WTFMove(backing)));
+        return adoptRef(*new GPUBuffer(WTFMove(backing), size, mappedAtCreation));
     }
 
     String label() const;
@@ -63,8 +63,10 @@ public:
     const PAL::WebGPU::Buffer& backing() const { return m_backing; }
 
 private:
-    GPUBuffer(Ref<PAL::WebGPU::Buffer>&& backing)
+    GPUBuffer(Ref<PAL::WebGPU::Buffer>&& backing, GPUSize64 size, bool mappedAtCreation)
         : m_backing(WTFMove(backing))
+        , m_size(size)
+        , m_mappedAtCreation(mappedAtCreation)
     {
     }
 
@@ -73,6 +75,8 @@ private:
     Ref<PAL::WebGPU::Buffer> m_backing;
 
     Vector<Ref<ArrayBuffer>> m_activeMappedRanges;
+    GPUSize64 m_size { 0 };
+    bool m_mappedAtCreation { false };
 };
 
 }

@@ -51,11 +51,37 @@ void GPUBuffer::mapAsync(GPUMapModeFlags mode, std::optional<GPUSize64> offset, 
     });
 }
 
+static size_t computeRangeSize(uint64_t bufferSize, GPUSize64 offset)
+{
+    auto result = checkedDifference<size_t>(bufferSize, offset);
+    if (result.hasOverflowed())
+        return 0;
+    return result.value();
+}
+
 ExceptionOr<Ref<JSC::ArrayBuffer>> GPUBuffer::getMappedRange(std::optional<GPUSize64> offset, std::optional<GPUSize64> size)
 {
-    auto mappedRange = m_backing->getMappedRange(offset.value_or(0), size);
-    if (!mappedRange.source)
+    CheckedSize checkedOffset = offset.value_or(0);
+
+    if (checkedOffset.hasOverflowed())
         return Exception { OperationError };
+
+    CheckedSize usedSize = valueOrCompute(size, [bufferSize = m_size, offset = checkedOffset.value()]() {
+        return computeRangeSize(bufferSize, offset);
+    });
+    if (usedSize.hasOverflowed())
+        return Exception { OperationError };
+
+    auto mappedRange = m_backing->getMappedRange(checkedOffset.value(), size);
+    if (!mappedRange.source) {
+        if (m_mappedAtCreation) {
+            if (auto result = ArrayBuffer::tryCreate(usedSize.value(), 1)) {
+                m_activeMappedRanges.append(*result);
+                return result.releaseNonNull();
+            }
+        }
+        return Exception { OperationError };
+    }
     auto result = ArrayBuffer::createFromBytes(mappedRange.source, mappedRange.byteLength, createSharedTask<void(void*)>([backing = m_backing.copyRef()](void*) { }));
     m_activeMappedRanges.append(result.copyRef());
     return result;

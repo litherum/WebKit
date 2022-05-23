@@ -98,7 +98,7 @@ void GPUDevice::destroy()
 
 Ref<GPUBuffer> GPUDevice::createBuffer(const GPUBufferDescriptor& bufferDescriptor)
 {
-    return GPUBuffer::create(m_backing->createBuffer(bufferDescriptor.convertToBacking()));
+    return GPUBuffer::create(m_backing->createBuffer(bufferDescriptor.convertToBacking()), bufferDescriptor.size, bufferDescriptor.mappedAtCreation);
 }
 
 Ref<GPUTexture> GPUDevice::createTexture(const GPUTextureDescriptor& textureDescriptor)
