@@ -55,6 +55,7 @@ static HardwareCapabilities::BaseCapabilities baseCapabilities(id<MTLDevice> dev
         false, // To be filled in by the caller.
         timestampCounterSet,
         statisticCounterSet,
+        device.maxBufferLength,
     };
 }
 

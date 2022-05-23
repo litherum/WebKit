@@ -39,6 +39,7 @@ struct HardwareCapabilities {
         bool supportsNonPrivateDepthStencilTextures { false };
         id<MTLCounterSet> timestampCounterSet { nil };
         id<MTLCounterSet> statisticCounterSet { nil };
+        NSUInteger maxBufferLength { 0 }; // FIXME: https://github.com/gpuweb/gpuweb/issues/1371 Move this to WGPULimits.
     } baseCapabilities;
 };
 

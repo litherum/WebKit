@@ -107,6 +107,7 @@ public:
     id<MTLDevice> device() const { return m_device; }
 
     void generateAValidationError(String&& message);
+    void generateAnOutOfMemoryError(String&& message);
 
     Instance& instance() const { return m_adapter->instance(); }
     bool hasUnifiedMemory() const { return m_device.hasUnifiedMemory; }
@@ -124,6 +125,8 @@ private:
     void makeInvalid() { m_device = nil; }
 
     void loseTheDevice(WGPUDeviceLostReason);
+
+    void generateAnError(WGPUErrorType, WGPUErrorFilter, String&& message);
 
     struct Error {
         WGPUErrorType type;

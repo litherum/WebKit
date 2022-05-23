@@ -177,25 +177,38 @@ auto Device::currentErrorScope(WGPUErrorFilter type) -> ErrorScope*
     return nullptr;
 }
 
-void Device::generateAValidationError(String&& message)
+void Device::generateAnError(WGPUErrorType errorType, WGPUErrorFilter errorFilter, String&& message)
 {
     // https://gpuweb.github.io/gpuweb/#abstract-opdef-generate-a-validation-error
 
-    auto* scope = currentErrorScope(WGPUErrorFilter_Validation);
+    auto* scope = currentErrorScope(errorFilter);
 
     if (scope) {
         if (!scope->error)
-            scope->error = Error { WGPUErrorType_Validation, WTFMove(message) };
+            scope->error = Error { errorType, WTFMove(message) };
         return;
     }
 
     if (m_uncapturedErrorCallback) {
         // FIXME: It's wrong to retain `this`. Instead, we should be using SharedTask.
         // Consider someone calls setUncapturedErrorCallback() while there's a callback pending.
-        instance().scheduleWork([protectedThis = Ref { *this }, message = WTFMove(message)]() mutable {
-            protectedThis->m_uncapturedErrorCallback(WGPUErrorType_Validation, WTFMove(message));
+        instance().scheduleWork([protectedThis = Ref { *this }, errorType, message = WTFMove(message)]() mutable {
+            protectedThis->m_uncapturedErrorCallback(errorType, WTFMove(message));
         });
     }
+}
+
+void Device::generateAValidationError(String&& message)
+{
+    // https://gpuweb.github.io/gpuweb/#abstract-opdef-generate-a-validation-error
+
+    generateAnError(WGPUErrorType_Validation, WGPUErrorFilter_Validation, WTFMove(message));
+}
+
+
+void Device::generateAnOutOfMemoryError(String&& message)
+{
+    generateAnError(WGPUErrorType_OutOfMemory, WGPUErrorFilter_OutOfMemory, WTFMove(message));
 }
 
 bool Device::validatePopErrorScope() const

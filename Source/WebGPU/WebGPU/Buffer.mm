@@ -96,6 +96,8 @@ static MTLStorageMode storageMode(bool deviceHasUnifiedMemory, WGPUBufferUsageFl
 
 id<MTLBuffer> Device::safeCreateBuffer(NSUInteger length, MTLStorageMode storageMode, MTLCPUCacheMode cpuCacheMode, MTLHazardTrackingMode hazardTrackingMode) const
 {
+    if (length > m_capabilities.baseCapabilities.maxBufferLength)
+        return nil;
     MTLResourceOptions resourceOptions = (cpuCacheMode << MTLResourceCPUCacheModeShift) | (storageMode << MTLResourceStorageModeShift) | (hazardTrackingMode << MTLResourceHazardTrackingModeShift);
     // FIXME(PERFORMANCE): Consider returning nil instead of clamping to 1.
     // FIXME(PERFORMANCE): Suballocate multiple Buffers either from MTLHeaps or from larger MTLBuffers.
@@ -116,8 +118,10 @@ Ref<Buffer> Device::createBuffer(const WGPUBufferDescriptor& descriptor)
     // FIXME(PERFORMANCE): Consider implementing hazard tracking ourself.
     MTLStorageMode storageMode = WebGPU::storageMode(hasUnifiedMemory(), descriptor.usage, descriptor.mappedAtCreation);
     auto buffer = safeCreateBuffer(static_cast<NSUInteger>(descriptor.size), storageMode);
-    if (!buffer)
+    if (!buffer) {
+        generateAnOutOfMemoryError("Buffer is too long."_s);
         return Buffer::createInvalid(*this);
+    }
 
     buffer.label = fromAPI(descriptor.label);
 
