@@ -73,7 +73,7 @@ private:
         return root().streamClientConnection().sendSync(WTFMove(message), WTFMove(reply), backing(), defaultSendTimeout);
     }
 
-    void mapAsync(PAL::WebGPU::MapModeFlags, PAL::WebGPU::Size64 offset, std::optional<PAL::WebGPU::Size64> sizeForMap, CompletionHandler<void()>&&) final;
+    void mapAsync(PAL::WebGPU::MapModeFlags, PAL::WebGPU::Size64 offset, std::optional<PAL::WebGPU::Size64> sizeForMap, CompletionHandler<void(bool)>&&) final;
     MappedRange getMappedRange(PAL::WebGPU::Size64 offset, std::optional<PAL::WebGPU::Size64>) final;
     void unmap() final;
 

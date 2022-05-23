@@ -463,11 +463,13 @@ static HardwareCapabilities::BaseCapabilities mergeBaseCapabilities(const Hardwa
     ASSERT(previous.argumentBuffersTier == next.argumentBuffersTier);
     ASSERT(!previous.timestampCounterSet || [previous.timestampCounterSet isEqual:next.timestampCounterSet]);
     ASSERT(!previous.statisticCounterSet || [previous.statisticCounterSet isEqual:next.statisticCounterSet]);
+    ASSERT(previous.maxBufferLength == next.maxBufferLength);
     return {
         previous.argumentBuffersTier,
         previous.supportsNonPrivateDepthStencilTextures || next.supportsNonPrivateDepthStencilTextures,
         previous.timestampCounterSet,
         previous.statisticCounterSet,
+        previous.maxBufferLength,
     };
 }
 

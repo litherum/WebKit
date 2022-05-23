@@ -46,20 +46,20 @@ BufferImpl::~BufferImpl()
     wgpuBufferRelease(m_backing);
 }
 
-void BufferImpl::mapAsync(MapModeFlags mapModeFlags, Size64 offset, std::optional<Size64> size, CompletionHandler<void()>&& callback)
+void BufferImpl::mapAsync(MapModeFlags mapModeFlags, Size64 offset, std::optional<Size64> size, CompletionHandler<void(bool)>&& callback)
 {
     auto backingMapModeFlags = m_convertToBackingContext->convertMapModeFlagsToBacking(mapModeFlags);
 
     if (size == WGPU_WHOLE_MAP_SIZE) {
-        callback();
+        callback(false);
         return;
     }
 
     auto usedSize = size.value_or(WGPU_WHOLE_MAP_SIZE);
 
     // FIXME: Check the casts.
-    wgpuBufferMapAsyncWithBlock(m_backing, backingMapModeFlags, static_cast<size_t>(offset), static_cast<size_t>(usedSize), makeBlockPtr([callback = WTFMove(callback)](WGPUBufferMapAsyncStatus) mutable {
-        callback();
+    wgpuBufferMapAsyncWithBlock(m_backing, backingMapModeFlags, static_cast<size_t>(offset), static_cast<size_t>(usedSize), makeBlockPtr([callback = WTFMove(callback)](WGPUBufferMapAsyncStatus status) mutable {
+        callback(status == WGPUBufferMapAsyncStatus_Success);
     }).get());
 }
 

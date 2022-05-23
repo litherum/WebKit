@@ -43,8 +43,11 @@ void GPUBuffer::setLabel(String&& label)
 
 void GPUBuffer::mapAsync(GPUMapModeFlags mode, std::optional<GPUSize64> offset, std::optional<GPUSize64> size, MapAsyncPromise&& promise)
 {
-    m_backing->mapAsync(convertMapModeFlagsToBacking(mode), offset.value_or(0), size, [promise = WTFMove(promise)] () mutable {
-        promise.resolve(nullptr);
+    m_backing->mapAsync(convertMapModeFlagsToBacking(mode), offset.value_or(0), size, [promise = WTFMove(promise)] (bool success) mutable {
+        if (success)
+            promise.resolve(nullptr);
+        else
+            promise.reject(OperationError);
     });
 }
 

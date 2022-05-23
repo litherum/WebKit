@@ -59,7 +59,12 @@ void RemoteBuffer::mapAsync(PAL::WebGPU::MapModeFlags mapModeFlags, PAL::WebGPU:
     m_isMapped = true;
     m_mapModeFlags = mapModeFlags;
 
-    m_backing->mapAsync(mapModeFlags, offset, size, [mapModeFlags, offset, size, strongThis = Ref<RemoteBuffer>(*this), callback = WTFMove(callback)] () mutable {
+    m_backing->mapAsync(mapModeFlags, offset, size, [mapModeFlags, offset, size, strongThis = Ref<RemoteBuffer>(*this), callback = WTFMove(callback)] (bool success) mutable {
+        if (!success) {
+            callback(std::nullopt);
+            return;
+        }
+
         auto mappedRange = strongThis->m_backing->getMappedRange(offset, size);
         strongThis->m_mappedRange = mappedRange;
         if (mapModeFlags.contains(PAL::WebGPU::MapMode::Read))
