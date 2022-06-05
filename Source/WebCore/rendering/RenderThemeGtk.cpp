@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2020 Igalia S.L.
+ * Copyright (C) 2022 Apple Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -36,7 +37,7 @@ RenderTheme& RenderTheme::singleton()
     return theme;
 }
 
-void RenderThemeGtk::updateCachedSystemFontDescription(CSSValueID, FontCascadeDescription& fontDescription) const
+FontCascadeDescription RenderThemeGtk::systemFont(CSSValueID) const
 {
     GtkSettings* settings = gtk_settings_get_default();
     if (!settings)
@@ -59,11 +60,13 @@ void RenderThemeGtk::updateCachedSystemFontDescription(CSSValueID, FontCascadeDe
     if (!pango_font_description_get_size_is_absolute(pangoDescription))
         size = size * (screenDPI() / 72.0);
 
+    FontCascadeDescription fontDescription;
     fontDescription.setSpecifiedSize(size);
     fontDescription.setIsAbsoluteSize(true);
     fontDescription.setWeight(normalWeightValue());
     fontDescription.setItalic(FontSelectionValue());
     pango_font_description_free(pangoDescription);
+    return fontDescription;
 }
 
 Seconds RenderThemeGtk::caretBlinkInterval() const
