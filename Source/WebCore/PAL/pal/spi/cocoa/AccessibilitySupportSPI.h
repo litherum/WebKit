@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Apple Inc.  All rights reserved.
+ * Copyright (C) 2020-2022 Apple Inc.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -48,5 +48,8 @@ void _AXSSetIsolatedTreeMode(AXSIsolatedTreeMode);
 #endif // ENABLE(ACCESSIBILITY_ISOLATED_TREE)
 
 WTF_EXTERN_C_END
+
+extern CFStringRef kAXSEnhanceTextLegibilityChangedNotification;
+Boolean _AXSEnhanceTextLegibilityEnabled();
 
 #endif // USE(APPLE_INTERNAL_SDK)

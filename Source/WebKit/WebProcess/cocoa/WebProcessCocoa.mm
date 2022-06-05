@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2020 Apple Inc. All rights reserved.
+ * Copyright (C) 2010-2022 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -985,22 +985,26 @@ void WebProcess::backlightLevelDidChange(float backlightLevel)
 void WebProcess::accessibilityPreferencesDidChange(const AccessibilityPreferences& preferences)
 {
 #if HAVE(PER_APP_ACCESSIBILITY_PREFERENCES)
+    auto convertSetting = [] (bool setting) {
+        return setting ? AXValueStateOn : AXValueStateOff;
+    };
     auto appID = CFSTR("com.apple.WebKit.WebContent");
     auto reduceMotionEnabled = preferences.reduceMotionEnabled;
-    if (_AXSReduceMotionEnabledApp(appID) != reduceMotionEnabled)
-        _AXSSetReduceMotionEnabledApp(reduceMotionEnabled, appID);
+    if (_AXSReduceMotionEnabled() != reduceMotionEnabled)
+        _AXSSetReduceMotionEnabledApp(convertSetting(reduceMotionEnabled), appID);
     auto increaseButtonLegibility = preferences.increaseButtonLegibility;
-    if (_AXSIncreaseButtonLegibilityApp(appID) != increaseButtonLegibility)
-        _AXSSetIncreaseButtonLegibilityApp(increaseButtonLegibility, appID);
+    if (_AXSIncreaseButtonLegibility() != increaseButtonLegibility)
+        _AXSSetIncreaseButtonLegibilityApp(convertSetting(increaseButtonLegibility), appID);
     auto enhanceTextLegibility = preferences.enhanceTextLegibility;
-    if (_AXSEnhanceTextLegibilityEnabledApp(appID) != enhanceTextLegibility)
-        _AXSSetEnhanceTextLegibilityEnabledApp(enhanceTextLegibility, appID);
+    if (_AXSEnhanceTextLegibilityEnabled() != enhanceTextLegibility)
+        _AXSSetEnhanceTextLegibilityEnabledApp(convertSetting(enhanceTextLegibility), appID);
     auto darkenSystemColors = preferences.darkenSystemColors;
-    if (_AXDarkenSystemColorsApp(appID) != darkenSystemColors)
-        _AXSSetDarkenSystemColorsApp(darkenSystemColors, appID);
+    if (_AXDarkenSystemColors() != darkenSystemColors)
+        _AXSSetDarkenSystemColorsApp(convertSetting(darkenSystemColors), appID);
     auto invertColorsEnabled = preferences.invertColorsEnabled;
-    if (_AXSInvertColorsEnabledApp(appID) != invertColorsEnabled)
-        _AXSInvertColorsSetEnabledApp(invertColorsEnabled, appID);
+    if (_AXSInvertColorsEnabled() != invertColorsEnabled)
+        _AXSInvertColorsSetEnabledApp(convertSetting(invertColorsEnabled), appID);
+    Page::updateStyleForAllPagesAfterGlobalChangeInEnvironment();
 #endif
 }
 

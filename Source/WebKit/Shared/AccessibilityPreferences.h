@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Apple Inc. All rights reserved.
+ * Copyright (C) 2021-2022 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,11 +35,11 @@ namespace WebKit {
 
 struct AccessibilityPreferences {
 #if HAVE(PER_APP_ACCESSIBILITY_PREFERENCES)
-    AXValueState reduceMotionEnabled { AXValueStateEmpty };
-    AXValueState increaseButtonLegibility { AXValueStateEmpty };
-    AXValueState enhanceTextLegibility { AXValueStateEmpty };
-    AXValueState darkenSystemColors { AXValueStateEmpty };
-    AXValueState invertColorsEnabled { AXValueStateEmpty };
+    bool reduceMotionEnabled { false };
+    bool increaseButtonLegibility { false };
+    bool enhanceTextLegibility { false };
+    bool darkenSystemColors { false };
+    bool invertColorsEnabled { false };
 #endif
 };
 

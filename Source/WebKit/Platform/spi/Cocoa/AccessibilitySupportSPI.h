@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Apple Inc. All rights reserved.
+ * Copyright (C) 2018-2022 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -55,11 +55,11 @@ typedef enum {
     AXValueStateOn
 } AXValueState;
 
-extern AXValueState _AXSReduceMotionEnabledApp(CFStringRef appID);
-extern AXValueState _AXSIncreaseButtonLegibilityApp(CFStringRef appID);
-extern AXValueState _AXSEnhanceTextLegibilityEnabledApp(CFStringRef appID);
-extern AXValueState _AXDarkenSystemColorsApp(CFStringRef appID);
-extern AXValueState _AXSInvertColorsEnabledApp(CFStringRef appID);
+extern bool _AXSReduceMotionEnabled();
+extern bool _AXSIncreaseButtonLegibility();
+extern bool _AXSEnhanceTextLegibilityEnabled();
+extern bool _AXDarkenSystemColors();
+extern bool _AXSInvertColorsEnabled();
 
 extern void _AXSSetReduceMotionEnabledApp(AXValueState enabled, CFStringRef appID);
 extern void _AXSSetIncreaseButtonLegibilityApp(AXValueState enabled, CFStringRef appID);

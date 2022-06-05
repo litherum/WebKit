@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2020 Apple Inc. All rights reserved.
+ * Copyright (C) 2006-2022 Apple Inc. All rights reserved.
  * Copyright (C) 2008 Torch Mobile Inc. All rights reserved. (http://www.torchmobile.com/)
  *
  * This library is free software; you can redistribute it and/or
@@ -437,9 +437,7 @@ void Page::firstTimeInitialization()
     platformStrategies()->loaderStrategy()->addOnlineStateChangeListener(&networkStateChanged);
 
     FontCache::registerFontCacheInvalidationCallback([] {
-        forEachPage([](auto& page) {
-            page.setNeedsRecalcStyleInAllFrames();
-        });
+        updateStyleForAllPagesAfterGlobalChangeInEnvironment();
     });
 }
 

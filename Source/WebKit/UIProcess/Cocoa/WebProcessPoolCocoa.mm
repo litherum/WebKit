@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010-2021 Apple Inc. All rights reserved.
+ * Copyright (C) 2010-2022 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -214,11 +214,11 @@ static AccessibilityPreferences accessibilityPreferences()
 #if HAVE(PER_APP_ACCESSIBILITY_PREFERENCES)
     auto appId = WebCore::applicationBundleIdentifier().createCFString();
 
-    preferences.reduceMotionEnabled = _AXSReduceMotionEnabledApp(appId.get());
-    preferences.increaseButtonLegibility = _AXSIncreaseButtonLegibilityApp(appId.get());
-    preferences.enhanceTextLegibility = _AXSEnhanceTextLegibilityEnabledApp(appId.get());
-    preferences.darkenSystemColors = _AXDarkenSystemColorsApp(appId.get());
-    preferences.invertColorsEnabled = _AXSInvertColorsEnabledApp(appId.get());
+    preferences.reduceMotionEnabled = _AXSReduceMotionEnabled();
+    preferences.increaseButtonLegibility = _AXSIncreaseButtonLegibility();
+    preferences.enhanceTextLegibility = _AXSEnhanceTextLegibilityEnabled();
+    preferences.darkenSystemColors = _AXDarkenSystemColors();
+    preferences.invertColorsEnabled = _AXSInvertColorsEnabled();
 #endif
     return preferences;
 }
