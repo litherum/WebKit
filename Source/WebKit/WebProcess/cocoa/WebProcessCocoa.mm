@@ -987,7 +987,8 @@ void WebProcess::backlightLevelDidChange(float backlightLevel)
 void WebProcess::accessibilityPreferencesDidChange(const AccessibilityPreferences& preferences)
 {
 #if HAVE(PER_APP_ACCESSIBILITY_PREFERENCES)
-    auto convertSetting = [] (bool setting) {
+    UNUSED_PARAM(preferences);
+    /*auto convertSetting = [] (bool setting) {
         return setting ? AXValueStateOn : AXValueStateOff;
     };
     auto appID = CFSTR("com.apple.WebKit.WebContent");
@@ -1005,7 +1006,7 @@ void WebProcess::accessibilityPreferencesDidChange(const AccessibilityPreference
         _AXSSetDarkenSystemColorsApp(convertSetting(darkenSystemColors), appID);
     auto invertColorsEnabled = preferences.invertColorsEnabled;
     if (_AXSInvertColorsEnabled() != invertColorsEnabled)
-        _AXSInvertColorsSetEnabledApp(convertSetting(invertColorsEnabled), appID);
+        _AXSInvertColorsSetEnabledApp(convertSetting(invertColorsEnabled), appID);*/
     SystemFontDatabase::singleton().clear();
     Page::updateStyleForAllPagesAfterGlobalChangeInEnvironment();
 #endif

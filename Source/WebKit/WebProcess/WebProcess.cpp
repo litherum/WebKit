@@ -302,6 +302,13 @@ WebProcess::WebProcess()
     , m_webSQLiteDatabaseTracker([this](bool isHoldingLockedFiles) { parentProcessConnection()->send(Messages::WebProcessProxy::SetIsHoldingLockedFiles(isHoldingLockedFiles), 0); })
 #endif
 {
+    auto appID = CFSTR("com.apple.WebKit.WebContent");
+    _AXSSetReduceMotionEnabledApp(AXValueStateEmpty, appID);
+    _AXSSetIncreaseButtonLegibilityApp(AXValueStateEmpty, appID);
+    _AXSSetEnhanceTextLegibilityEnabledApp(AXValueStateEmpty, appID);
+    _AXSSetDarkenSystemColorsApp(AXValueStateEmpty, appID);
+    _AXSInvertColorsSetEnabledApp(AXValueStateEmpty, appID);
+
     // Initialize our platform strategies.
     WebPlatformStrategies::initialize();
 

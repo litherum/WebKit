@@ -5202,7 +5202,7 @@ bool CSSPropertyParser::consumeSystemFont(bool important)
     // Instead, we stuff sentinel values into the outputted CSSValues, which are later replaced by
     // real system font values inside Style::BuilderCustom and Style::BuilderConverter.
     
-    addProperty(CSSPropertyFontStyle, CSSPropertyFont, CSSFontStyleValue::create(CSSValuePool::singleton().createIdentifierValue(systemFontID)), important);
+    addProperty(CSSPropertyFontStyle, CSSPropertyFont, CSSValuePool::singleton().createIdentifierValue(systemFontID), important);
     addProperty(CSSPropertyFontWeight, CSSPropertyFont, CSSValuePool::singleton().createIdentifierValue(systemFontID), important);
     addProperty(CSSPropertyFontSize, CSSPropertyFont, CSSValuePool::singleton().createIdentifierValue(systemFontID), important);
     addProperty(CSSPropertyFontFamily, CSSPropertyFont, CSSValuePool::singleton().createIdentifierValue(systemFontID), important);

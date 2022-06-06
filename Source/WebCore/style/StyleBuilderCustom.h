@@ -1891,7 +1891,6 @@ inline void BuilderCustom::applyValueFontSize(BuilderState& builderState, CSSVal
             size = determineRubyTextSizeMultiplier(builderState) * parentSize;
             break;
         default:
-            ASSERT_NOT_REACHED();
             break;
         }
     } else {
