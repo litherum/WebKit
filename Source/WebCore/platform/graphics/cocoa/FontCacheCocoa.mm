@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2022 Apple Inc. All rights reserved.
+ * Copyright (C) 2022 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -23,42 +23,39 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#import "config.h"
+#import "FontCache.h"
 
-#include "RenderTheme.h"
-#include <wtf/RetainPtr.h>
-
-OBJC_CLASS NSDateComponentsFormatter;
+#import "FontCacheCoreText.h"
+#import <pal/ios/UIKitSoftLink.h>
 
 namespace WebCore {
 
-class RenderThemeCocoa : public RenderTheme {
-public:
-    WEBCORE_EXPORT static RenderThemeCocoa& singleton();
-
-private:
-    void purgeCaches() override;
-
-    bool shouldHaveCapsLockIndicator(const HTMLInputElement&) const final;
-
-#if ENABLE(APPLE_PAY)
-    void adjustApplePayButtonStyle(RenderStyle&, const Element*) const override;
-    bool paintApplePayButton(const RenderObject&, const PaintInfo&, const IntRect&) override;
-#endif
-
-    FontCascadeDescription systemFont(CSSValueID systemFontID) const override;
-
-#if ENABLE(VIDEO) && ENABLE(MODERN_MEDIA_CONTROLS)
-    String mediaControlsStyleSheet() override;
-    Vector<String, 2> mediaControlsScripts() override;
-    String mediaControlsBase64StringForIconNameAndType(const String&, const String&) override;
-    String mediaControlsFormattedStringForDuration(double) override;
-
-    String m_mediaControlsLocalizedStringsScript;
-    String m_mediaControlsScript;
-    String m_mediaControlsStyleSheet;
-    RetainPtr<NSDateComponentsFormatter> m_durationFormatter;
-#endif // ENABLE(VIDEO) && ENABLE(MODERN_MEDIA_CONTROLS)
-};
-
+CFStringRef getUIContentSizeCategoryDidChangeNotificationName()
+{
+    return static_cast<CFStringRef>(PAL::get_UIKit_UIContentSizeCategoryDidChangeNotification());
 }
+
+static String& _contentSizeCategory()
+{
+    static NeverDestroyed<String> _contentSizeCategory;
+    return _contentSizeCategory.get();
+}
+
+CFStringRef contentSizeCategory()
+{
+    if (!_contentSizeCategory().isNull())
+        return (__bridge CFStringRef)static_cast<NSString*>(_contentSizeCategory());
+#if PLATFORM(IOS_FAMILY)
+    return static_cast<CFStringRef>([[PAL::getUIApplicationClass() sharedApplication] preferredContentSizeCategory]);
+#else
+    return kCTFontContentSizeCategoryL;
+#endif
+}
+
+void setContentSizeCategory(const String& contentSizeCategory)
+{
+    _contentSizeCategory() = contentSizeCategory;
+}
+
+} // namespace WebCore
