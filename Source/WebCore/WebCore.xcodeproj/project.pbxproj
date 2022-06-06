@@ -7161,6 +7161,7 @@
 		1C12AC281EE778AE0079E0A0 /* FontFamilySpecificationCoreText.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FontFamilySpecificationCoreText.cpp; sourceTree = "<group>"; };
 		1C12AC291EE778AE0079E0A0 /* FontFamilySpecificationCoreText.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FontFamilySpecificationCoreText.h; sourceTree = "<group>"; };
 		1C12AC2C1EE779950079E0A0 /* FontDescriptionCocoa.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FontDescriptionCocoa.cpp; sourceTree = "<group>"; };
+		1C16B86A284D6B8200318FEC /* SystemFontDatabaseCocoa.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SystemFontDatabaseCocoa.mm; sourceTree = "<group>"; };
 		1C16B86C284D73EF00318FEC /* FontCacheCocoa.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = FontCacheCocoa.mm; sourceTree = "<group>"; };
 		1C18DA56181AF6A500C4EF22 /* TextPainter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextPainter.cpp; sourceTree = "<group>"; };
 		1C18DA57181AF6A500C4EF22 /* TextPainter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextPainter.h; sourceTree = "<group>"; };
@@ -7233,6 +7234,8 @@
 		1C43DE6822AB4B8A001527D9 /* LocalCurrentTraitCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalCurrentTraitCollection.h; sourceTree = "<group>"; };
 		1C43DE6A22AB4B8A001527D9 /* LocalCurrentTraitCollection.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LocalCurrentTraitCollection.mm; sourceTree = "<group>"; };
 		1C4674FD26F4843600B61273 /* FontPalette.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FontPalette.h; sourceTree = "<group>"; };
+		1C4C77DE284DA83900BD0936 /* SystemFontDatabase.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SystemFontDatabase.cpp; sourceTree = "<group>"; };
+		1C4C77DF284DA83900BD0936 /* SystemFontDatabase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SystemFontDatabase.h; sourceTree = "<group>"; };
 		1C4D0DD124D9F0DB003D7498 /* GlyphBufferMembers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GlyphBufferMembers.h; sourceTree = "<group>"; };
 		1C4DB02427339E5E007B0AD1 /* ShouldLocalizeAxisNames.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShouldLocalizeAxisNames.h; sourceTree = "<group>"; };
 		1C50C49522C84F2400A6E4BE /* WHLSLStandardLibraryFunctionMap.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WHLSLStandardLibraryFunctionMap.cpp; sourceTree = "<group>"; };
@@ -29420,6 +29423,8 @@
 				501BAAA813950E2C00F7ACEB /* WindRule.h */,
 				379919941200DDF400EA041C /* WOFFFileFormat.cpp */,
 				379919951200DDF400EA041C /* WOFFFileFormat.h */,
+				1C4C77DE284DA83900BD0936 /* SystemFontDatabase.cpp */,
+				1C4C77DF284DA83900BD0936 /* SystemFontDatabase.h */,
 			);
 			path = graphics;
 			sourceTree = "<group>";
@@ -29565,6 +29570,7 @@
 				07F5CFF22582A4F800662EF5 /* WebMAudioUtilitiesCocoa.mm */,
 				7B1619102719880E00C40EAC /* WebProcessGraphicsContextGLCocoa.mm */,
 				1C16B86C284D73EF00318FEC /* FontCacheCocoa.mm */,
+				1C16B86A284D6B8200318FEC /* SystemFontDatabaseCocoa.mm */,
 			);
 			path = cocoa;
 			sourceTree = "<group>";
