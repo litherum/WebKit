@@ -352,7 +352,6 @@ VariationDefaultsMap defaultVariationValues(CTFontRef font, ShouldLocalizeAxisNa
     return result;
 }
 
-#if USE(NON_VARIABLE_SYSTEM_FONT)
 static inline bool fontIsSystemFont(CTFontRef font)
 {
     if (isSystemFont(font))
@@ -361,7 +360,6 @@ static inline bool fontIsSystemFont(CTFontRef font)
     auto name = adoptCF(CTFontCopyPostScriptName(font));
     return fontNameIsSystemFont(name.get());
 }
-#endif
 
 // These values were calculated by performing a linear regression on the CSS weights/widths/slopes and Core Text weights/widths/slopes of San Francisco.
 // FIXME: <rdar://problem/31312602> Get the real values from Core Text.
@@ -569,6 +567,17 @@ static void addAttributesForFontPalettes(CFMutableDictionaryRef attributes, cons
     }
 }
 
+static bool& platformShouldEnhanceTextLegibility()
+{
+    static NeverDestroyed<bool> shouldEnhanceTextLegibility = _AXSEnhanceTextLegibilityEnabled();
+    return shouldEnhanceTextLegibility.get();
+}
+
+static inline bool shouldEnhanceTextLegibility()
+{
+    return platformShouldEnhanceTextLegibility() || FontCache::forCurrentThread().shouldMockBoldSystemFontForAccessibility();
+}
+
 RetainPtr<CTFontRef> preparePlatformFont(CTFontRef originalFont, const FontDescription& fontDescription, const FontCreationContext& fontCreationContext, bool applyWeightWidthSlopeVariations)
 {
     if (!originalFont)
@@ -651,6 +660,11 @@ RetainPtr<CTFontRef> preparePlatformFont(CTFontRef originalFont, const FontDescr
             width = std::max(std::min(width, static_cast<float>(widthValue->maximum)), static_cast<float>(widthValue->minimum));
         if (auto slopeValue = fontCreationContext.fontFaceCapabilities().weight)
             slope = std::max(std::min(slope, static_cast<float>(slopeValue->maximum)), static_cast<float>(slopeValue->minimum));
+        if (shouldEnhanceTextLegibility() && fontIsSystemFont(originalFont)) {
+            auto ctWeight = denormalizeCTWeight(weight);
+            ctWeight = CTFontGetAccessibilityBoldWeightOfWeight(ctWeight);
+            weight = normalizeCTWeight(ctWeight);
+        }
         if (needsConversion) {
             weight = denormalizeGXWeight(weight);
             width = denormalizeVariationWidth(width);
@@ -1302,6 +1316,8 @@ static void invalidateFontCache()
         FontDatabase::singletonDisallowingUserInstalledFonts().clear();
 
         FontCache::invalidateAllFontCaches();
+
+        platformShouldEnhanceTextLegibility() = _AXSEnhanceTextLegibilityEnabled();
     });
 }
 
