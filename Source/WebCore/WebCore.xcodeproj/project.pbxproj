@@ -632,6 +632,7 @@
 		1C24EEA91C72A7B40080F8FC /* JSFontFaceSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C24EEA71C72A7B40080F8FC /* JSFontFaceSet.h */; };
 		1C26671B26FA932F00117073 /* FontCreationContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C26671926FA7F2E00117073 /* FontCreationContext.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1C43DE6B22AB4B8A001527D9 /* LocalCurrentTraitCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C43DE6822AB4B8A001527D9 /* LocalCurrentTraitCollection.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		1C4C77E0284DB75700BD0936 /* SystemFontDatabase.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C4C77DF284DA83900BD0936 /* SystemFontDatabase.h */; };
 		1C4D0DD324D9F10D003D7498 /* GlyphBufferMembers.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C4D0DD124D9F0DB003D7498 /* GlyphBufferMembers.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1C4DB02627339FE0007B0AD1 /* ShouldLocalizeAxisNames.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C4DB02427339E5E007B0AD1 /* ShouldLocalizeAxisNames.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1C5E1DA826F94B9000E07AF1 /* FontPaletteValues.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C5E1DA626F949B900E07AF1 /* FontPaletteValues.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -37297,6 +37298,7 @@
 				BE20507E18A458C20080647E /* RenderVTTCue.h in Headers */,
 				A871DFE40A15376B00B12A68 /* RenderWidget.h in Headers */,
 				A89CCC530F44E98100B5DA10 /* ReplaceNodeWithSpanCommand.h in Headers */,
+				1C4C77E0284DB75700BD0936 /* SystemFontDatabase.h in Headers */,
 				2DF512CE1D873E47001D6780 /* ReplaceRangeWithTextCommand.h in Headers */,
 				93309E0A099E64920056E581 /* ReplaceSelectionCommand.h in Headers */,
 				071C00342707D95500D027C7 /* ReplayKitCaptureSource.h in Headers */,

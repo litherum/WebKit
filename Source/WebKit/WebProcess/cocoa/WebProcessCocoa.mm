@@ -83,6 +83,7 @@
 #import <WebCore/RuntimeEnabledFeatures.h>
 #import <WebCore/SWContextManager.h>
 #import <WebCore/SystemBattery.h>
+#import <WebCore/SystemFontDatabase.h>
 #import <WebCore/SystemSoundManager.h>
 #import <WebCore/UTIUtilities.h>
 #import <WebCore/WebMAudioUtilitiesCocoa.h>
@@ -1005,6 +1006,7 @@ void WebProcess::accessibilityPreferencesDidChange(const AccessibilityPreference
     auto invertColorsEnabled = preferences.invertColorsEnabled;
     if (_AXSInvertColorsEnabled() != invertColorsEnabled)
         _AXSInvertColorsSetEnabledApp(convertSetting(invertColorsEnabled), appID);
+    SystemFontDatabase::singleton().clear();
     Page::updateStyleForAllPagesAfterGlobalChangeInEnvironment();
 #endif
 }
