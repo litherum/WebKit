@@ -7162,6 +7162,7 @@
 		1C12AC291EE778AE0079E0A0 /* FontFamilySpecificationCoreText.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FontFamilySpecificationCoreText.h; sourceTree = "<group>"; };
 		1C12AC2C1EE779950079E0A0 /* FontDescriptionCocoa.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FontDescriptionCocoa.cpp; sourceTree = "<group>"; };
 		1C16B86C284D73EF00318FEC /* FontCacheCocoa.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = FontCacheCocoa.mm; sourceTree = "<group>"; };
+		1C16B86A284D6B8200318FEC /* SystemFontDatabaseCocoa.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SystemFontDatabaseCocoa.mm; sourceTree = "<group>"; };
 		1C18DA56181AF6A500C4EF22 /* TextPainter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextPainter.cpp; sourceTree = "<group>"; };
 		1C18DA57181AF6A500C4EF22 /* TextPainter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextPainter.h; sourceTree = "<group>"; };
 		1C21E57A183ED1FF001C289D /* IOSurfacePool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IOSurfacePool.cpp; sourceTree = "<group>"; };
@@ -29565,6 +29566,7 @@
 				07F5CFF22582A4F800662EF5 /* WebMAudioUtilitiesCocoa.mm */,
 				7B1619102719880E00C40EAC /* WebProcessGraphicsContextGLCocoa.mm */,
 				1C16B86C284D73EF00318FEC /* FontCacheCocoa.mm */,
+				1C16B86A284D6B8200318FEC /* SystemFontDatabaseCocoa.mm */,
 			);
 			path = cocoa;
 			sourceTree = "<group>";

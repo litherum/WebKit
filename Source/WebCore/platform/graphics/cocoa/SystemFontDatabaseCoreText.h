@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Apple Inc. All rights reserved.
+ * Copyright (C) 2018-2022 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -96,6 +96,42 @@ public:
     String fantasyFamily(const String& locale);
     String monospaceFamily(const String& locale);
 
+    enum class FontShorthand {
+        // This needs to be kept in sync with CSSValue.
+        Caption,
+        Icon,
+        Menu,
+        MessageBox,
+        SmallCaption,
+        WebkitMiniControl,
+        WebkitSmallControl,
+        WebkitControl,
+        AppleSystemHeadline,
+        AppleSystemBody,
+        AppleSystemSubheadline,
+        AppleSystemFootnote,
+        AppleSystemCaption1,
+        AppleSystemCaption2,
+        AppleSystemShortHeadline,
+        AppleSystemShortBody,
+        AppleSystemShortSubheadline,
+        AppleSystemShortFootnote,
+        AppleSystemShortCaption1,
+        AppleSystemTallBody,
+        AppleSystemTitle0,
+        AppleSystemTitle1,
+        AppleSystemTitle2,
+        AppleSystemTitle3,
+        AppleSystemTitle4,
+        StatusBar,
+    };
+    using FontShorthandUnderlyingType = std::underlying_type<FontShorthand>::type;
+    static constexpr auto fontShorthandCount = static_cast<FontShorthandUnderlyingType>(FontShorthand::StatusBar) - static_cast<FontShorthandUnderlyingType>(FontShorthand::Caption) + 1;
+
+    const AtomString& systemFontShorthandFamily(FontShorthand);
+    float systemFontShorthandSize(FontShorthand);
+    FontSelectionValue systemFontShorthandWeight(FontShorthand);
+
     void clear();
 
 private:
@@ -107,12 +143,28 @@ private:
     RetainPtr<CTFontRef> createSystemDesignFont(SystemFontKind, const CascadeListParameters&);
     RetainPtr<CTFontRef> createTextStyleFont(const CascadeListParameters&);
 
+    struct SystemFontShorthandInfo {
+        AtomString family;
+        float size;
+        FontSelectionValue weight;
+    };
+    const SystemFontShorthandInfo& systemFontShorthandInfo(FontShorthand);
+    static RetainPtr<CTFontDescriptorRef> smallCaptionFontDescriptor();
+    static RetainPtr<CTFontDescriptorRef> menuFontDescriptor();
+    static RetainPtr<CTFontDescriptorRef> statusBarFontDescriptor();
+    static RetainPtr<CTFontDescriptorRef> miniControlFontDescriptor();
+    static RetainPtr<CTFontDescriptorRef> smallControlFontDescriptor();
+    static RetainPtr<CTFontDescriptorRef> controlFontDescriptor();
+
     static RetainPtr<CTFontRef> createFontByApplyingWeightWidthItalicsAndFallbackBehavior(CTFontRef, CGFloat weight, CGFloat width, bool italic, float size, AllowUserInstalledFonts, CFStringRef design = nullptr);
     static RetainPtr<CTFontDescriptorRef> removeCascadeList(CTFontDescriptorRef);
     static Vector<RetainPtr<CTFontDescriptorRef>> computeCascadeList(CTFontRef, CFStringRef locale);
     static CascadeListParameters systemFontParameters(const FontDescription&, const AtomString& familyName, SystemFontKind, AllowUserInstalledFonts);
 
     HashMap<CascadeListParameters, Vector<RetainPtr<CTFontDescriptorRef>>, CascadeListParameters::Hash, SimpleClassHashTraits<CascadeListParameters>> m_systemFontCache;
+
+    using SystemFontShorthandCache = std::array<std::optional<SystemFontShorthandInfo>, fontShorthandCount>;
+    SystemFontShorthandCache m_systemFontShorthandCache;
 
     MemoryCompactRobinHoodHashMap<String, String> m_serifFamilies;
     MemoryCompactRobinHoodHashMap<String, String> m_sansSeriferifFamilies;

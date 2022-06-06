@@ -129,6 +129,8 @@ Vector<RetainPtr<CTFontDescriptorRef>> SystemFontDatabaseCoreText::cascadeList(c
 void SystemFontDatabaseCoreText::clear()
 {
     m_systemFontCache.clear();
+    for (auto& item : m_systemFontShorthandCache)
+        item.reset();
     m_serifFamilies.clear();
     m_sansSeriferifFamilies.clear();
     m_cursiveFamilies.clear();
@@ -332,6 +334,135 @@ String SystemFontDatabaseCoreText::monospaceFamily(const String& locale)
         return "Courier"_str;
 #endif
     return result;
+}
+
+static inline FontSelectionValue cssWeightOfSystemFontDescriptor(CTFontDescriptorRef fontDescriptor)
+{
+    auto resultRef = adoptCF(static_cast<CFNumberRef>(CTFontDescriptorCopyAttribute(fontDescriptor, kCTFontCSSWeightAttribute)));
+    float result = 0;
+    if (resultRef && CFNumberGetValue(resultRef.get(), kCFNumberFloatType, &result))
+        return FontSelectionValue(result);
+
+    auto traitsRef = adoptCF(static_cast<CFDictionaryRef>(CTFontDescriptorCopyAttribute(fontDescriptor, kCTFontTraitsAttribute)));
+    resultRef = static_cast<CFNumberRef>(CFDictionaryGetValue(traitsRef.get(), kCTFontWeightTrait));
+    CFNumberGetValue(resultRef.get(), kCFNumberFloatType, &result);
+    return FontSelectionValue(normalizeCTWeight(result));
+}
+
+auto SystemFontDatabaseCoreText::systemFontShorthandInfo(FontShorthand fontShorthand) -> const SystemFontShorthandInfo&
+{
+    auto index = static_cast<FontShorthandUnderlyingType>(fontShorthand);
+    if (auto& entry = m_systemFontShorthandCache[index])
+        return *entry;
+
+    auto interrogateFontDescriptorShorthandItem = [] (CTFontDescriptorRef fontDescriptor, const String& family) {
+        auto sizeNumber = adoptCF(static_cast<CFNumberRef>(CTFontDescriptorCopyAttribute(fontDescriptor, kCTFontSizeAttribute))); // FIXME: Make sure this actually works
+        float size = 0;
+        CFNumberGetValue(sizeNumber.get(), kCFNumberFloatType, &size);
+        auto weight = normalizeCTWeight(size);
+        return SystemFontShorthandInfo { AtomString(family), size, FontSelectionValue(weight) };
+    };
+
+    auto interrogateTextStyleShorthandItem = [] (CFStringRef textStyle) {
+        CGFloat weight = 0;
+        float size = CTFontDescriptorGetTextStyleSize(textStyle, contentSizeCategory(), kCTFontTextStylePlatformDefault, &weight, nullptr);
+        auto cssWeight = normalizeCTWeight(weight);
+        return SystemFontShorthandInfo { textStyle, size, FontSelectionValue(cssWeight) };
+    };
+
+    switch (fontShorthand) {
+    case FontShorthand::Caption:
+    case FontShorthand::Icon:
+    case FontShorthand::MessageBox:
+        m_systemFontShorthandCache[index] = interrogateFontDescriptorShorthandItem(adoptCF(CTFontDescriptorCreateForUIType(kCTFontUIFontSystem, 0, nullptr)).get(), "system-ui"_s);
+        break;
+    case FontShorthand::Menu:
+        m_systemFontShorthandCache[index] = interrogateFontDescriptorShorthandItem(menuFontDescriptor().get(), "-apple-menu"_s);
+        break;
+    case FontShorthand::SmallCaption:
+        m_systemFontShorthandCache[index] = interrogateFontDescriptorShorthandItem(smallCaptionFontDescriptor().get(), "system-ui"_s);
+        break;
+    case FontShorthand::WebkitMiniControl:
+        m_systemFontShorthandCache[index] = interrogateFontDescriptorShorthandItem(miniControlFontDescriptor().get(), "system-ui"_s);
+        break;
+    case FontShorthand::WebkitSmallControl:
+        m_systemFontShorthandCache[index] = interrogateFontDescriptorShorthandItem(smallControlFontDescriptor().get(), "system-ui"_s);
+        break;
+    case FontShorthand::WebkitControl:
+        m_systemFontShorthandCache[index] = interrogateFontDescriptorShorthandItem(controlFontDescriptor().get(), "system-ui"_s);
+        break;
+    case FontShorthand::AppleSystemHeadline:
+        m_systemFontShorthandCache[index] = interrogateTextStyleShorthandItem(kCTUIFontTextStyleHeadline);
+        break;
+    case FontShorthand::AppleSystemBody:
+        m_systemFontShorthandCache[index] = interrogateTextStyleShorthandItem(kCTUIFontTextStyleBody);
+        break;
+    case FontShorthand::AppleSystemSubheadline:
+        m_systemFontShorthandCache[index] = interrogateTextStyleShorthandItem(kCTUIFontTextStyleSubhead);
+        break;
+    case FontShorthand::AppleSystemFootnote:
+        m_systemFontShorthandCache[index] = interrogateTextStyleShorthandItem(kCTUIFontTextStyleFootnote);
+        break;
+    case FontShorthand::AppleSystemCaption1:
+        m_systemFontShorthandCache[index] = interrogateTextStyleShorthandItem(kCTUIFontTextStyleCaption1);
+        break;
+    case FontShorthand::AppleSystemCaption2:
+        m_systemFontShorthandCache[index] = interrogateTextStyleShorthandItem(kCTUIFontTextStyleCaption2);
+        break;
+    case FontShorthand::AppleSystemShortHeadline:
+        m_systemFontShorthandCache[index] = interrogateTextStyleShorthandItem(kCTUIFontTextStyleShortHeadline);
+        break;
+    case FontShorthand::AppleSystemShortBody:
+        m_systemFontShorthandCache[index] = interrogateTextStyleShorthandItem(kCTUIFontTextStyleShortBody);
+        break;
+    case FontShorthand::AppleSystemShortSubheadline:
+        m_systemFontShorthandCache[index] = interrogateTextStyleShorthandItem(kCTUIFontTextStyleShortSubhead);
+        break;
+    case FontShorthand::AppleSystemShortFootnote:
+        m_systemFontShorthandCache[index] = interrogateTextStyleShorthandItem(kCTUIFontTextStyleShortFootnote);
+        break;
+    case FontShorthand::AppleSystemShortCaption1:
+        m_systemFontShorthandCache[index] = interrogateTextStyleShorthandItem(kCTUIFontTextStyleShortCaption1);
+        break;
+    case FontShorthand::AppleSystemTallBody:
+        m_systemFontShorthandCache[index] = interrogateTextStyleShorthandItem(kCTUIFontTextStyleTallBody);
+        break;
+    case FontShorthand::AppleSystemTitle0:
+        m_systemFontShorthandCache[index] = interrogateTextStyleShorthandItem(kCTUIFontTextStyleTitle0);
+        break;
+    case FontShorthand::AppleSystemTitle1:
+        m_systemFontShorthandCache[index] = interrogateTextStyleShorthandItem(kCTUIFontTextStyleTitle1);
+        break;
+    case FontShorthand::AppleSystemTitle2:
+        m_systemFontShorthandCache[index] = interrogateTextStyleShorthandItem(kCTUIFontTextStyleTitle2);
+        break;
+    case FontShorthand::AppleSystemTitle3:
+        m_systemFontShorthandCache[index] = interrogateTextStyleShorthandItem(kCTUIFontTextStyleTitle3);
+        break;
+    case FontShorthand::AppleSystemTitle4:
+        m_systemFontShorthandCache[index] = interrogateTextStyleShorthandItem(kCTUIFontTextStyleTitle4);
+        break;
+    case FontShorthand::StatusBar:
+        m_systemFontShorthandCache[index] = interrogateFontDescriptorShorthandItem(statusBarFontDescriptor().get(), "-apple-status-bar"_s);
+        break;
+    }
+
+    return *m_systemFontShorthandCache[index];
+}
+
+const AtomString& SystemFontDatabaseCoreText::systemFontShorthandFamily(FontShorthand fontShorthand)
+{
+    return systemFontShorthandInfo(fontShorthand).family;
+}
+
+float SystemFontDatabaseCoreText::systemFontShorthandSize(FontShorthand fontShorthand)
+{
+    return systemFontShorthandInfo(fontShorthand).size;
+}
+
+FontSelectionValue SystemFontDatabaseCoreText::systemFontShorthandWeight(FontShorthand fontShorthand)
+{
+    return systemFontShorthandInfo(fontShorthand).weight;
 }
 
 }
