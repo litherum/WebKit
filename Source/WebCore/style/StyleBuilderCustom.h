@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2013 Google Inc. All rights reserved.
- * Copyright (C) 2014-2017 Apple Inc. All rights reserved.
+ * Copyright (C) 2014-2022 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -1045,6 +1045,19 @@ inline void BuilderCustom::applyInheritFontFamily(BuilderState& builderState)
 
 inline void BuilderCustom::applyValueFontFamily(BuilderState& builderState, CSSValue& value)
 {
+    if (is<CSSPrimitiveValue>(value)) {
+        auto valueID = downcast<CSSPrimitiveValue>(value).valueID();
+        ASSERT(valueID, valueID != CSSValueInvalid);
+
+        auto familyName = SystemFontDatabase::singleton().systemFontShorthandFamily(CSSPropertyParserHelpers::lowerFontShorthand(valueID));
+        Vector<AtomString> families { familyName };
+        auto fontDescription = builderState.fontDescription();
+        fontDescription.setIsSpecifiedFont(false);
+        fontDescription.setFamilies(families);
+        builderState.setFontDescription(WTFMove(fontDescription));
+        return;
+    }
+
     auto& valueList = downcast<CSSValueList>(value);
 
     auto fontDescription = builderState.fontDescription();
@@ -1822,6 +1835,17 @@ inline void BuilderCustom::applyInheritFontStyle(BuilderState& builderState)
 
 inline void BuilderCustom::applyValueFontStyle(BuilderState& builderState, CSSValue& value)
 {
+    if (is<CSSPrimitiveValue>(value)) {
+        auto valueID = downcast<CSSPrimitiveValue>(value).valueID();
+        ASSERT_UNUSED(valueID, valueID != CSSValueInvalid);
+
+        auto fontDescription = builderState.fontDescription();
+        fontDescription.setItalic(std::nullopt);
+        fontDescription.setFontStyleAxis(FontStyleAxis::slnt);
+        builderState.setFontDescription(WTFMove(fontDescription));
+        return;
+    }
+
     auto& fontStyleValue = downcast<CSSFontStyleValue>(value);
     auto fontDescription = builderState.fontDescription();
     fontDescription.setItalic(BuilderConverter::convertFontStyleFromValue(fontStyleValue));
@@ -1838,11 +1862,13 @@ inline void BuilderCustom::applyValueFontSize(BuilderState& builderState, CSSVal
     bool parentIsAbsoluteSize = builderState.parentStyle().fontDescription().isAbsoluteSize();
 
     auto& primitiveValue = downcast<CSSPrimitiveValue>(value);
-    float size;
+    float size = 0;
     if (CSSValueID ident = primitiveValue.valueID()) {
-        fontDescription.setIsAbsoluteSize(parentIsAbsoluteSize && (ident == CSSValueLarger || ident == CSSValueSmaller || ident == CSSValueWebkitRubyText));
+        fontDescription.setIsAbsoluteSize(parentIsAbsoluteSize && (ident == CSSValueLarger || ident == CSSValueSmaller || ident == CSSValueWebkitRubyText || (CSSPropertyParserHelpers::isSystemFontShorthand(ident))));
 
-        // Keywords are being used.
+        if (CSSPropertyParserHelpers::isSystemFontShorthand(ident))
+            size = SystemFontDatabase::singleton().systemFontShorthandSize(CSSPropertyParserHelpers::lowerFontShorthand(ident));
+
         switch (ident) {
         case CSSValueXxSmall:
         case CSSValueXSmall:
@@ -1865,7 +1891,7 @@ inline void BuilderCustom::applyValueFontSize(BuilderState& builderState, CSSVal
             size = determineRubyTextSizeMultiplier(builderState) * parentSize;
             break;
         default:
-            return;
+            break;
         }
     } else {
         fontDescription.setIsAbsoluteSize(parentIsAbsoluteSize || !(primitiveValue.isPercentage() || primitiveValue.isFontRelativeLength()));
