@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2021 Apple Inc. All rights reserved.
+ * Copyright (C) 2006-2022 Apple Inc. All rights reserved.
  * Copyright (C) 2007-2008 Torch Mobile, Inc.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -327,7 +327,6 @@ public:
     void removeClient(FontSelector&);
 
     unsigned short generation() const { return m_generation; }
-    WEBCORE_EXPORT void invalidate();
     static void registerFontCacheInvalidationCallback(Function<void()>&&);
     WEBCORE_EXPORT static void invalidateAllFontCaches();
 
@@ -369,6 +368,9 @@ public:
     static void prewarmGlobally();
 
 private:
+    void invalidate();
+    void platformInvalidate();
+
     WEBCORE_EXPORT void purgeInactiveFontDataIfNeeded();
     void pruneUnreferencedEntriesFromFontCascadeCache();
     void pruneSystemFallbackFonts();

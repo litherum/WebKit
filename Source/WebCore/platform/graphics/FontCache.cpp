@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2021 Apple Inc. All rights reserved.
+ * Copyright (C) 2006-2022 Apple Inc. All rights reserved.
  * Copyright (C) 2007 Nicholas Shanks <webkit@nickshanks.com>
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@
 #include "FontPlatformData.h"
 #include "FontSelector.h"
 #include "Logging.h"
+#include "SystemFontDatabase.h"
 #include "ThreadGlobalData.h"
 #include "WebKitFontFamilyNames.h"
 #include "WorkerOrWorkletThread.h"
@@ -480,6 +481,10 @@ void FontCache::invalidate()
     m_fontDataCaches->verticalData.clear();
 #endif
     invalidateFontCascadeCache();
+
+    SystemFontDatabase::singleton().invalidate();
+
+    platformInvalidate();
 
     ++m_generation;
 

@@ -74,12 +74,16 @@ public:
     float systemFontShorthandSize(FontShorthand);
     FontSelectionValue systemFontShorthandWeight(FontShorthand);
 
-    WEBCORE_EXPORT void clear();
-
 protected:
     SystemFontDatabase();
 
 private:
+    friend class FontCache;
+
+    // Don't call these. Instead, you should be calling FontCache::invalidateAllFontCaches().
+    void invalidate();
+    void platformInvalidate();
+
     struct SystemFontShorthandInfo {
         AtomString family;
         float size;
