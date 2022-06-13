@@ -1019,8 +1019,10 @@ void WebProcess::accessibilityPreferencesDidChange(const AccessibilityPreference
     auto invertColorsEnabled = preferences.invertColorsEnabled;
     if (_AXSInvertColorsEnabledApp(appID) != invertColorsEnabled)
         _AXSInvertColorsSetEnabledApp(invertColorsEnabled, appID);
-    FontCache::invalidateAllFontCaches();
 #endif
+    overrideEnhanceTextLegibility(preferences.enhanceTextLegibilityOverall);
+    FontCache::invalidateAllFontCaches();
+    // FIXME: Clear more caches. Document::invalidateMatchedPropertiesCacheAndForceStyleRecalc()???
 }
 
 #if HAVE(MEDIA_ACCESSIBILITY_FRAMEWORK)

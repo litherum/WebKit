@@ -347,8 +347,11 @@
 #include "ScrollbarThemeMac.h"
 #endif
 
-#if PLATFORM(IOS_FAMILY)
+#if USE(CORE_TEXT)
 #include "FontCacheCoreText.h"
+#endif
+
+#if PLATFORM(IOS_FAMILY)
 #include "MediaSessionHelperIOS.h"
 #endif
 
@@ -648,6 +651,10 @@ void Internals::resetToConsistentState(Page& page)
 #if ENABLE(MEDIA_SESSION) && USE(GLIB)
     auto& sessionManager = reinterpret_cast<MediaSessionManagerGLib&>(PlatformMediaSessionManager::sharedManager());
     sessionManager.setDBusNotificationsEnabled(false);
+#endif
+
+#if USE(CORE_TEXT)
+    overrideEnhanceTextLegibility(false);
 #endif
 
     TextPainter::setForceUseGlyphDisplayListForTesting(false);
