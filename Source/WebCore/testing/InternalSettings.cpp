@@ -567,8 +567,11 @@ ExceptionOr<void> InternalSettings::setShouldMockBoldSystemFontForAccessibility(
 {
     if (!m_page)
         return Exception { InvalidAccessError };
+#if USE(CORE_TEXT)
+    overrideEnhanceTextLegibility(should);
+#else
     UNUSED_PARAM(should);
-    // FIXME: Implement this.
+#endif
     return { };
 }
 
