@@ -55,6 +55,8 @@
 		1CF96F032972B2D900CDA27E /* WebGPU.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1CEBD7E32716AFBA00A5254D /* WebGPU.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1CF96F082972B39600CDA27E /* WebGPUView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CF96F072972B39600CDA27E /* WebGPUView.swift */; };
 		1CF96F0B2972D31000CDA27E /* Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 1CF96F092972D2B900CDA27E /* Utilities.m */; };
+		1CF96F122972DE5200CDA27E /* WebGPUView+AppKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CF96F112972DE5200CDA27E /* WebGPUView+AppKit.swift */; };
+		1CF96F142972DE6800CDA27E /* WebGPUView+UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CF96F132972DE6800CDA27E /* WebGPUView+UIKit.swift */; };
 		338BB2CE27B6B60200E066AB /* Token.h in Headers */ = {isa = PBXBuildFile; fileRef = 338BB2CD27B6B60200E066AB /* Token.h */; };
 		338BB2D027B6B61B00E066AB /* Token.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 338BB2CF27B6B61B00E066AB /* Token.cpp */; };
 		338BB2D227B6B63F00E066AB /* SourceSpan.h in Headers */ = {isa = PBXBuildFile; fileRef = 338BB2D127B6B63F00E066AB /* SourceSpan.h */; };
@@ -341,6 +343,8 @@
 		1CF96F0A2972D30B00CDA27E /* Utilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
 		1CF96F0F2972D39D00CDA27E /* AppPlayground-BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AppPlayground-BridgingHeader.h"; sourceTree = "<group>"; };
 		1CF96F102972DD2900CDA27E /* AppPlayground.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = AppPlayground.xcconfig; sourceTree = "<group>"; };
+		1CF96F112972DE5200CDA27E /* WebGPUView+AppKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WebGPUView+AppKit.swift"; sourceTree = "<group>"; };
+		1CF96F132972DE6800CDA27E /* WebGPUView+UIKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WebGPUView+UIKit.swift"; sourceTree = "<group>"; };
 		338BB2CD27B6B60200E066AB /* Token.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Token.h; sourceTree = "<group>"; };
 		338BB2CF27B6B61B00E066AB /* Token.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Token.cpp; sourceTree = "<group>"; };
 		338BB2D127B6B63F00E066AB /* SourceSpan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SourceSpan.h; sourceTree = "<group>"; };
@@ -739,6 +743,8 @@
 				1CF96EF62972AD3900CDA27E /* ContentView.swift */,
 				1CF96F0A2972D30B00CDA27E /* Utilities.h */,
 				1CF96F092972D2B900CDA27E /* Utilities.m */,
+				1CF96F112972DE5200CDA27E /* WebGPUView+AppKit.swift */,
+				1CF96F132972DE6800CDA27E /* WebGPUView+UIKit.swift */,
 				1CF96F072972B39600CDA27E /* WebGPUView.swift */,
 			);
 			path = AppPlayground;
@@ -1120,6 +1126,8 @@
 				1CF96EF52972AD3900CDA27E /* AppPlaygroundApp.swift in Sources */,
 				1CF96EF72972AD3900CDA27E /* ContentView.swift in Sources */,
 				1CF96F0B2972D31000CDA27E /* Utilities.m in Sources */,
+				1CF96F122972DE5200CDA27E /* WebGPUView+AppKit.swift in Sources */,
+				1CF96F142972DE6800CDA27E /* WebGPUView+UIKit.swift in Sources */,
 				1CF96F082972B39600CDA27E /* WebGPUView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

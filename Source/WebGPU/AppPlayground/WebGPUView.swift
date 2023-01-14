@@ -9,20 +9,17 @@ import SwiftUI
 import MetalKit
 import WebGPU
 
-struct WebGPUView: NSViewRepresentable {
-    typealias NSViewType = MTKView
+struct WebGPUViewInner {
+    typealias ViewType = MTKView
 
-    init() {
-    }
-
-    func makeNSView(context: Context) -> MTKView {
+    func makeView(coordinator: Coordinator) -> MTKView {
         let mtkView = MTKView()
-        context.coordinator.set(view: mtkView)
-        mtkView.delegate = context.coordinator
+        coordinator.set(view: mtkView)
+        mtkView.delegate = coordinator
         return mtkView
     }
     
-    func updateNSView(_ nsView: MTKView, context: Context) {
+    func updateView(_ nsView: MTKView) {
     }
 
     func makeCoordinator() -> Coordinator {
