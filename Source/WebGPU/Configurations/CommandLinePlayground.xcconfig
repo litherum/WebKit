@@ -24,3 +24,5 @@
 PRODUCT_NAME = CommandLinePlayground;
 SWIFT_VERSION = 5.0;
 WARNING_CFLAGS = $(inherited) -Wno-strict-prototypes
+CLANG_ENABLE_MODULES = YES;
+LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/Frameworks @loader_path/Frameworks;

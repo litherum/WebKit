@@ -1157,14 +1157,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1C5319CA27BDD70000CD127E /* CommandLinePlayground.xcconfig */;
 			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -1172,13 +1164,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1C5319CA27BDD70000CD127E /* CommandLinePlayground.xcconfig */;
 			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -1186,13 +1171,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1C5319CA27BDD70000CD127E /* CommandLinePlayground.xcconfig */;
 			buildSettings = {
-				CLANG_ENABLE_MODULES = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				SWIFT_VERSION = 5.0;
 			};
 			name = Production;
 		};
