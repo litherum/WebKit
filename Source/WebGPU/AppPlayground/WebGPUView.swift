@@ -53,9 +53,11 @@ struct WebGPUViewInner {
                 }
                 scheduler.schedule(workItem)
             }
-            instance = withUnsafePointer(to: &instanceCocoaDescriptor.chain) { pointer in
-                var instanceDescriptor = WGPUInstanceDescriptor(nextInChain: pointer)
-                return wgpuCreateInstance(&instanceDescriptor)
+            instance = withUnsafePointer(to: &instanceCocoaDescriptor) { pointer in
+                return pointer.withMemoryRebound(to: WGPUChainedStruct.self, capacity: 1) { pointer in
+                    var instanceDescriptor = WGPUInstanceDescriptor(nextInChain: pointer)
+                    return wgpuCreateInstance(&instanceDescriptor)
+                }
             }
 
             super.init()
@@ -100,9 +102,11 @@ struct WebGPUViewInner {
             self.view = view
 
             var surfaceDescriptorFromMetalLayer = WGPUSurfaceDescriptorFromMetalLayer(chain: WGPUChainedStruct(next: nil, sType: WGPUSType_SurfaceDescriptorFromMetalLayer), layer: cast(view.layer as? CAMetalLayer))
-            surface = withUnsafePointer(to: &surfaceDescriptorFromMetalLayer.chain) { pointer in
-                var surfaceDescriptor = WGPUSurfaceDescriptor(nextInChain: pointer, label: nil)
-                return wgpuInstanceCreateSurface(instance, &surfaceDescriptor)
+            surface = withUnsafePointer(to: &surfaceDescriptorFromMetalLayer) { pointer in
+                return pointer.withMemoryRebound(to: WGPUChainedStruct.self, capacity: 1) { pointer in
+                    var surfaceDescriptor = WGPUSurfaceDescriptor(nextInChain: pointer, label: nil)
+                    return wgpuInstanceCreateSurface(instance, &surfaceDescriptor)
+                }
             }
         }
 
