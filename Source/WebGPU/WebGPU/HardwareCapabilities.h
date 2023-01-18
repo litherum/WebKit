@@ -39,6 +39,7 @@ struct HardwareCapabilities {
         bool supportsNonPrivateDepthStencilTextures { false };
         id<MTLCounterSet> timestampCounterSet { nil };
         id<MTLCounterSet> statisticCounterSet { nil };
+        bool canPresent10A2PixelFormats { false };
     } baseCapabilities;
 };
 
