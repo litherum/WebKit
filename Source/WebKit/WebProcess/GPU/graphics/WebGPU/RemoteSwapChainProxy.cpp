@@ -59,26 +59,6 @@ void RemoteSwapChainProxy::setLabelInternal(const String& label)
     UNUSED_VARIABLE(sendResult);
 }
 
-#if PLATFORM(COCOA)
-void RemoteSwapChainProxy::prepareForDisplay(CompletionHandler<void(MachSendRight&&)>&& completionHandler)
-{
-    MachSendRight emptyResult;
-    auto sendResult = sendSync(Messages::RemoteSwapChain::PrepareForDisplay());
-    if (!sendResult) {
-        completionHandler(WTFMove(emptyResult));
-        return;
-    }
-
-    auto [sendRight] = sendResult.takeReply();
-    if (!sendRight) {
-        completionHandler(WTFMove(emptyResult));
-        return;
-    }
-
-    completionHandler(WTFMove(sendRight));
-}
-#endif // PLATFORM(COCOA)
-
 } // namespace WebKit::WebGPU
 
 #endif // ENABLE(GPU_PROCESS)

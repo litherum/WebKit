@@ -49,10 +49,6 @@ public:
 
     virtual void destroy() = 0;
 
-#if PLATFORM(COCOA)
-    virtual void prepareForDisplay(CompletionHandler<void(WTF::MachSendRight&&)>&&) = 0;
-#endif
-
 protected:
     SwapChain() = default;
 

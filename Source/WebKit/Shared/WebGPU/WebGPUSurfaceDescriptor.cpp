@@ -40,11 +40,7 @@ std::optional<SurfaceDescriptor> ConvertToBackingContext::convertToBacking(const
     if (!base)
         return std::nullopt;
 
-    auto size = convertToBacking(surfaceDescriptor.size);
-    if (!size)
-        return std::nullopt;
-
-    return { { WTFMove(*base), WTFMove(*size), surfaceDescriptor.sampleCount, surfaceDescriptor.format, surfaceDescriptor.usage } };
+    return { { WTFMove(*base) } };
 }
 
 std::optional<PAL::WebGPU::SurfaceDescriptor> ConvertFromBackingContext::convertFromBacking(const SurfaceDescriptor& surfaceDescriptor)
@@ -53,11 +49,7 @@ std::optional<PAL::WebGPU::SurfaceDescriptor> ConvertFromBackingContext::convert
     if (!base)
         return std::nullopt;
 
-    auto size = convertFromBacking(surfaceDescriptor.size);
-    if (!size)
-        return std::nullopt;
-
-    return { { WTFMove(*base), WTFMove(*size), surfaceDescriptor.sampleCount, surfaceDescriptor.format, surfaceDescriptor.usage } };
+    return { { WTFMove(*base) } };
 }
 
 } // namespace WebKit

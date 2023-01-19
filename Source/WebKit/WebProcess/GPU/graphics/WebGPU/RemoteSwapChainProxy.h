@@ -49,10 +49,6 @@ public:
     RemoteDeviceProxy& parent() { return m_parent; }
     RemoteGPUProxy& root() { return m_parent->root(); }
 
-#if PLATFORM(COCOA)
-    void prepareForDisplay(CompletionHandler<void(WTF::MachSendRight&&)>&&) final;
-#endif
-
 private:
     friend class DowncastConvertToBackingContext;
 

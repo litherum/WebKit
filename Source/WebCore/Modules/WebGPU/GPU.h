@@ -27,6 +27,7 @@
 
 #include "GPUAdapter.h"
 #include "GPURequestAdapterOptions.h"
+#include "GPUSurfaceDescriptor.h"
 #include "GPUTextureFormat.h"
 #include "JSDOMPromiseDeferred.h"
 #include <optional>
@@ -37,6 +38,9 @@
 
 namespace WebCore {
 
+class GPUTexture;
+struct GPUTextureDescriptor;
+
 class GPU : public RefCounted<GPU> {
 public:
     static Ref<GPU> create()
@@ -44,15 +48,19 @@ public:
         return adoptRef(*new GPU());
     }
 
+    ~GPU();
+
     using RequestAdapterPromise = DOMPromiseDeferred<IDLNullable<IDLInterface<GPUAdapter>>>;
     void requestAdapter(const std::optional<GPURequestAdapterOptions>&, RequestAdapterPromise&&);
 
     GPUTextureFormat getPreferredCanvasFormat();
 
+    Ref<GPUSurface> createSurface(const GPUSurfaceDescriptor&);
+
     void setBacking(PAL::WebGPU::GPU&);
 
 private:
-    GPU() = default;
+    GPU();
 
     struct PendingRequestAdapterArguments {
         std::optional<GPURequestAdapterOptions> options;

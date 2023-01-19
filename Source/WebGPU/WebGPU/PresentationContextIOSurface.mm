@@ -28,66 +28,9 @@
 
 #import "APIConversions.h"
 
-// borrowed from pal/spi/cocoa/IOTypesSPI.h
-#if PLATFORM(MAC) || USE(APPLE_INTERNAL_SDK)
-#include <IOKit/IOTypes.h>
-#else
-
-enum {
-    kIOWriteCombineCache = 4,
-};
-
-enum {
-    kIOMapCacheShift = 8,
-    kIOMapWriteCombineCache = kIOWriteCombineCache << kIOMapCacheShift,
-};
-#endif
-
 namespace WebGPU {
 
-static NSDictionary *optionsFor32BitSurface(int width, int height, unsigned pixelFormat)
-{
-    unsigned bytesPerElement = 4;
-    unsigned bytesPerPixel = 4;
-
-    size_t bytesPerRow = IOSurfaceAlignProperty(kIOSurfaceBytesPerRow, width * bytesPerPixel);
-    ASSERT(bytesPerRow);
-
-    size_t totalBytes = IOSurfaceAlignProperty(kIOSurfaceAllocSize, height * bytesPerRow);
-    ASSERT(totalBytes);
-
-    return @{
-        (id)kIOSurfaceWidth: @(width),
-        (id)kIOSurfaceHeight: @(height),
-        (id)kIOSurfacePixelFormat: @(pixelFormat),
-        (id)kIOSurfaceBytesPerElement: @(bytesPerElement),
-        (id)kIOSurfaceBytesPerRow: @(bytesPerRow),
-        (id)kIOSurfaceAllocSize: @(totalBytes),
-#if PLATFORM(IOS_FAMILY)
-        (id)kIOSurfaceCacheMode: @(kIOMapWriteCombineCache),
-#endif
-        (id)kIOSurfaceElementHeight: @(1)
-    };
-}
-
-static RetainPtr<IOSurfaceRef> createIOSurface(int width, int height)
-{
-    NSDictionary *options = optionsFor32BitSurface(width, height, 'BGRA');
-    return adoptCF(IOSurfaceCreate((CFDictionaryRef)options));
-}
-
-static RetainPtr<IOSurfaceRef> createSurfaceFromDescriptor(const WGPUSurfaceDescriptor& descriptor)
-{
-    if (!descriptor.nextInChain || descriptor.nextInChain->sType != static_cast<WGPUSType>(WGPUSTypeExtended_SurfaceDescriptorCocoaSurfaceBacking))
-        return nullptr;
-
-    auto widthHeight = reinterpret_cast<const WGPUSurfaceDescriptorCocoaCustomSurface*>(descriptor.nextInChain);
-    return createIOSurface(widthHeight->width, widthHeight->height);
-}
-
-PresentationContextIOSurface::PresentationContextIOSurface(const WGPUSurfaceDescriptor& descriptor)
-    : m_displayBuffer(createSurfaceFromDescriptor(descriptor))
-    , m_drawingBuffer(createSurfaceFromDescriptor(descriptor))
+PresentationContextIOSurface::PresentationContextIOSurface(const WGPUSurfaceDescriptor&)
 {
 }
 
@@ -118,19 +61,3 @@ RetainPtr<IOSurfaceRef> PresentationContextIOSurface::nextDrawable()
 }
 
 } // namespace WebGPU
-
-#pragma mark WGPU Stubs
-
-IOSurfaceRef wgpuSurfaceCocoaCustomSurfaceGetDisplayBuffer(WGPUSurface surface)
-{
-    if (auto* presentationContextIOSurface = downcast<WebGPU::PresentationContextIOSurface>(&WebGPU::fromAPI(surface)))
-        return presentationContextIOSurface->displayBuffer().get();
-    return nullptr;
-}
-
-IOSurfaceRef wgpuSurfaceCocoaCustomSurfaceGetDrawingBuffer(WGPUSurface surface)
-{
-    if (auto* presentationContextIOSurface = downcast<WebGPU::PresentationContextIOSurface>(&WebGPU::fromAPI(surface)))
-        return presentationContextIOSurface->drawingBuffer().get();
-    return nullptr;
-}

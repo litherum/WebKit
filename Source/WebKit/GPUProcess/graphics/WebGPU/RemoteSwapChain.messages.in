@@ -26,14 +26,6 @@
 messages -> RemoteSwapChain NotRefCounted Stream {
     void Destroy()
     void SetLabel(String label)
-
-#if PLATFORM(COCOA)
-    void PrepareForDisplay() -> (MachSendRight displayBuffer) Synchronous NotStreamEncodableReply
-#endif
-#if !PLATFORM(COCOA)
-    void PrepareForDisplay() -> () Synchronous
-#endif
-
 }
 
 #endif

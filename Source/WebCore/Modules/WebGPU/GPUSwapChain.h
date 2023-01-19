@@ -43,9 +43,6 @@ public:
     String label() const;
     void setLabel(String&&);
 
-#if PLATFORM(COCOA)
-    void prepareForDisplay(CompletionHandler<void(WTF::MachSendRight&&)>&&);
-#endif
     void destroy();
 
     PAL::WebGPU::SwapChain& backing() { return m_backing; }

@@ -52,16 +52,8 @@ void SwapChainImpl::destroy()
     wgpuSwapChainRelease(m_backing);
 }
 
-void SwapChainImpl::prepareForDisplay(CompletionHandler<void(WTF::MachSendRight&&)>&& completionHandler)
+void SwapChainImpl::setLabelInternal(const String&)
 {
-    wgpuSwapChainPresent(m_backing);
-    auto ioSurface = wgpuSurfaceCocoaCustomSurfaceGetDisplayBuffer(m_surface);
-    completionHandler(MachSendRight::adopt(IOSurfaceCreateMachPort(ioSurface)));
-}
-
-void SwapChainImpl::setLabelInternal(const String& label)
-{
-    UNUSED_PARAM(label);
 }
 
 } // namespace PAL::WebGPU

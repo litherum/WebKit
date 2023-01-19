@@ -38,13 +38,6 @@ void GPUSwapChain::setLabel(String&& label)
     m_backing->setLabel(WTFMove(label));
 }
 
-#if PLATFORM(COCOA)
-void GPUSwapChain::prepareForDisplay(CompletionHandler<void(WTF::MachSendRight&&)>&& completionHandler)
-{
-    m_backing->prepareForDisplay(WTFMove(completionHandler));
-}
-#endif
-
 void GPUSwapChain::destroy()
 {
 }

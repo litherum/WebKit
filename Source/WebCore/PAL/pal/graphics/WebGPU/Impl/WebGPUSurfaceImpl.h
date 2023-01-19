@@ -41,20 +41,19 @@ class ConvertToBackingContext;
 class SurfaceImpl final : public Surface {
     WTF_MAKE_FAST_ALLOCATED;
 public:
-    static Ref<SurfaceImpl> create(WGPUSurface surface)
+    static Ref<SurfaceImpl> create(WGPUSurface surface, ConvertToBackingContext& convertToBackingContext)
     {
-        return adoptRef(*new SurfaceImpl(surface));
+        return adoptRef(*new SurfaceImpl(surface, convertToBackingContext));
     }
 
     virtual ~SurfaceImpl();
 
-    WGPUSurface backing() const { return m_backing; }
-    IOSurfaceRef drawingBuffer() const;
+    WGPUSurface backing() const { return m_backing; }\
 
 private:
     friend class DowncastConvertToBackingContext;
 
-    SurfaceImpl(WGPUSurface);
+    SurfaceImpl(WGPUSurface, ConvertToBackingContext&);
 
     SurfaceImpl(const SurfaceImpl&) = delete;
     SurfaceImpl(SurfaceImpl&&) = delete;
@@ -66,6 +65,7 @@ private:
     void setLabelInternal(const String&) final;
 
     WGPUSurface m_backing { nullptr };
+    Ref<ConvertToBackingContext> m_convertToBackingContext;
 };
 
 } // namespace PAL::WebGPU

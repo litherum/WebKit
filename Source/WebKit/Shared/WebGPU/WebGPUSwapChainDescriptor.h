@@ -30,18 +30,20 @@
 #include "WebGPUExtent3D.h"
 #include "WebGPUObjectDescriptorBase.h"
 #include <optional>
-#include <pal/graphics/WebGPU/WebGPUIntegralTypes.h>
-#include <pal/graphics/WebGPU/WebGPUTextureDimension.h>
+#include <pal/graphics/WebGPU/WebGPUCanvasCompositingAlphaMode.h>
+#include <pal/graphics/WebGPU/WebGPUPredefinedColorSpace.h>
 #include <pal/graphics/WebGPU/WebGPUTextureFormat.h>
 #include <pal/graphics/WebGPU/WebGPUTextureUsage.h>
+#include <wtf/Vector.h>
 
 namespace WebKit::WebGPU {
 
 struct SwapChainDescriptor : public ObjectDescriptorBase {
-    Extent3D size;
-    PAL::WebGPU::Size32 sampleCount { 1 };
     PAL::WebGPU::TextureFormat format { PAL::WebGPU::TextureFormat::R8unorm };
-    PAL::WebGPU::TextureUsageFlags usage;
+    PAL::WebGPU::TextureUsageFlags usage { PAL::WebGPU::TextureUsage::RenderAttachment };
+    Vector<PAL::WebGPU::TextureFormat> viewFormats;
+    PAL::WebGPU::PredefinedColorSpace colorSpace { PAL::WebGPU::PredefinedColorSpace::SRGB };
+    PAL::WebGPU::CanvasCompositingAlphaMode compositingAlphaMode { PAL::WebGPU::CanvasCompositingAlphaMode::Opaque };
 };
 
 } // namespace WebKit::WebGPU

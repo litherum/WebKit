@@ -6556,7 +6556,6 @@
 		0DA55D9628E678F6004A6758 /* UserActivation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserActivation.h; sourceTree = "<group>"; };
 		0DA55D9928E6797E004A6758 /* Navigator+UserActivation.idl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Navigator+UserActivation.idl"; sourceTree = "<group>"; };
 		0DD1F6EE291433EA00B79355 /* GPUCanvasContext.idl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = GPUCanvasContext.idl; sourceTree = "<group>"; };
-		0DD1F6EF291433EA00B79355 /* GPUCanvasContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GPUCanvasContext.cpp; sourceTree = "<group>"; };
 		0DD1F6F0291433EB00B79355 /* GPUCanvasContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GPUCanvasContext.h; sourceTree = "<group>"; };
 		0DD25D5929387A98009F8BBF /* GPUAutoLayoutMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GPUAutoLayoutMode.h; sourceTree = "<group>"; };
 		0DD25D5A29387A98009F8BBF /* GPUAutoLayoutMode.idl */ = {isa = PBXFileReference; lastKnownFileType = text; path = GPUAutoLayoutMode.idl; sourceTree = "<group>"; };
@@ -8010,6 +8009,9 @@
 		1CA4FD3427351FCE0027FD5A /* GPUImageCopyTexture.idl */ = {isa = PBXFileReference; lastKnownFileType = text; path = GPUImageCopyTexture.idl; sourceTree = "<group>"; };
 		1CA4FD36273525AA0027FD5A /* GPUCommandBuffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GPUCommandBuffer.cpp; sourceTree = "<group>"; };
 		1CA4FD38273525FF0027FD5A /* GPURenderBundle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GPURenderBundle.cpp; sourceTree = "<group>"; };
+		1CAB34D9297A89C90088D4D3 /* GPUCanvasContextCocoa.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GPUCanvasContextCocoa.h; sourceTree = "<group>"; };
+		1CAB34DA297A8A290088D4D3 /* GPUCanvasContextCocoa.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GPUCanvasContextCocoa.cpp; sourceTree = "<group>"; };
+		1CAB34E2297A93290088D4D3 /* GPUCanvasContext.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GPUCanvasContext.cpp; sourceTree = "<group>"; };
 		1CAF347E0A6C405200ABE06E /* WebScriptObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebScriptObject.h; sourceTree = "<group>"; };
 		1CAF347F0A6C405200ABE06E /* WebScriptObject.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WebScriptObject.mm; sourceTree = "<group>"; };
 		1CAF34800A6C405200ABE06E /* WebScriptObjectPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebScriptObjectPrivate.h; sourceTree = "<group>"; };
@@ -22743,9 +22745,11 @@
 				8A054530283CF13E00F498E7 /* EXTTextureNorm16.idl */,
 				0F16BED92304F05300B4A167 /* GPUBasedCanvasRenderingContext.cpp */,
 				311518FB1E78C15F00EC514A /* GPUBasedCanvasRenderingContext.h */,
-				0DD1F6EF291433EA00B79355 /* GPUCanvasContext.cpp */,
+				1CAB34E2297A93290088D4D3 /* GPUCanvasContext.cpp */,
 				0DD1F6F0291433EB00B79355 /* GPUCanvasContext.h */,
 				0DD1F6EE291433EA00B79355 /* GPUCanvasContext.idl */,
+				1CAB34DA297A8A290088D4D3 /* GPUCanvasContextCocoa.cpp */,
+				1CAB34D9297A89C90088D4D3 /* GPUCanvasContextCocoa.h */,
 				7C7903B11F86F95C00463A70 /* ImageBitmapRenderingContext.cpp */,
 				7C7903B01F86F95C00463A70 /* ImageBitmapRenderingContext.h */,
 				7C7903B21F86F95C00463A70 /* ImageBitmapRenderingContext.idl */,

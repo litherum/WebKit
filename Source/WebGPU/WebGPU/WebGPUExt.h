@@ -90,8 +90,6 @@ typedef struct WGPUTextureDescriptorViewFormats {
 
 typedef struct WGPUSurfaceDescriptorCocoaCustomSurface {
     WGPUChainedStruct chain;
-    uint32_t width;
-    uint32_t height;
 } WGPUSurfaceDescriptorCocoaCustomSurface;
 
 typedef struct WGPUTextureDescriptorCocoaCustomSurface {
@@ -209,9 +207,6 @@ WGPU_EXPORT void wgpuDeviceSetUncapturedErrorCallbackWithBlock(WGPUDevice device
 WGPU_EXPORT void wgpuInstanceRequestAdapterWithBlock(WGPUInstance instance, WGPURequestAdapterOptions const * options, WGPURequestAdapterBlockCallback callback);
 WGPU_EXPORT void wgpuQueueOnSubmittedWorkDoneWithBlock(WGPUQueue queue, uint64_t signalValue, WGPUQueueWorkDoneBlockCallback callback);
 WGPU_EXPORT void wgpuShaderModuleGetCompilationInfoWithBlock(WGPUShaderModule shaderModule, WGPUCompilationInfoBlockCallback callback);
-
-WGPU_EXPORT IOSurfaceRef wgpuSurfaceCocoaCustomSurfaceGetDisplayBuffer(WGPUSurface);
-WGPU_EXPORT IOSurfaceRef wgpuSurfaceCocoaCustomSurfaceGetDrawingBuffer(WGPUSurface);
 
 #endif  // !defined(WGPU_SKIP_DECLARATIONS)
 

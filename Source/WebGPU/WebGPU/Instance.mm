@@ -323,10 +323,6 @@ WGPUProc wgpuGetProcAddress(WGPUDevice, const char* procName)
         return reinterpret_cast<WGPUProc>(&wgpuDeviceCreateShaderModule);
     if (!strcmp(procName, "wgpuDeviceCreateSwapChain"))
         return reinterpret_cast<WGPUProc>(&wgpuDeviceCreateSwapChain);
-    if (!strcmp(procName, "wgpuSurfaceCocoaCustomSurfaceGetDisplayBuffer"))
-        return reinterpret_cast<WGPUProc>(&wgpuSurfaceCocoaCustomSurfaceGetDisplayBuffer);
-    if (!strcmp(procName, "wgpuSurfaceCocoaCustomSurfaceGetDrawingBuffer"))
-        return reinterpret_cast<WGPUProc>(&wgpuSurfaceCocoaCustomSurfaceGetDrawingBuffer);
     if (!strcmp(procName, "wgpuDeviceCreateTexture"))
         return reinterpret_cast<WGPUProc>(&wgpuDeviceCreateTexture);
     if (!strcmp(procName, "wgpuDeviceDestroy"))

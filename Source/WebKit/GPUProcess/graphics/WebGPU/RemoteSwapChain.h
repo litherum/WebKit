@@ -77,12 +77,6 @@ private:
 
     void setLabel(String&&);
 
-#if PLATFORM(COCOA)
-    void prepareForDisplay(CompletionHandler<void(WTF::MachSendRight&&)>&&);
-#else
-    void prepareForDisplay(CompletionHandler<void()>&&);
-#endif
-
     Ref<PAL::WebGPU::SwapChain> m_backing;
     WebGPU::ObjectHeap& m_objectHeap;
     Ref<IPC::StreamServerConnection> m_streamConnection;

@@ -33,10 +33,6 @@
 namespace PAL::WebGPU {
 
 struct SurfaceDescriptor : public ObjectDescriptorBase {
-    Extent3D size;
-    Size32 sampleCount { 1 };
-    TextureFormat format { TextureFormat::R8unorm };
-    TextureUsageFlags usage;
 };
 
 } // namespace PAL::WebGPU

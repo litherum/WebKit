@@ -26,9 +26,14 @@
 #include "config.h"
 #include "GPU.h"
 
+#include "GPUSurface.h"
 #include "JSGPUAdapter.h"
 
 namespace WebCore {
+
+GPU::GPU() = default;
+
+GPU::~GPU() = default;
 
 static PAL::WebGPU::RequestAdapterOptions convertToBacking(const std::optional<GPURequestAdapterOptions>& options)
 {
@@ -66,6 +71,13 @@ void GPU::requestAdapter(const std::optional<GPURequestAdapterOptions>& options,
 GPUTextureFormat GPU::getPreferredCanvasFormat()
 {
     return GPUTextureFormat::Bgra8unorm;
+}
+
+
+Ref<GPUSurface> GPU::createSurface(const GPUSurfaceDescriptor& descriptor)
+{
+    // FIXME: What happens if m_backing is nullptr? Is it possible?
+    return GPUSurface::create(m_backing->createSurface(descriptor.convertToBacking()));
 }
 
 }

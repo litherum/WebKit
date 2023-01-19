@@ -33,7 +33,7 @@
 
 namespace WebKit::WebGPU {
 
-RemoteSurfaceProxy::RemoteSurfaceProxy(RemoteDeviceProxy& parent, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier)
+RemoteSurfaceProxy::RemoteSurfaceProxy(RemoteGPUProxy& parent, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier)
     : m_backing(identifier)
     , m_convertToBackingContext(convertToBackingContext)
     , m_parent(parent)

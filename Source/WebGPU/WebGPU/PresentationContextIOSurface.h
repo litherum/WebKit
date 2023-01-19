@@ -47,8 +47,6 @@ public:
     void present() override;
     TextureView* getCurrentTextureView() override; // FIXME: This should return a TextureView&.
 
-    RetainPtr<IOSurfaceRef> displayBuffer() const { return m_displayBuffer; }
-    RetainPtr<IOSurfaceRef> drawingBuffer() const { return m_drawingBuffer; }
     RetainPtr<IOSurfaceRef> nextDrawable();
 
     bool isPresentationContextIOSurface() const override { return true; }

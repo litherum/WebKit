@@ -57,9 +57,6 @@ private:
     WGPUSwapChain backing() const { return m_backing; }
 
     void destroy() final;
-#if PLATFORM(COCOA)
-    void prepareForDisplay(CompletionHandler<void(WTF::MachSendRight&&)>&&) final;
-#endif
 
     void setLabelInternal(const String&) final;
 

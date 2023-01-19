@@ -65,19 +65,6 @@ void RemoteSwapChain::setLabel(String&& label)
     m_backing->setLabel(WTFMove(label));
 }
 
-#if PLATFORM(COCOA)
-void RemoteSwapChain::prepareForDisplay(CompletionHandler<void(MachSendRight&&)>&& completionHandler)
-{
-    m_backing->prepareForDisplay(WTFMove(completionHandler));
-}
-#else
-void RemoteSwapChain::prepareForDisplay(CompletionHandler<void()>&&)
-{
-
-}
-#endif // !PLATFORM(COCOA)
-
-
 } // namespace WebKit
 
 #endif // ENABLE(GPU_PROCESS)

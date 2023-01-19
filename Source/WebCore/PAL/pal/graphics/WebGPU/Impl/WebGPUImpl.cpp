@@ -30,6 +30,8 @@
 
 #include "WebGPUAdapterImpl.h"
 #include "WebGPUDowncastConvertToBackingContext.h"
+#include "WebGPUSurfaceImpl.h"
+#include "WebGPUSurfaceDescriptor.h"
 #include <WebGPU/WebGPUExt.h>
 #include <wtf/BlockPtr.h>
 
@@ -58,6 +60,26 @@ void GPUImpl::requestAdapter(const RequestAdapterOptions& options, CompletionHan
     wgpuInstanceRequestAdapterWithBlock(m_backing, &backingOptions, makeBlockPtr([convertToBackingContext = m_convertToBackingContext.copyRef(), callback = WTFMove(callback)](WGPURequestAdapterStatus, WGPUAdapter adapter, const char*) mutable {
         callback(AdapterImpl::create(adapter, convertToBackingContext));
     }).get());
+}
+
+Ref<Surface> GPUImpl::createSurface(const SurfaceDescriptor& descriptor)
+{
+    // FIXME: We need to do this regardless of whether or not we think this compositing architecture is the way to go or not.
+    auto label = descriptor.label.utf8();
+
+    WGPUSurfaceDescriptorCocoaCustomSurface cocoaSurface {
+        {
+            nullptr,
+            static_cast<WGPUSType>(WGPUSTypeExtended_SurfaceDescriptorCocoaSurfaceBacking),
+        }
+    };
+
+    WGPUSurfaceDescriptor backingDescriptor {
+        &cocoaSurface.chain,
+        label.data(),
+    };
+
+    return SurfaceImpl::create(wgpuInstanceCreateSurface(backing(), &backingDescriptor), m_convertToBackingContext);
 }
 
 } // namespace PAL::WebGPU

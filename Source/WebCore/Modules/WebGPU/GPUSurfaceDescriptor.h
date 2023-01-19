@@ -39,17 +39,8 @@ struct GPUSurfaceDescriptor : public GPUObjectDescriptorBase {
     {
         return {
             { label },
-            WebCore::convertToBacking(size),
-            sampleCount,
-            WebCore::convertToBacking(format),
-            convertTextureUsageFlagsToBacking(usage)
         };
     }
-
-    GPUExtent3D size;
-    GPUSize32 sampleCount { 1 };
-    GPUTextureFormat format { GPUTextureFormat::R8unorm };
-    GPUTextureUsageFlags usage { GPUTextureUsage::RENDER_ATTACHMENT };
 };
 
 }
