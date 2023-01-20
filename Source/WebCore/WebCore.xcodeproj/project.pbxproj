@@ -8012,6 +8012,8 @@
 		1CAB34D9297A89C90088D4D3 /* GPUCanvasContextCocoa.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GPUCanvasContextCocoa.h; sourceTree = "<group>"; };
 		1CAB34DA297A8A290088D4D3 /* GPUCanvasContextCocoa.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GPUCanvasContextCocoa.cpp; sourceTree = "<group>"; };
 		1CAB34E2297A93290088D4D3 /* GPUCanvasContext.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GPUCanvasContext.cpp; sourceTree = "<group>"; };
+		1CAB34E9297A9BBE0088D4D3 /* GPUCompositorIntegration.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GPUCompositorIntegration.cpp; sourceTree = "<group>"; };
+		1CAB34EA297A9BBE0088D4D3 /* GPUCompositorIntegration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GPUCompositorIntegration.h; sourceTree = "<group>"; };
 		1CAF347E0A6C405200ABE06E /* WebScriptObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebScriptObject.h; sourceTree = "<group>"; };
 		1CAF347F0A6C405200ABE06E /* WebScriptObject.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WebScriptObject.mm; sourceTree = "<group>"; };
 		1CAF34800A6C405200ABE06E /* WebScriptObjectPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebScriptObjectPrivate.h; sourceTree = "<group>"; };
@@ -20996,6 +20998,8 @@
 				1CA4FCC227350CF10027FD5A /* GPUCompilationMessage.idl */,
 				1CA4FCD327350CF70027FD5A /* GPUCompilationMessageType.h */,
 				1CA4FCA127350CE40027FD5A /* GPUCompilationMessageType.idl */,
+				1CAB34E9297A9BBE0088D4D3 /* GPUCompositorIntegration.cpp */,
+				1CAB34EA297A9BBE0088D4D3 /* GPUCompositorIntegration.h */,
 				1CA4FCF927351FB70027FD5A /* GPUComputePassDescriptor.h */,
 				1CA4FD2F27351FCC0027FD5A /* GPUComputePassDescriptor.idl */,
 				1CA4FD1F27351FC50027FD5A /* GPUComputePassEncoder.cpp */,

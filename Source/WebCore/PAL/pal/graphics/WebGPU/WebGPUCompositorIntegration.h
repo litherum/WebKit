@@ -25,37 +25,25 @@
 
 #pragma once
 
-#include "WebGPURequestAdapterOptions.h"
 #include <optional>
-#include <wtf/CompletionHandler.h>
+#include <wtf/Ref.h>
 #include <wtf/RefCounted.h>
-#include <wtf/RefPtr.h>
+#include <wtf/text/WTFString.h>
 
 namespace PAL::WebGPU {
 
-class Adapter;
-class CompositorIntegration;
-class Surface;
-struct SurfaceDescriptor;
-
-class GPU : public RefCounted<GPU> {
+class CompositorIntegration : public RefCounted<CompositorIntegration> {
 public:
-    virtual ~GPU() = default;
-
-    virtual void requestAdapter(const RequestAdapterOptions&, CompletionHandler<void(RefPtr<Adapter>&&)>&&) = 0;
-
-    virtual Ref<Surface> createSurface(const SurfaceDescriptor&) = 0;
-
-    virtual Ref<CompositorIntegration> createCompositorIntegration() = 0;
+    virtual ~CompositorIntegration() = default;
 
 protected:
-    GPU() = default;
+    CompositorIntegration() = default;
 
 private:
-    GPU(const GPU&) = delete;
-    GPU(GPU&&) = delete;
-    GPU& operator=(const GPU&) = delete;
-    GPU& operator=(GPU&&) = delete;
+    CompositorIntegration(const CompositorIntegration&) = delete;
+    CompositorIntegration(CompositorIntegration&&) = delete;
+    CompositorIntegration& operator=(const CompositorIntegration&) = delete;
+    CompositorIntegration& operator=(CompositorIntegration&&) = delete;
 };
 
 } // namespace PAL::WebGPU

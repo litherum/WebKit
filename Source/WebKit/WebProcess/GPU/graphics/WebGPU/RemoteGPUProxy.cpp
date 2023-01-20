@@ -31,9 +31,11 @@
 #include "GPUConnectionToWebProcessMessages.h"
 #include "GPUProcessConnection.h"
 #include "RemoteAdapterProxy.h"
+#include "RemoteCompositorIntegrationProxy.h"
 #include "RemoteGPU.h"
 #include "RemoteGPUMessages.h"
 #include "RemoteGPUProxyMessages.h"
+#include "RemoteSurfaceProxy.h"
 #include "WebGPUConvertToBackingContext.h"
 #include <pal/graphics/WebGPU/WebGPUSupportedFeatures.h>
 #include <pal/graphics/WebGPU/WebGPUSupportedLimits.h>
@@ -163,6 +165,17 @@ Ref<PAL::WebGPU::Surface> RemoteGPUProxy::createSurface(const PAL::WebGPU::Surfa
     UNUSED_VARIABLE(sendResult);
 
     return WebGPU::RemoteSurfaceProxy::create(*this, m_convertToBackingContext, identifier);
+}
+
+Ref<PAL::WebGPU::CompositorIntegration> RemoteGPUProxy::createCompositorIntegration()
+{
+    // FIXME: Should we be consulting m_lost?
+
+    auto identifier = WebGPUIdentifier::generate();
+    auto sendResult = send(Messages::RemoteGPU::CreateCompositorIntegration(identifier));
+    UNUSED_VARIABLE(sendResult);
+
+    return WebGPU::RemoteCompositorIntegrationProxy::create(*this, m_convertToBackingContext, identifier);
 }
 
 } // namespace WebKit

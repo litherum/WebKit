@@ -25,37 +25,38 @@
 
 #pragma once
 
-#include "WebGPURequestAdapterOptions.h"
-#include <optional>
-#include <wtf/CompletionHandler.h>
-#include <wtf/RefCounted.h>
-#include <wtf/RefPtr.h>
+#if HAVE(WEBGPU_IMPLEMENTATION)
+
+#include "WebGPUCompositorIntegration.h"
+#include <WebGPU/WebGPU.h>
 
 namespace PAL::WebGPU {
 
-class Adapter;
-class CompositorIntegration;
-class Surface;
-struct SurfaceDescriptor;
+class ConvertToBackingContext;
 
-class GPU : public RefCounted<GPU> {
+class CompositorIntegrationImpl final : public CompositorIntegration {
+    WTF_MAKE_FAST_ALLOCATED;
 public:
-    virtual ~GPU() = default;
+    static Ref<CompositorIntegrationImpl> create(ConvertToBackingContext& convertToBackingContext)
+    {
+        return adoptRef(*new CompositorIntegrationImpl(convertToBackingContext));
+    }
 
-    virtual void requestAdapter(const RequestAdapterOptions&, CompletionHandler<void(RefPtr<Adapter>&&)>&&) = 0;
-
-    virtual Ref<Surface> createSurface(const SurfaceDescriptor&) = 0;
-
-    virtual Ref<CompositorIntegration> createCompositorIntegration() = 0;
-
-protected:
-    GPU() = default;
+    virtual ~CompositorIntegrationImpl();
 
 private:
-    GPU(const GPU&) = delete;
-    GPU(GPU&&) = delete;
-    GPU& operator=(const GPU&) = delete;
-    GPU& operator=(GPU&&) = delete;
+    friend class DowncastConvertToBackingContext;
+
+    explicit CompositorIntegrationImpl(ConvertToBackingContext&);
+
+    CompositorIntegrationImpl(const CompositorIntegrationImpl&) = delete;
+    CompositorIntegrationImpl(CompositorIntegrationImpl&&) = delete;
+    CompositorIntegrationImpl& operator=(const CompositorIntegrationImpl&) = delete;
+    CompositorIntegrationImpl& operator=(CompositorIntegrationImpl&&) = delete;
+
+    Ref<ConvertToBackingContext> m_convertToBackingContext;
 };
 
 } // namespace PAL::WebGPU
+
+#endif // HAVE(WEBGPU_IMPLEMENTATION)

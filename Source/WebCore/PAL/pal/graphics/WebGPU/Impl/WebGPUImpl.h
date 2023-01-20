@@ -63,6 +63,8 @@ private:
 
     Ref<Surface> createSurface(const SurfaceDescriptor&) final;
 
+    Ref<CompositorIntegration> createCompositorIntegration() final;
+
     WGPUInstance m_backing { nullptr };
     Ref<ConvertToBackingContext> m_convertToBackingContext;
 };

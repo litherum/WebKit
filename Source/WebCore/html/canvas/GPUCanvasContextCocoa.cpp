@@ -28,6 +28,7 @@
 
 #include "GPUAdapter.h"
 #include "GPUCanvasConfiguration.h"
+#include "GPUCompositorIntegration.h"
 #include "GPUSurface.h"
 #include "GPUSurfaceDescriptor.h"
 #include "GPUSwapChain.h"
@@ -79,6 +80,7 @@ static GPUSurfaceDescriptor surfaceDescriptor()
 GPUCanvasContextCocoa::GPUCanvasContextCocoa(CanvasBase& canvas, GPU& gpu)
     : GPUCanvasContext(canvas)
     , m_layerContentsDisplayDelegate(DisplayBufferDisplayDelegate::create())
+    , m_compositorIntegration(gpu.createCompositorIntegration())
     , m_surface(gpu.createSurface(surfaceDescriptor()))
 {
 }

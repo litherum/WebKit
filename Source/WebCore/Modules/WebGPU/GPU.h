@@ -27,7 +27,6 @@
 
 #include "GPUAdapter.h"
 #include "GPURequestAdapterOptions.h"
-#include "GPUSurfaceDescriptor.h"
 #include "GPUTextureFormat.h"
 #include "JSDOMPromiseDeferred.h"
 #include <optional>
@@ -38,8 +37,9 @@
 
 namespace WebCore {
 
-class GPUTexture;
-struct GPUTextureDescriptor;
+class GPUCompositorIntegration;
+class GPUSurface;
+struct GPUSurfaceDescriptor;
 
 class GPU : public RefCounted<GPU> {
 public:
@@ -56,6 +56,8 @@ public:
     GPUTextureFormat getPreferredCanvasFormat();
 
     Ref<GPUSurface> createSurface(const GPUSurfaceDescriptor&);
+
+    Ref<GPUCompositorIntegration> createCompositorIntegration();
 
     void setBacking(PAL::WebGPU::GPU&);
 

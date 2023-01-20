@@ -26,7 +26,9 @@
 #include "config.h"
 #include "GPU.h"
 
+#include "GPUCompositorIntegration.h"
 #include "GPUSurface.h"
+#include "GPUSurfaceDescriptor.h"
 #include "JSGPUAdapter.h"
 
 namespace WebCore {
@@ -73,11 +75,16 @@ GPUTextureFormat GPU::getPreferredCanvasFormat()
     return GPUTextureFormat::Bgra8unorm;
 }
 
-
 Ref<GPUSurface> GPU::createSurface(const GPUSurfaceDescriptor& descriptor)
 {
     // FIXME: What happens if m_backing is nullptr? Is it possible?
     return GPUSurface::create(m_backing->createSurface(descriptor.convertToBacking()));
+}
+
+Ref<GPUCompositorIntegration> GPU::createCompositorIntegration()
+{
+    // FIXME: What happens if m_backing is nullptr? Is it possible?
+    return GPUCompositorIntegration::create(m_backing->createCompositorIntegration());
 }
 
 }

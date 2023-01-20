@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Apple Inc. All rights reserved.
+ * Copyright (C) 2021-2022 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -23,39 +23,26 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "config.h"
+#include "RemoteCompositorIntegrationProxy.h"
 
-#include "WebGPURequestAdapterOptions.h"
-#include <optional>
-#include <wtf/CompletionHandler.h>
-#include <wtf/RefCounted.h>
-#include <wtf/RefPtr.h>
+#if ENABLE(GPU_PROCESS)
 
-namespace PAL::WebGPU {
+#include "RemoteGPUProxy.h"
+#include "RemoteCompositorIntegrationMessages.h"
+#include "WebGPUConvertToBackingContext.h"
 
-class Adapter;
-class CompositorIntegration;
-class Surface;
-struct SurfaceDescriptor;
+namespace WebKit::WebGPU {
 
-class GPU : public RefCounted<GPU> {
-public:
-    virtual ~GPU() = default;
+RemoteCompositorIntegrationProxy::RemoteCompositorIntegrationProxy(RemoteGPUProxy& parent, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier)
+    : m_backing(identifier)
+    , m_convertToBackingContext(convertToBackingContext)
+    , m_parent(parent)
+{
+}
 
-    virtual void requestAdapter(const RequestAdapterOptions&, CompletionHandler<void(RefPtr<Adapter>&&)>&&) = 0;
+RemoteCompositorIntegrationProxy::~RemoteCompositorIntegrationProxy() = default;
 
-    virtual Ref<Surface> createSurface(const SurfaceDescriptor&) = 0;
+} // namespace WebKit::WebGPU
 
-    virtual Ref<CompositorIntegration> createCompositorIntegration() = 0;
-
-protected:
-    GPU() = default;
-
-private:
-    GPU(const GPU&) = delete;
-    GPU(GPU&&) = delete;
-    GPU& operator=(const GPU&) = delete;
-    GPU& operator=(GPU&&) = delete;
-};
-
-} // namespace PAL::WebGPU
+#endif // ENABLE(GPU_PROCESS)

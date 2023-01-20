@@ -130,6 +130,7 @@ private:
     std::optional<GPUCanvasConfiguration> m_configuration;
     Ref<DisplayBufferDisplayDelegate> m_layerContentsDisplayDelegate;
     RefPtr<GPUSwapChain> m_swapChain;
+    Ref<GPUCompositorIntegration> m_compositorIntegration;
     Ref<GPUSurface> m_surface;
 
     int m_width { 0 };

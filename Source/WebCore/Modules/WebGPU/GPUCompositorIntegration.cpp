@@ -23,39 +23,9 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "config.h"
+#include "GPUCompositorIntegration.h"
 
-#include "WebGPURequestAdapterOptions.h"
-#include <optional>
-#include <wtf/CompletionHandler.h>
-#include <wtf/RefCounted.h>
-#include <wtf/RefPtr.h>
+namespace WebCore {
 
-namespace PAL::WebGPU {
-
-class Adapter;
-class CompositorIntegration;
-class Surface;
-struct SurfaceDescriptor;
-
-class GPU : public RefCounted<GPU> {
-public:
-    virtual ~GPU() = default;
-
-    virtual void requestAdapter(const RequestAdapterOptions&, CompletionHandler<void(RefPtr<Adapter>&&)>&&) = 0;
-
-    virtual Ref<Surface> createSurface(const SurfaceDescriptor&) = 0;
-
-    virtual Ref<CompositorIntegration> createCompositorIntegration() = 0;
-
-protected:
-    GPU() = default;
-
-private:
-    GPU(const GPU&) = delete;
-    GPU(GPU&&) = delete;
-    GPU& operator=(const GPU&) = delete;
-    GPU& operator=(GPU&&) = delete;
-};
-
-} // namespace PAL::WebGPU
+}

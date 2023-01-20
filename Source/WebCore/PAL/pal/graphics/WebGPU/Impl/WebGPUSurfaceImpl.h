@@ -48,7 +48,7 @@ public:
 
     virtual ~SurfaceImpl();
 
-    WGPUSurface backing() const { return m_backing; }\
+    WGPUSurface backing() const { return m_backing; }
 
 private:
     friend class DowncastConvertToBackingContext;

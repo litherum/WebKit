@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Apple Inc. All rights reserved.
+ * Copyright (C) 2021-2022 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -23,39 +23,34 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "config.h"
+#include "RemoteCompositorIntegration.h"
 
-#include "WebGPURequestAdapterOptions.h"
-#include <optional>
-#include <wtf/CompletionHandler.h>
-#include <wtf/RefCounted.h>
-#include <wtf/RefPtr.h>
+#if ENABLE(GPU_PROCESS)
 
-namespace PAL::WebGPU {
+#include "RemoteCompositorIntegrationMessages.h"
+#include "StreamServerConnection.h"
+#include "WebGPUObjectHeap.h"
+#include <pal/graphics/WebGPU/WebGPUCompositorIntegration.h>
 
-class Adapter;
-class CompositorIntegration;
-class Surface;
-struct SurfaceDescriptor;
+namespace WebKit {
 
-class GPU : public RefCounted<GPU> {
-public:
-    virtual ~GPU() = default;
+RemoteCompositorIntegration::RemoteCompositorIntegration(PAL::WebGPU::CompositorIntegration& compositorIntegration, WebGPU::ObjectHeap& objectHeap, Ref<IPC::StreamServerConnection>&& streamConnection, WebGPUIdentifier identifier)
+    : m_backing(compositorIntegration)
+    , m_objectHeap(objectHeap)
+    , m_streamConnection(WTFMove(streamConnection))
+    , m_identifier(identifier)
+{
+    m_streamConnection->startReceivingMessages(*this, Messages::RemoteCompositorIntegration::messageReceiverName(), m_identifier.toUInt64());
+}
 
-    virtual void requestAdapter(const RequestAdapterOptions&, CompletionHandler<void(RefPtr<Adapter>&&)>&&) = 0;
+RemoteCompositorIntegration::~RemoteCompositorIntegration() = default;
 
-    virtual Ref<Surface> createSurface(const SurfaceDescriptor&) = 0;
+void RemoteCompositorIntegration::stopListeningForIPC()
+{
+    m_streamConnection->stopReceivingMessages(Messages::RemoteCompositorIntegration::messageReceiverName(), m_identifier.toUInt64());
+}
 
-    virtual Ref<CompositorIntegration> createCompositorIntegration() = 0;
+} // namespace WebKit
 
-protected:
-    GPU() = default;
-
-private:
-    GPU(const GPU&) = delete;
-    GPU(GPU&&) = delete;
-    GPU& operator=(const GPU&) = delete;
-    GPU& operator=(GPU&&) = delete;
-};
-
-} // namespace PAL::WebGPU
+#endif // ENABLE(GPU_PROCESS)

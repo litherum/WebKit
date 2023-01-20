@@ -29,6 +29,7 @@
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
 #include "WebGPUAdapterImpl.h"
+#include "WebGPUCompositorIntegrationImpl.h"
 #include "WebGPUDowncastConvertToBackingContext.h"
 #include "WebGPUSurfaceImpl.h"
 #include "WebGPUSurfaceDescriptor.h"
@@ -80,6 +81,11 @@ Ref<Surface> GPUImpl::createSurface(const SurfaceDescriptor& descriptor)
     };
 
     return SurfaceImpl::create(wgpuInstanceCreateSurface(backing(), &backingDescriptor), m_convertToBackingContext);
+}
+
+Ref<CompositorIntegration> GPUImpl::createCompositorIntegration()
+{
+    return CompositorIntegrationImpl::create(m_convertToBackingContext);
 }
 
 } // namespace PAL::WebGPU

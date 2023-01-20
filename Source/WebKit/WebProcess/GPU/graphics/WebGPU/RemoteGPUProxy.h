@@ -102,6 +102,8 @@ private:
 
     Ref<PAL::WebGPU::Surface> createSurface(const PAL::WebGPU::SurfaceDescriptor&) final;
 
+    Ref<PAL::WebGPU::CompositorIntegration> createCompositorIntegration() final;
+
     void abandonGPUProcess();
 
     Deque<CompletionHandler<void(RefPtr<PAL::WebGPU::Adapter>&&)>> m_callbacks;

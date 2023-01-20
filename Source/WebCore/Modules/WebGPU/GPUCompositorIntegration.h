@@ -25,37 +25,31 @@
 
 #pragma once
 
-#include "WebGPURequestAdapterOptions.h"
 #include <optional>
-#include <wtf/CompletionHandler.h>
+#include <pal/graphics/WebGPU/WebGPUCompositorIntegration.h>
+#include <wtf/Ref.h>
 #include <wtf/RefCounted.h>
-#include <wtf/RefPtr.h>
+#include <wtf/text/WTFString.h>
 
-namespace PAL::WebGPU {
+namespace WebCore {
 
-class Adapter;
-class CompositorIntegration;
-class Surface;
-struct SurfaceDescriptor;
-
-class GPU : public RefCounted<GPU> {
+class GPUCompositorIntegration : public RefCounted<GPUCompositorIntegration> {
 public:
-    virtual ~GPU() = default;
+    static Ref<GPUCompositorIntegration> create(Ref<PAL::WebGPU::CompositorIntegration>&& backing)
+    {
+        return adoptRef(*new GPUCompositorIntegration(WTFMove(backing)));
+    }
 
-    virtual void requestAdapter(const RequestAdapterOptions&, CompletionHandler<void(RefPtr<Adapter>&&)>&&) = 0;
-
-    virtual Ref<Surface> createSurface(const SurfaceDescriptor&) = 0;
-
-    virtual Ref<CompositorIntegration> createCompositorIntegration() = 0;
-
-protected:
-    GPU() = default;
+    PAL::WebGPU::CompositorIntegration& backing() { return m_backing; }
+    const PAL::WebGPU::CompositorIntegration& backing() const { return m_backing; }
 
 private:
-    GPU(const GPU&) = delete;
-    GPU(GPU&&) = delete;
-    GPU& operator=(const GPU&) = delete;
-    GPU& operator=(GPU&&) = delete;
+    GPUCompositorIntegration(Ref<PAL::WebGPU::CompositorIntegration>&& backing)
+        : m_backing(WTFMove(backing))
+    {
+    }
+
+    Ref<PAL::WebGPU::CompositorIntegration> m_backing;
 };
 
-} // namespace PAL::WebGPU
+}
