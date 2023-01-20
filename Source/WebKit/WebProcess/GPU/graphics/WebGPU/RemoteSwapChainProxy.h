@@ -35,6 +35,7 @@
 namespace WebKit::WebGPU {
 
 class ConvertToBackingContext;
+class RemoteTextureViewProxy;
 
 class RemoteSwapChainProxy final : public PAL::WebGPU::SwapChain {
     WTF_MAKE_FAST_ALLOCATED;
@@ -73,13 +74,15 @@ private:
         return root().streamClientConnection().sendSync(WTFMove(message), backing(), defaultSendTimeout);
     }
 
-    void destroy() final;
+    PAL::WebGPU::TextureView& getCurrentTextureView() final;
+    void present() final;
 
     void setLabelInternal(const String&) final;
 
     WebGPUIdentifier m_backing;
     Ref<ConvertToBackingContext> m_convertToBackingContext;
     Ref<RemoteDeviceProxy> m_parent;
+    RefPtr<RemoteTextureViewProxy> m_currentTextureView;
 };
 
 } // namespace WebKit::WebGPU

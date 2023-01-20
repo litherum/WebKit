@@ -73,7 +73,8 @@ private:
 
     void didReceiveStreamMessage(IPC::StreamServerConnection&, IPC::Decoder&) final;
 
-    void destroy();
+    void getCurrentTextureView(WebGPUIdentifier);
+    void present();
 
     void setLabel(String&&);
 

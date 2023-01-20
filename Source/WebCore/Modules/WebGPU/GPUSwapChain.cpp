@@ -26,6 +26,8 @@
 #include "config.h"
 #include "GPUSwapChain.h"
 
+#include "GPUTextureView.h"
+
 namespace WebCore {
 
 String GPUSwapChain::label() const
@@ -38,8 +40,18 @@ void GPUSwapChain::setLabel(String&& label)
     m_backing->setLabel(WTFMove(label));
 }
 
-void GPUSwapChain::destroy()
+GPUTextureView& GPUSwapChain::getCurrentTextureView()
 {
+    if (!m_currentTextureView)
+        m_currentTextureView = GPUTextureView::create(m_backing->getCurrentTextureView()).ptr();
+
+    return *m_currentTextureView;
+}
+
+void GPUSwapChain::present()
+{
+    m_backing->present();
+    m_currentTextureView = nullptr;
 }
 
 }

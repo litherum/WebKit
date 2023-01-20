@@ -53,7 +53,7 @@ Ref<PAL::WebGPU::TextureView> RemoteTextureProxy::createView(const std::optional
         convertedDescriptor = m_convertToBackingContext->convertToBacking(*descriptor);
         if (!convertedDescriptor) {
             // FIXME: Implement error handling.
-            return RemoteTextureViewProxy::create(*this, m_convertToBackingContext, WebGPUIdentifier::generate());
+            return RemoteTextureViewProxy::create(root(), m_convertToBackingContext, WebGPUIdentifier::generate());
         }
     }
 
@@ -61,7 +61,7 @@ Ref<PAL::WebGPU::TextureView> RemoteTextureProxy::createView(const std::optional
     auto sendResult = send(Messages::RemoteTexture::CreateView(*convertedDescriptor, identifier));
     UNUSED_VARIABLE(sendResult);
 
-    return RemoteTextureViewProxy::create(*this, m_convertToBackingContext, identifier);
+    return RemoteTextureViewProxy::create(root(), m_convertToBackingContext, identifier);
 }
 
 void RemoteTextureProxy::destroy()

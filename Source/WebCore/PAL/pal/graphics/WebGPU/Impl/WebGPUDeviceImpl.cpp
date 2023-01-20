@@ -157,7 +157,7 @@ Ref<SwapChain> DeviceImpl::createSwapChain(const Surface& surface, const SwapCha
     };
 
     WGPUSurface wgpuSurface = m_convertToBackingContext->convertToBacking(surface);
-    return SwapChainImpl::create(wgpuSurface, wgpuDeviceCreateSwapChain(backing(), wgpuSurface, &backingDescriptor));
+    return SwapChainImpl::create(wgpuDeviceCreateSwapChain(backing(), wgpuSurface, &backingDescriptor), m_convertToBackingContext);
 }
 
 Ref<Sampler> DeviceImpl::createSampler(const SamplerDescriptor& descriptor)

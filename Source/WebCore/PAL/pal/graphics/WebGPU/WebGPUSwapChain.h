@@ -34,6 +34,7 @@ namespace PAL::WebGPU {
 
 class Surface;
 struct SurfaceDescriptor;
+class TextureView;
 
 class SwapChain : public RefCounted<SwapChain> {
 public:
@@ -47,7 +48,8 @@ public:
         setLabelInternal(m_label);
     }
 
-    virtual void destroy() = 0;
+    virtual TextureView& getCurrentTextureView() = 0;
+    virtual void present() = 0;
 
 protected:
     SwapChain() = default;

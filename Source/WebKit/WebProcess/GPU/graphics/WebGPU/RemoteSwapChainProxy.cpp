@@ -30,6 +30,7 @@
 
 #include "RemoteSurfaceProxy.h"
 #include "RemoteSwapChainMessages.h"
+#include "RemoteTextureViewProxy.h"
 #include "WebGPUConvertToBackingContext.h"
 #include "WebGPUSurfaceDescriptor.h"
 #include <pal/graphics/WebGPU/WebGPUSurfaceDescriptor.h>
@@ -47,9 +48,22 @@ RemoteSwapChainProxy::~RemoteSwapChainProxy()
 {
 }
 
-void RemoteSwapChainProxy::destroy()
+PAL::WebGPU::TextureView& RemoteSwapChainProxy::getCurrentTextureView()
 {
-    auto sendResult = send(Messages::RemoteSwapChain::Destroy());
+    if (!m_currentTextureView) {
+        auto identifier = WebGPUIdentifier::generate();
+        auto sendResult = send(Messages::RemoteSwapChain::GetCurrentTextureView(identifier));
+        UNUSED_VARIABLE(sendResult);
+
+        m_currentTextureView = RemoteTextureViewProxy::create(root(), m_convertToBackingContext, identifier);
+    }
+
+    return *m_currentTextureView;
+}
+
+void RemoteSwapChainProxy::present()
+{
+    auto sendResult = send(Messages::RemoteSwapChain::Present());
     UNUSED_VARIABLE(sendResult);
 }
 

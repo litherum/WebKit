@@ -30,12 +30,14 @@
 
 #include "RemoteSurface.h"
 #include "RemoteSwapChainMessages.h"
+#include "RemoteTextureView.h"
 #include "StreamServerConnection.h"
 #include "WebGPUObjectHeap.h"
 #include "WebGPUSurfaceDescriptor.h"
 #include <pal/graphics/WebGPU/WebGPUSurface.h>
 #include <pal/graphics/WebGPU/WebGPUSurfaceDescriptor.h>
 #include <pal/graphics/WebGPU/WebGPUSwapChain.h>
+#include <pal/graphics/WebGPU/WebGPUTextureView.h>
 
 namespace WebKit {
 
@@ -55,9 +57,16 @@ void RemoteSwapChain::stopListeningForIPC()
     m_streamConnection->stopReceivingMessages(Messages::RemoteSwapChain::messageReceiverName(), m_identifier.toUInt64());
 }
 
-void RemoteSwapChain::destroy()
+void RemoteSwapChain::getCurrentTextureView(WebGPUIdentifier identifier)
 {
-    m_backing->destroy();
+    auto& textureView = m_backing->getCurrentTextureView();
+    auto remoteTextureView = RemoteTextureView::create(textureView, m_objectHeap, m_streamConnection.copyRef(), identifier);
+    m_objectHeap.addObject(identifier, remoteTextureView);
+}
+
+void RemoteSwapChain::present()
+{
+    m_backing->present();
 }
 
 void RemoteSwapChain::setLabel(String&& label)

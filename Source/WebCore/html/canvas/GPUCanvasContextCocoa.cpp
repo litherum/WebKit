@@ -140,8 +140,10 @@ void GPUCanvasContextCocoa::createSwapChainIfNeeded()
 
 RefPtr<GPUTexture> GPUCanvasContextCocoa::getCurrentTexture()
 {
-    if (!m_configuration)
+    if (!m_swapChain)
         return nullptr;
+
+    
 
     //createSwapChainIfNeeded();
     //

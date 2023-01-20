@@ -73,8 +73,6 @@ private:
         return root().streamClientConnection().sendSync(WTFMove(message), backing(), defaultSendTimeout);
     }
 
-    void destroy() final;
-
     void setLabelInternal(const String&) final;
 
     WebGPUIdentifier m_backing;

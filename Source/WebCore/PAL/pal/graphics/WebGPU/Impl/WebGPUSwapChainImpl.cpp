@@ -31,14 +31,15 @@
 #include "WebGPUConvertToBackingContext.h"
 #include "WebGPUSurfaceDescriptor.h"
 #include "WebGPUSurfaceImpl.h"
+#include "WebGPUTextureViewImpl.h"
 #include <WebGPU/WebGPUExt.h>
 #include <wtf/CompletionHandler.h>
 
 namespace PAL::WebGPU {
 
-SwapChainImpl::SwapChainImpl(WGPUSurface surface, WGPUSwapChain swapChain)
+SwapChainImpl::SwapChainImpl(WGPUSwapChain swapChain, ConvertToBackingContext& convertToBackingContext)
     : m_backing(swapChain)
-    , m_surface(surface)
+    , m_convertToBackingContext(convertToBackingContext)
 {
 }
 
@@ -47,9 +48,18 @@ SwapChainImpl::~SwapChainImpl()
     wgpuSwapChainRelease(m_backing);
 }
 
-void SwapChainImpl::destroy()
+TextureView& SwapChainImpl::getCurrentTextureView()
 {
-    wgpuSwapChainRelease(m_backing);
+    if (!m_currentTextureView)
+        m_currentTextureView = TextureViewImpl::create(wgpuSwapChainGetCurrentTextureView(m_backing), m_convertToBackingContext).ptr();
+
+    return *m_currentTextureView;
+}
+
+void SwapChainImpl::present()
+{
+    wgpuSwapChainPresent(m_backing);
+    m_currentTextureView = nullptr;
 }
 
 void SwapChainImpl::setLabelInternal(const String&)

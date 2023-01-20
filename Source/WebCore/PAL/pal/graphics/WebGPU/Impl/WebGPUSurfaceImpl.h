@@ -60,8 +60,6 @@ private:
     SurfaceImpl& operator=(const SurfaceImpl&) = delete;
     SurfaceImpl& operator=(SurfaceImpl&&) = delete;
 
-    void destroy() final;
-
     void setLabelInternal(const String&) final;
 
     WGPUSurface m_backing { nullptr };

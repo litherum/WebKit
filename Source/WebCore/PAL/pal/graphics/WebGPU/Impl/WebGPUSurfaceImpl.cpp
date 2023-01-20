@@ -44,11 +44,6 @@ SurfaceImpl::SurfaceImpl(WGPUSurface surface, ConvertToBackingContext& convertTo
 
 SurfaceImpl::~SurfaceImpl()
 {
-    destroy();
-}
-
-void SurfaceImpl::destroy()
-{
     wgpuSurfaceRelease(m_backing);
 }
 

@@ -34,12 +34,15 @@
 
 namespace PAL::WebGPU {
 
+class ConvertToBackingContext;
+class TextureViewImpl;
+
 class SwapChainImpl final : public SwapChain {
     WTF_MAKE_FAST_ALLOCATED;
 public:
-    static Ref<SwapChainImpl> create(WGPUSurface surface, WGPUSwapChain swapChain)
+    static Ref<SwapChainImpl> create(WGPUSwapChain swapChain, ConvertToBackingContext& convertToBackingContext)
     {
-        return adoptRef(*new SwapChainImpl(surface, swapChain));
+        return adoptRef(*new SwapChainImpl(swapChain, convertToBackingContext));
     }
 
     virtual ~SwapChainImpl();
@@ -47,7 +50,7 @@ public:
 private:
     friend class DowncastConvertToBackingContext;
 
-    SwapChainImpl(WGPUSurface, WGPUSwapChain);
+    SwapChainImpl(WGPUSwapChain, ConvertToBackingContext&);
 
     SwapChainImpl(const SwapChainImpl&) = delete;
     SwapChainImpl(SwapChainImpl&&) = delete;
@@ -56,12 +59,14 @@ private:
 
     WGPUSwapChain backing() const { return m_backing; }
 
-    void destroy() final;
+    TextureView& getCurrentTextureView() final;
+    void present() final;
 
     void setLabelInternal(const String&) final;
 
     WGPUSwapChain m_backing { nullptr };
-    WGPUSurface m_surface { nullptr };
+    Ref<ConvertToBackingContext> m_convertToBackingContext;
+    RefPtr<TextureViewImpl> m_currentTextureView;
 };
 
 } // namespace PAL::WebGPU

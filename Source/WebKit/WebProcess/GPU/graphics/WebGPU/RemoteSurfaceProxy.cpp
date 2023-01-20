@@ -44,12 +44,6 @@ RemoteSurfaceProxy::~RemoteSurfaceProxy()
 {
 }
 
-void RemoteSurfaceProxy::destroy()
-{
-    auto sendResult = send(Messages::RemoteSurface::Destroy());
-    UNUSED_VARIABLE(sendResult);
-}
-
 void RemoteSurfaceProxy::setLabelInternal(const String& label)
 {
     auto sendResult = send(Messages::RemoteSurface::SetLabel(label));
