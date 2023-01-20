@@ -46,6 +46,7 @@ public:
 
     void present() override;
     TextureView* getCurrentTextureView() override; // FIXME: This should return a TextureView&.
+    Texture* getCurrentTexture() override; // FIXME: This should return a Texture&.
 
     RetainPtr<IOSurfaceRef> nextDrawable();
 

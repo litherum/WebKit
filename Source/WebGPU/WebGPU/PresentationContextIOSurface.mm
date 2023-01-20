@@ -50,6 +50,11 @@ TextureView* PresentationContextIOSurface::getCurrentTextureView()
     return nullptr;
 }
 
+Texture* PresentationContextIOSurface::getCurrentTexture()
+{
+    return nullptr;
+}
+
 RetainPtr<IOSurfaceRef> PresentationContextIOSurface::nextDrawable()
 {
     // FIXME: wait until a buffer is available

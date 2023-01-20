@@ -76,6 +76,11 @@ TextureView* PresentationContext::getCurrentTextureView()
     return nullptr;
 }
 
+Texture* PresentationContext::getCurrentTexture()
+{
+    return nullptr;
+}
+
 } // namespace WebGPU
 
 #pragma mark WGPU Stubs
@@ -98,6 +103,11 @@ WGPUTextureFormat wgpuSurfaceGetPreferredFormat(WGPUSurface surface, WGPUAdapter
 WGPUTextureView wgpuSwapChainGetCurrentTextureView(WGPUSwapChain swapChain)
 {
     return WebGPU::fromAPI(swapChain).getCurrentTextureView();
+}
+
+WGPUTexture wgpuSwapChainGetCurrentTexture(WGPUSwapChain swapChain)
+{
+    return WebGPU::fromAPI(swapChain).getCurrentTexture();
 }
 
 void wgpuSwapChainPresent(WGPUSwapChain swapChain)

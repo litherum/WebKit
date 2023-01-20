@@ -449,6 +449,8 @@ WGPUProc wgpuGetProcAddress(WGPUDevice, const char* procName)
         return reinterpret_cast<WGPUProc>(&wgpuShaderModuleSetLabel);
     if (!strcmp(procName, "wgpuSurfaceGetPreferredFormat"))
         return reinterpret_cast<WGPUProc>(&wgpuSurfaceGetPreferredFormat);
+    if (!strcmp(procName, "wgpuSwapChainGetCurrentTexture"))
+        return reinterpret_cast<WGPUProc>(&wgpuSwapChainGetCurrentTexture);
     if (!strcmp(procName, "wgpuSwapChainGetCurrentTextureView"))
         return reinterpret_cast<WGPUProc>(&wgpuSwapChainGetCurrentTextureView);
     if (!strcmp(procName, "wgpuSwapChainPresent"))
