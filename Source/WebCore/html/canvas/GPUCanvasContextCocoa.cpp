@@ -143,25 +143,7 @@ RefPtr<GPUTexture> GPUCanvasContextCocoa::getCurrentTexture()
     if (!m_swapChain)
         return nullptr;
 
-    
-
-    //createSwapChainIfNeeded();
-    //
-    //GPUTextureDescriptor descriptor = {
-    //    { "WebGPU Display texture"_s },
-    //    GPUExtent3DDict { static_cast<uint32_t>(m_width), static_cast<uint32_t>(m_height), 1 },
-    //    1 /* mipMapCount */,
-    //    1 /* sampleCount */,
-    //    GPUTextureDimension::_2d,
-    //    m_configuration->format,
-    //    m_configuration->usage,
-    //    m_configuration->viewFormats
-    //};
-    //
-    //markContextChangedAndNotifyCanvasObservers();
-    //return m_configuration->device->createSurfaceTexture(descriptor, m_surface);
-
-    return nullptr;
+    return &m_swapChain->getCurrentTexture();
 }
 
 PixelFormat GPUCanvasContextCocoa::pixelFormat() const

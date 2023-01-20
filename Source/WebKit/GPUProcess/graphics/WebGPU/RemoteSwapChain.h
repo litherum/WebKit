@@ -73,6 +73,7 @@ private:
 
     void didReceiveStreamMessage(IPC::StreamServerConnection&, IPC::Decoder&) final;
 
+    void getCurrentTexture(WebGPUIdentifier);
     void getCurrentTextureView(WebGPUIdentifier);
     void present();
 

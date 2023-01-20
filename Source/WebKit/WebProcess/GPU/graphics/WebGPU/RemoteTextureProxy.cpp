@@ -35,10 +35,10 @@
 
 namespace WebKit::WebGPU {
 
-RemoteTextureProxy::RemoteTextureProxy(RemoteDeviceProxy& parent, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier)
+RemoteTextureProxy::RemoteTextureProxy(RemoteGPUProxy& root, ConvertToBackingContext& convertToBackingContext, WebGPUIdentifier identifier)
     : m_backing(identifier)
     , m_convertToBackingContext(convertToBackingContext)
-    , m_parent(parent)
+    , m_root(root)
 {
 }
 

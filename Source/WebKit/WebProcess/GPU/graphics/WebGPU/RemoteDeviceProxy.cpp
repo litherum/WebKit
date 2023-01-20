@@ -108,14 +108,14 @@ Ref<PAL::WebGPU::Texture> RemoteDeviceProxy::createTexture(const PAL::WebGPU::Te
     auto convertedDescriptor = m_convertToBackingContext->convertToBacking(descriptor);
     if (!convertedDescriptor) {
         // FIXME: Implement error handling.
-        return RemoteTextureProxy::create(*this, m_convertToBackingContext, WebGPUIdentifier::generate());
+        return RemoteTextureProxy::create(root(), m_convertToBackingContext, WebGPUIdentifier::generate());
     }
 
     auto identifier = WebGPUIdentifier::generate();
     auto sendResult = send(Messages::RemoteDevice::CreateTexture(*convertedDescriptor, identifier));
     UNUSED_VARIABLE(sendResult);
 
-    return RemoteTextureProxy::create(*this, m_convertToBackingContext, identifier);
+    return RemoteTextureProxy::create(root(), m_convertToBackingContext, identifier);
 }
 
 Ref<PAL::WebGPU::Sampler> RemoteDeviceProxy::createSampler(const PAL::WebGPU::SamplerDescriptor& descriptor)

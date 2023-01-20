@@ -40,18 +40,39 @@ void GPUSwapChain::setLabel(String&& label)
     m_backing->setLabel(WTFMove(label));
 }
 
+void GPUSwapChain::clearCurrentTextureAndView()
+{
+    m_currentTexture = nullptr;
+    m_currentTextureView = nullptr;
+}
+
+void GPUSwapChain::ensureCurrentTextureAndView()
+{
+    ASSERT(static_cast<bool>(m_currentTexture) == static_cast<bool>(m_currentTextureView));
+
+    if (m_currentTexture && m_currentTextureView)
+        return;
+
+    m_currentTexture = GPUTexture::create(m_backing->getCurrentTexture()).ptr();
+    m_currentTextureView = GPUTextureView::create(m_backing->getCurrentTextureView()).ptr();
+}
+
+GPUTexture& GPUSwapChain::getCurrentTexture()
+{
+    ensureCurrentTextureAndView();
+    return *m_currentTexture;
+}
+
 GPUTextureView& GPUSwapChain::getCurrentTextureView()
 {
-    if (!m_currentTextureView)
-        m_currentTextureView = GPUTextureView::create(m_backing->getCurrentTextureView()).ptr();
-
+    ensureCurrentTextureAndView();
     return *m_currentTextureView;
 }
 
 void GPUSwapChain::present()
 {
     m_backing->present();
-    m_currentTextureView = nullptr;
+    clearCurrentTextureAndView();
 }
 
 }

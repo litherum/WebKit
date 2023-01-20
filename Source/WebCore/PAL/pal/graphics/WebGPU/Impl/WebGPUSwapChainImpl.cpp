@@ -31,14 +31,16 @@
 #include "WebGPUConvertToBackingContext.h"
 #include "WebGPUSurfaceDescriptor.h"
 #include "WebGPUSurfaceImpl.h"
+#include "WebGPUTextureImpl.h"
 #include "WebGPUTextureViewImpl.h"
 #include <WebGPU/WebGPUExt.h>
 #include <wtf/CompletionHandler.h>
 
 namespace PAL::WebGPU {
 
-SwapChainImpl::SwapChainImpl(WGPUSwapChain swapChain, ConvertToBackingContext& convertToBackingContext)
-    : m_backing(swapChain)
+SwapChainImpl::SwapChainImpl(WGPUSwapChain swapChain, TextureFormat format, ConvertToBackingContext& convertToBackingContext)
+    : m_format(format)
+    , m_backing(swapChain)
     , m_convertToBackingContext(convertToBackingContext)
 {
 }
@@ -48,18 +50,39 @@ SwapChainImpl::~SwapChainImpl()
     wgpuSwapChainRelease(m_backing);
 }
 
+void SwapChainImpl::clearCurrentTextureAndView()
+{
+    m_currentTexture = nullptr;
+    m_currentTextureView = nullptr;
+}
+
+void SwapChainImpl::ensureCurrentTextureAndView()
+{
+    ASSERT(static_cast<bool>(m_currentTexture) == static_cast<bool>(m_currentTextureView));
+
+    if (m_currentTexture && m_currentTextureView)
+        return;
+
+    m_currentTexture = TextureImpl::create(wgpuSwapChainGetCurrentTexture(m_backing), m_format, TextureDimension::_2d, m_convertToBackingContext).ptr();
+    m_currentTextureView = TextureViewImpl::create(wgpuSwapChainGetCurrentTextureView(m_backing), m_convertToBackingContext).ptr();
+}
+
+Texture& SwapChainImpl::getCurrentTexture()
+{
+    ensureCurrentTextureAndView();
+    return *m_currentTexture;
+}
+
 TextureView& SwapChainImpl::getCurrentTextureView()
 {
-    if (!m_currentTextureView)
-        m_currentTextureView = TextureViewImpl::create(wgpuSwapChainGetCurrentTextureView(m_backing), m_convertToBackingContext).ptr();
-
+    ensureCurrentTextureAndView();
     return *m_currentTextureView;
 }
 
 void SwapChainImpl::present()
 {
     wgpuSwapChainPresent(m_backing);
-    m_currentTextureView = nullptr;
+    clearCurrentTextureAndView();
 }
 
 void SwapChainImpl::setLabelInternal(const String&)

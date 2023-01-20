@@ -57,6 +57,13 @@ void RemoteSwapChain::stopListeningForIPC()
     m_streamConnection->stopReceivingMessages(Messages::RemoteSwapChain::messageReceiverName(), m_identifier.toUInt64());
 }
 
+void RemoteSwapChain::getCurrentTexture(WebGPUIdentifier identifier)
+{
+    auto& texture = m_backing->getCurrentTexture();
+    auto remoteTexture = RemoteTexture::create(texture, m_objectHeap, m_streamConnection.copyRef(), identifier);
+    m_objectHeap.addObject(identifier, remoteTexture);
+}
+
 void RemoteSwapChain::getCurrentTextureView(WebGPUIdentifier identifier)
 {
     auto& textureView = m_backing->getCurrentTextureView();

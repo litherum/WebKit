@@ -24,6 +24,7 @@
 #if ENABLE(GPU_PROCESS)
 
 messages -> RemoteSwapChain NotRefCounted Stream {
+    void GetCurrentTexture(WebKit::WebGPUIdentifier identifier)
     void GetCurrentTextureView(WebKit::WebGPUIdentifier identifier)
     void Present()
     void SetLabel(String label)

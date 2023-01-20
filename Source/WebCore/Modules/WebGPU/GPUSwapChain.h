@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include "GPUTexture.h"
 #include "GPUTextureView.h"
 #include <optional>
 #include <pal/graphics/WebGPU/WebGPUSwapChain.h>
@@ -44,6 +45,7 @@ public:
     String label() const;
     void setLabel(String&&);
 
+    GPUTexture& getCurrentTexture();
     GPUTextureView& getCurrentTextureView();
     void present();
 
@@ -55,8 +57,12 @@ private:
         : m_backing(WTFMove(backing))
     {
     }
+    
+    void clearCurrentTextureAndView();
+    void ensureCurrentTextureAndView();
 
     Ref<PAL::WebGPU::SwapChain> m_backing;
+    RefPtr<GPUTexture> m_currentTexture;
     RefPtr<GPUTextureView> m_currentTextureView;
 };
 

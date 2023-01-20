@@ -48,16 +48,45 @@ RemoteSwapChainProxy::~RemoteSwapChainProxy()
 {
 }
 
-PAL::WebGPU::TextureView& RemoteSwapChainProxy::getCurrentTextureView()
+void RemoteSwapChainProxy::clearCurrentTextureAndView()
 {
-    if (!m_currentTextureView) {
+    m_currentTexture = nullptr;
+    m_currentTextureView = nullptr;
+}
+
+void RemoteSwapChainProxy::ensureCurrentTextureAndView()
+{
+    ASSERT(static_cast<bool>(m_currentTexture) == static_cast<bool>(m_currentTextureView));
+
+    if (m_currentTexture && m_currentTextureView)
+        return;
+
+    {
+        auto identifier = WebGPUIdentifier::generate();
+        auto sendResult = send(Messages::RemoteSwapChain::GetCurrentTexture(identifier));
+        UNUSED_VARIABLE(sendResult);
+
+        m_currentTexture = RemoteTextureProxy::create(root(), m_convertToBackingContext, identifier);
+    }
+
+    {
         auto identifier = WebGPUIdentifier::generate();
         auto sendResult = send(Messages::RemoteSwapChain::GetCurrentTextureView(identifier));
         UNUSED_VARIABLE(sendResult);
 
         m_currentTextureView = RemoteTextureViewProxy::create(root(), m_convertToBackingContext, identifier);
     }
+}
 
+PAL::WebGPU::Texture& RemoteSwapChainProxy::getCurrentTexture()
+{
+    ensureCurrentTextureAndView();
+    return *m_currentTexture;
+}
+
+PAL::WebGPU::TextureView& RemoteSwapChainProxy::getCurrentTextureView()
+{
+    ensureCurrentTextureAndView();
     return *m_currentTextureView;
 }
 
@@ -65,6 +94,8 @@ void RemoteSwapChainProxy::present()
 {
     auto sendResult = send(Messages::RemoteSwapChain::Present());
     UNUSED_VARIABLE(sendResult);
+
+    clearCurrentTextureAndView();
 }
 
 void RemoteSwapChainProxy::setLabelInternal(const String& label)

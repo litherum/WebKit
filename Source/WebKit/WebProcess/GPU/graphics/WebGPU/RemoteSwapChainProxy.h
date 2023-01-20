@@ -35,6 +35,7 @@
 namespace WebKit::WebGPU {
 
 class ConvertToBackingContext;
+class RemoteTextureProxy;
 class RemoteTextureViewProxy;
 
 class RemoteSwapChainProxy final : public PAL::WebGPU::SwapChain {
@@ -74,14 +75,19 @@ private:
         return root().streamClientConnection().sendSync(WTFMove(message), backing(), defaultSendTimeout);
     }
 
+    PAL::WebGPU::Texture& getCurrentTexture() final;
     PAL::WebGPU::TextureView& getCurrentTextureView() final;
     void present() final;
 
     void setLabelInternal(const String&) final;
+    
+    void clearCurrentTextureAndView();
+    void ensureCurrentTextureAndView();
 
     WebGPUIdentifier m_backing;
     Ref<ConvertToBackingContext> m_convertToBackingContext;
     Ref<RemoteDeviceProxy> m_parent;
+    RefPtr<RemoteTextureProxy> m_currentTexture;
     RefPtr<RemoteTextureViewProxy> m_currentTextureView;
 };
 
