@@ -62,8 +62,8 @@ void SwapChainImpl::ensureCurrentTextureAndView()
     if (m_currentTexture && m_currentTextureView)
         return;
 
-    m_currentTexture = TextureImpl::create(wgpuSwapChainGetCurrentTexture(m_backing), m_format, TextureDimension::_2d, m_convertToBackingContext).ptr();
-    m_currentTextureView = TextureViewImpl::create(wgpuSwapChainGetCurrentTextureView(m_backing), m_convertToBackingContext).ptr();
+    m_currentTexture = TextureImpl::wrap(wgpuSwapChainGetCurrentTexture(m_backing), m_format, TextureDimension::_2d, m_convertToBackingContext).ptr();
+    m_currentTextureView = TextureViewImpl::wrap(wgpuSwapChainGetCurrentTextureView(m_backing), m_convertToBackingContext).ptr();
 }
 
 Texture& SwapChainImpl::getCurrentTexture()

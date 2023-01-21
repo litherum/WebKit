@@ -33,7 +33,10 @@
 
 namespace WebCore {
 
-GPU::GPU() = default;
+GPU::GPU(Ref<PAL::WebGPU::GPU>&& backing)
+    : m_backing(WTFMove(backing))
+{
+}
 
 GPU::~GPU() = default;
 
@@ -45,22 +48,8 @@ static PAL::WebGPU::RequestAdapterOptions convertToBacking(const std::optional<G
     return options->convertToBacking();
 }
 
-void GPU::setBacking(PAL::WebGPU::GPU& backing)
-{
-    m_backing = &backing;
-    while (!m_pendingRequestAdapterArguments.isEmpty()) {
-        auto arguments = m_pendingRequestAdapterArguments.takeFirst();
-        requestAdapter(arguments.options, WTFMove(arguments.promise));
-    }
-}
-
 void GPU::requestAdapter(const std::optional<GPURequestAdapterOptions>& options, RequestAdapterPromise&& promise)
 {
-    if (!m_backing) {
-        m_pendingRequestAdapterArguments.append({ options, WTFMove(promise) });
-        return;
-    }
-
     m_backing->requestAdapter(convertToBacking(options), [promise = WTFMove(promise)] (RefPtr<PAL::WebGPU::Adapter>&& adapter) mutable {
         if (!adapter) {
             promise.reject(nullptr);
@@ -77,13 +66,11 @@ GPUTextureFormat GPU::getPreferredCanvasFormat()
 
 Ref<GPUSurface> GPU::createSurface(const GPUSurfaceDescriptor& descriptor)
 {
-    // FIXME: What happens if m_backing is nullptr? Is it possible?
     return GPUSurface::create(m_backing->createSurface(descriptor.convertToBacking()));
 }
 
 Ref<GPUCompositorIntegration> GPU::createCompositorIntegration()
 {
-    // FIXME: What happens if m_backing is nullptr? Is it possible?
     return GPUCompositorIntegration::create(m_backing->createCompositorIntegration());
 }
 

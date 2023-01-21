@@ -85,9 +85,19 @@ Texture* PresentationContext::getCurrentTexture()
 
 #pragma mark WGPU Stubs
 
+void wgpuSurfaceRetain(WGPUSurface surface)
+{
+    WebGPU::fromAPI(surface).ref();
+}
+
 void wgpuSurfaceRelease(WGPUSurface surface)
 {
     WebGPU::fromAPI(surface).deref();
+}
+
+void wgpuSwapChainRetain(WGPUSwapChain swapChain)
+{
+    WebGPU::fromAPI(swapChain).ref();
 }
 
 void wgpuSwapChainRelease(WGPUSwapChain swapChain)

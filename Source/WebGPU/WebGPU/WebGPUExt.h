@@ -94,6 +94,30 @@ typedef struct WGPUSurfaceDescriptorCocoaCustomSurface {
 
 #if !defined(WGPU_SKIP_PROCS)
 
+typedef void (*WGPUProcAdapterRetain)(WGPUAdapter adapter);
+typedef void (*WGPUProcBindGroupLayoutRetain)(WGPUBindGroupLayout bindGroupLayout);
+typedef void (*WGPUProcBindGroupRetain)(WGPUBindGroup bindGroup);
+typedef void (*WGPUProcBufferRetain)(WGPUBuffer buffer);
+typedef void (*WGPUProcCommandBufferRetain)(WGPUCommandBuffer commandBuffer);
+typedef void (*WGPUProcCommandEncoderRetain)(WGPUCommandEncoder commandEncoder);
+typedef void (*WGPUProcComputePassEncoderRetain)(WGPUComputePassEncoder computePassEncoder);
+typedef void (*WGPUProcComputePipelineRetain)(WGPUComputePipeline computePipeline);
+typedef void (*WGPUProcDeviceRetain)(WGPUDevice device);
+typedef void (*WGPUProcInstanceRetain)(WGPUInstance instance);
+typedef void (*WGPUProcPipelineLayoutRetain)(WGPUPipelineLayout pipelineLayout);
+typedef void (*WGPUProcQuerySetRetain)(WGPUQuerySet querySet);
+typedef void (*WGPUProcQueueRetain)(WGPUQueue queue);
+typedef void (*WGPUProcRenderBundleEncoderRetain)(WGPURenderBundleEncoder renderBundleEncoder);
+typedef void (*WGPUProcRenderBundleRetain)(WGPURenderBundle renderBundle);
+typedef void (*WGPUProcRenderPassEncoderRetain)(WGPURenderPassEncoder renderPassEncoder);
+typedef void (*WGPUProcRenderPipelineRetain)(WGPURenderPipeline renderPipeline);
+typedef void (*WGPUProcSamplerRetain)(WGPUSampler sampler);
+typedef void (*WGPUProcShaderModuleRetain)(WGPUShaderModule shaderModule);
+typedef void (*WGPUProcSurfaceRetain)(WGPUSurface surface);
+typedef void (*WGPUProcSwapChainRetain)(WGPUSwapChain swapChain);
+typedef void (*WGPUProcTextureRetain)(WGPUTexture texture);
+typedef void (*WGPUProcTextureViewRetain)(WGPUTextureView textureView);
+
 typedef void (*WGPUProcAdapterRelease)(WGPUAdapter adapter);
 typedef void (*WGPUProcBindGroupLayoutRelease)(WGPUBindGroupLayout bindGroupLayout);
 typedef void (*WGPUProcBindGroupRelease)(WGPUBindGroup bindGroup);
@@ -151,6 +175,30 @@ typedef void (*WGPUProcSwapChainGetCurrentTexture)(WGPUShaderModule shaderModule
 #endif  // !defined(WGPU_SKIP_PROCS)
 
 #if !defined(WGPU_SKIP_DECLARATIONS)
+
+WGPU_EXPORT void wgpuAdapterRetain(WGPUAdapter adapter);
+WGPU_EXPORT void wgpuBindGroupLayoutRetain(WGPUBindGroupLayout bindGroupLayout);
+WGPU_EXPORT void wgpuBindGroupRetain(WGPUBindGroup bindGroup);
+WGPU_EXPORT void wgpuBufferRetain(WGPUBuffer buffer);
+WGPU_EXPORT void wgpuCommandBufferRetain(WGPUCommandBuffer commandBuffer);
+WGPU_EXPORT void wgpuCommandEncoderRetain(WGPUCommandEncoder commandEncoder);
+WGPU_EXPORT void wgpuComputePassEncoderRetain(WGPUComputePassEncoder computePassEncoder);
+WGPU_EXPORT void wgpuComputePipelineRetain(WGPUComputePipeline computePipeline);
+WGPU_EXPORT void wgpuDeviceRetain(WGPUDevice device);
+WGPU_EXPORT void wgpuInstanceRetain(WGPUInstance instance);
+WGPU_EXPORT void wgpuPipelineLayoutRetain(WGPUPipelineLayout pipelineLayout);
+WGPU_EXPORT void wgpuQuerySetRetain(WGPUQuerySet querySet);
+WGPU_EXPORT void wgpuQueueRetain(WGPUQueue queue);
+WGPU_EXPORT void wgpuRenderBundleEncoderRetain(WGPURenderBundleEncoder renderBundleEncoder);
+WGPU_EXPORT void wgpuRenderBundleRetain(WGPURenderBundle renderBundle);
+WGPU_EXPORT void wgpuRenderPassEncoderRetain(WGPURenderPassEncoder renderPassEncoder);
+WGPU_EXPORT void wgpuRenderPipelineRetain(WGPURenderPipeline renderPipeline);
+WGPU_EXPORT void wgpuSamplerRetain(WGPUSampler sampler);
+WGPU_EXPORT void wgpuShaderModuleRetain(WGPUShaderModule shaderModule);
+WGPU_EXPORT void wgpuSurfaceRetain(WGPUSurface surface);
+WGPU_EXPORT void wgpuSwapChainRetain(WGPUSwapChain swapChain);
+WGPU_EXPORT void wgpuTextureRetain(WGPUTexture texture);
+WGPU_EXPORT void wgpuTextureViewRetain(WGPUTextureView textureView);
 
 WGPU_EXPORT void wgpuAdapterRelease(WGPUAdapter adapter);
 WGPU_EXPORT void wgpuBindGroupLayoutRelease(WGPUBindGroupLayout bindGroupLayout);

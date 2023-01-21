@@ -51,6 +51,9 @@ void PresentationContextIOSurface::configure(Device& device, const WGPUSwapChain
     if (descriptor.nextInChain)
         return;
 
+    if (descriptor.format != WGPUTextureFormat_BGRA8Unorm)
+        return;
+
     NSArray<IOSurface *> *iosurfaces = bridge_cast(m_recreateIOSurfaces(&descriptor));
     WGPUTextureDescriptor wgpuTextureDescriptor = {
          nullptr,
@@ -81,6 +84,7 @@ void PresentationContextIOSurface::configure(Device& device, const WGPUSwapChain
     textureDescriptor.usage = Texture::usage(descriptor.usage);
     for (IOSurface *iosurface in iosurfaces) {
         id<MTLTexture> texture = [device.device() newTextureWithDescriptor:textureDescriptor iosurface:bridge_cast(iosurface) plane:0];
+        texture.label = fromAPI(descriptor.label);
         auto viewFormats = Vector<WGPUTextureFormat> { Texture::pixelFormat(descriptor.format) };
         m_renderBuffers.append(Texture::create(texture, wgpuTextureDescriptor, WTFMove(viewFormats), device));
         m_renderBufferViews.append(TextureView::create(texture, wgpuTextureViewDescriptor, { { descriptor.width, descriptor.height, 1 } }, device));

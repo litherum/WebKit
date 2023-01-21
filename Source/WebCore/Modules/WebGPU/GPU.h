@@ -43,9 +43,9 @@ struct GPUSurfaceDescriptor;
 
 class GPU : public RefCounted<GPU> {
 public:
-    static Ref<GPU> create()
+    static Ref<GPU> create(Ref<PAL::WebGPU::GPU>&& backing)
     {
-        return adoptRef(*new GPU());
+        return adoptRef(*new GPU(WTFMove(backing)));
     }
 
     ~GPU();
@@ -59,17 +59,15 @@ public:
 
     Ref<GPUCompositorIntegration> createCompositorIntegration();
 
-    void setBacking(PAL::WebGPU::GPU&);
-
 private:
-    GPU();
+    GPU(Ref<PAL::WebGPU::GPU>&&);
 
     struct PendingRequestAdapterArguments {
         std::optional<GPURequestAdapterOptions> options;
         RequestAdapterPromise promise;
     };
     Deque<PendingRequestAdapterArguments> m_pendingRequestAdapterArguments;
-    RefPtr<PAL::WebGPU::GPU> m_backing;
+    Ref<PAL::WebGPU::GPU> m_backing;
 };
 
 }

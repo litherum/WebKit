@@ -64,11 +64,41 @@ static GPUSurfaceDescriptor surfaceDescriptor(GPUCompositorIntegration& composit
     };
 }
 
+static int getCanvasWidth(const GPUCanvasContext::CanvasType& canvas)
+{
+    return WTF::switchOn(canvas, [](const RefPtr<HTMLCanvasElement>& htmlCanvas) -> int {
+        auto scaleFactor = htmlCanvas->document().deviceScaleFactor();
+        return scaleFactor * htmlCanvas->width();
+    }
+#if ENABLE(OFFSCREEN_CANVAS)
+    , [](const RefPtr<OffscreenCanvas>& offscreenCanvas) -> int {
+        return offscreenCanvas->width();
+    }
+#endif
+    );
+}
+
+static int getCanvasHeight(const GPUCanvasContext::CanvasType& canvas)
+{
+    return WTF::switchOn(canvas, [](const RefPtr<HTMLCanvasElement>& htmlCanvas) -> int {
+        auto scaleFactor = htmlCanvas->document().deviceScaleFactor();
+        return scaleFactor * htmlCanvas->height();
+    }
+#if ENABLE(OFFSCREEN_CANVAS)
+    , [](const RefPtr<OffscreenCanvas>& offscreenCanvas) -> int {
+        return offscreenCanvas->height();
+    }
+#endif
+    );
+}
+
 GPUCanvasContextCocoa::GPUCanvasContextCocoa(CanvasBase& canvas, GPU& gpu)
     : GPUCanvasContext(canvas)
     , m_layerContentsDisplayDelegate(DisplayBufferDisplayDelegate::create())
     , m_compositorIntegration(gpu.createCompositorIntegration())
     , m_surface(gpu.createSurface(surfaceDescriptor(m_compositorIntegration)))
+    , m_width(getCanvasWidth(htmlCanvas()))
+    , m_height(getCanvasHeight(htmlCanvas()))
 {
 }
 
@@ -103,6 +133,9 @@ auto GPUCanvasContextCocoa::canvas() -> CanvasType
 void GPUCanvasContextCocoa::configure(GPUCanvasConfiguration&& configuration)
 {
     if (isConfigured())
+        return;
+
+    if (!m_width || !m_height)
         return;
 
     ASSERT(configuration.device);
@@ -153,6 +186,7 @@ RefPtr<GPUTexture> GPUCanvasContextCocoa::getCurrentTexture()
         return nullptr;
     }
 
+    markContextChangedAndNotifyCanvasObservers();
     return &m_configuration->swapChain->getCurrentTexture();
 }
 

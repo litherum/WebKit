@@ -201,6 +201,11 @@ void Instance::requestAdapter(const WGPURequestAdapterOptions& options, Completi
 
 #pragma mark WGPU Stubs
 
+void wgpuInstanceRetain(WGPUInstance instance)
+{
+    WebGPU::fromAPI(instance).ref();
+}
+
 void wgpuInstanceRelease(WGPUInstance instance)
 {
     WebGPU::fromAPI(instance).deref();
@@ -215,6 +220,7 @@ WGPUProc wgpuGetProcAddress(WGPUDevice, const char* procName)
 {
     // FIXME(PERFORMANCE): Use gperf to make this faster.
     // FIXME: Generate this at build time
+    // FIXME: Retain and release methods are not listed here.
     if (!strcmp(procName, "wgpuAdapterEnumerateFeatures"))
         return reinterpret_cast<WGPUProc>(&wgpuAdapterEnumerateFeatures);
     if (!strcmp(procName, "wgpuAdapterGetLimits"))
