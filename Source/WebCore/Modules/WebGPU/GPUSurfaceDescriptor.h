@@ -25,11 +25,8 @@
 
 #pragma once
 
-#include "GPUExtent3DDict.h"
-#include "GPUIntegralTypes.h"
+#include "GPUCompositorIntegration.h"
 #include "GPUObjectDescriptorBase.h"
-#include "GPUTextureFormat.h"
-#include "GPUTextureUsage.h"
 #include <pal/graphics/WebGPU/WebGPUSurfaceDescriptor.h>
 
 namespace WebCore {
@@ -37,10 +34,14 @@ namespace WebCore {
 struct GPUSurfaceDescriptor : public GPUObjectDescriptorBase {
     PAL::WebGPU::SurfaceDescriptor convertToBacking() const
     {
+        ASSERT(compositorIntegration);
         return {
             { label },
+            compositorIntegration->backing(),
         };
     }
+
+    GPUCompositorIntegration* compositorIntegration { nullptr };
 };
 
 }

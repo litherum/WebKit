@@ -27,5 +27,7 @@
     Vector<PAL::WebGPU::TextureFormat> viewFormats;
     PAL::WebGPU::PredefinedColorSpace colorSpace;
     PAL::WebGPU::CanvasCompositingAlphaMode compositingAlphaMode;
+    uint32_t width;
+    uint32_t height;
 };
 #endif

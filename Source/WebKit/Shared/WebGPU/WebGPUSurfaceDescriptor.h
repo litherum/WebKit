@@ -27,11 +27,13 @@
 
 #if ENABLE(GPU_PROCESS)
 
+#include "WebGPUIdentifier.h"
 #include "WebGPUObjectDescriptorBase.h"
 
 namespace WebKit::WebGPU {
 
 struct SurfaceDescriptor : public ObjectDescriptorBase {
+    WebGPUIdentifier compositorIntegration;
 };
 
 } // namespace WebKit::WebGPU

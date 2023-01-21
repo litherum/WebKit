@@ -40,40 +40,27 @@
 
 namespace WebCore {
 
-//static IntSize getCanvasSizeAsIntSize(const GPUCanvasContext::CanvasType& canvas)
-//{
-//    return WTF::switchOn(canvas, [](const RefPtr<HTMLCanvasElement>& htmlCanvas) -> IntSize {
-//        auto scaleFactor = htmlCanvas->document().deviceScaleFactor();
-//        return { static_cast<int>(scaleFactor * htmlCanvas->width()), static_cast<int>(scaleFactor * htmlCanvas->height()) };
-//    }
-//#if ENABLE(OFFSCREEN_CANVAS)
-//    , [](const RefPtr<OffscreenCanvas>& offscreenCanvas) -> IntSize {
-//        return { static_cast<int>(offscreenCanvas->width()), static_cast<int>(offscreenCanvas->height()) };
-//    }
-//#endif
-//    );
-//}
-
 WTF_MAKE_ISO_ALLOCATED_IMPL(GPUCanvasContextCocoa);
 
 std::unique_ptr<GPUCanvasContext> GPUCanvasContext::create(CanvasBase& canvas, GPU& gpu)
 {
-    return GPUCanvasContextCocoa::create(canvas, gpu);
-}
-
-std::unique_ptr<GPUCanvasContextCocoa> GPUCanvasContextCocoa::create(CanvasBase& canvas, GPU& gpu)
-{
-    auto context = std::unique_ptr<GPUCanvasContextCocoa>(new GPUCanvasContextCocoa(canvas, gpu));
+    auto context = GPUCanvasContextCocoa::create(canvas, gpu);
     context->suspendIfNeeded();
     return context;
 }
 
-static GPUSurfaceDescriptor surfaceDescriptor()
+std::unique_ptr<GPUCanvasContextCocoa> GPUCanvasContextCocoa::create(CanvasBase& canvas, GPU& gpu)
+{
+    return std::unique_ptr<GPUCanvasContextCocoa>(new GPUCanvasContextCocoa(canvas, gpu));
+}
+
+static GPUSurfaceDescriptor surfaceDescriptor(GPUCompositorIntegration& compositorIntegration)
 {
     return {
         {
             "WebGPU Canvas surface"_s,
-        }
+        },
+        &compositorIntegration,
     };
 }
 
@@ -81,7 +68,7 @@ GPUCanvasContextCocoa::GPUCanvasContextCocoa(CanvasBase& canvas, GPU& gpu)
     : GPUCanvasContext(canvas)
     , m_layerContentsDisplayDelegate(DisplayBufferDisplayDelegate::create())
     , m_compositorIntegration(gpu.createCompositorIntegration())
-    , m_surface(gpu.createSurface(surfaceDescriptor()))
+    , m_surface(gpu.createSurface(surfaceDescriptor(m_compositorIntegration)))
 {
 }
 
@@ -92,9 +79,20 @@ void GPUCanvasContextCocoa::reshape(int width, int height)
 
     m_width = width;
     m_height = height;
-    //m_swapChain = nullptr;
-    //
-    //createSwapChainIfNeeded();
+
+    auto configuration = WTFMove(m_configuration);
+    ASSERT(!isConfigured());
+    if (configuration) {
+        GPUCanvasConfiguration canvasConfiguration {
+            configuration->device.ptr(),
+            configuration->format,
+            configuration->usage,
+            configuration->viewFormats,
+            configuration->colorSpace,
+            configuration->compositingAlphaMode,
+        };
+        configure(WTFMove(canvasConfiguration));
+    }
 }
 
 auto GPUCanvasContextCocoa::canvas() -> CanvasType
@@ -102,58 +100,60 @@ auto GPUCanvasContextCocoa::canvas() -> CanvasType
     return htmlCanvas();
 }
 
-void GPUCanvasContextCocoa::configure(GPUCanvasConfiguration&&)
+void GPUCanvasContextCocoa::configure(GPUCanvasConfiguration&& configuration)
 {
-    //m_configuration = WTFMove(configuration);
-    //
-    //auto canvasSize = getCanvasSizeAsIntSize(htmlCanvas());
-    //reshape(canvasSize.width(), canvasSize.height());
-}
-
-void GPUCanvasContextCocoa::createSwapChainIfNeeded()
-{
-    if (m_swapChain || !m_configuration)
+    if (isConfigured())
         return;
 
-    //GPUSurfaceDescriptor surfaceDescriptor = {
-    //    { "WebGPU Canvas surface"_s },
-    //    GPUExtent3DDict { static_cast<uint32_t>(m_width), static_cast<uint32_t>(m_height), 1 },
-    //    1 /* sampleCount */,
-    //    m_configuration->format,
-    //    m_configuration->usage
-    //};
-    //
-    //m_surface = m_configuration->device->createSurface(surfaceDescriptor);
-    //ASSERT(m_surface);
-    //
-    //GPUSwapChainDescriptor descriptor = {
-    //    { "WebGPU Canvas swap chain"_s },
-    //    GPUExtent3DDict { static_cast<uint32_t>(m_width), static_cast<uint32_t>(m_height), 1 },
-    //    1 /* sampleCount */,
-    //    m_configuration->format,
-    //    m_configuration->usage
-    //};
-    //
-    //m_swapChain = m_configuration->device->createSwapChain(*m_surface, descriptor);
-    //ASSERT(m_swapChain);
+    ASSERT(configuration.device);
+    if (!configuration.device)
+        return;
+
+    GPUSwapChainDescriptor descriptor = {
+        {
+            "WebGPU Canvas swap chain"_s,
+        },
+        configuration.format,
+        configuration.usage,
+        configuration.viewFormats,
+        configuration.colorSpace,
+        configuration.compositingAlphaMode,
+        static_cast<uint32_t>(m_width), // FIXME: Is it possible for these to be negative?
+        static_cast<uint32_t>(m_height),
+    };
+
+    auto swapChain = configuration.device->createSwapChain(m_surface, descriptor);
+
+    m_configuration = {
+        *configuration.device,
+        swapChain,
+        configuration.format,
+        configuration.usage,
+        configuration.viewFormats,
+        configuration.colorSpace,
+        configuration.compositingAlphaMode,
+    };
+}
+
+void GPUCanvasContextCocoa::unconfigure()
+{
+    m_configuration = std::nullopt;
+    ASSERT(!isConfigured());
 }
 
 RefPtr<GPUTexture> GPUCanvasContextCocoa::getCurrentTexture()
 {
-    if (!m_swapChain)
+    if (!isConfigured()) {
+        // FIXME: I think we're supposed to return an invalid texture here.
         return nullptr;
+    }
 
-    return &m_swapChain->getCurrentTexture();
+    return &m_configuration->swapChain->getCurrentTexture();
 }
 
 PixelFormat GPUCanvasContextCocoa::pixelFormat() const
 {
     return PixelFormat::BGRA8;
-}
-
-void GPUCanvasContextCocoa::unconfigure()
-{
-    m_configuration.reset();
 }
 
 DestinationColorSpace GPUCanvasContextCocoa::colorSpace() const

@@ -125,11 +125,23 @@ private:
     GPUCanvasContextCocoa(CanvasBase&, GPU&);
 
     void markContextChangedAndNotifyCanvasObservers();
-    void createSwapChainIfNeeded();
 
-    std::optional<GPUCanvasConfiguration> m_configuration;
+    bool isConfigured() const {
+        return static_cast<bool>(m_configuration);
+    }
+
+    struct Configuration {
+        Ref<GPUDevice> device;
+        Ref<GPUSwapChain> swapChain;
+        GPUTextureFormat format { GPUTextureFormat::R8unorm };
+        GPUTextureUsageFlags usage { GPUTextureUsage::RENDER_ATTACHMENT };
+        Vector<GPUTextureFormat> viewFormats;
+        GPUPredefinedColorSpace colorSpace { GPUPredefinedColorSpace::SRGB };
+        GPUCanvasCompositingAlphaMode compositingAlphaMode { GPUCanvasCompositingAlphaMode::Opaque };
+    };
+    std::optional<Configuration> m_configuration;
+
     Ref<DisplayBufferDisplayDelegate> m_layerContentsDisplayDelegate;
-    RefPtr<GPUSwapChain> m_swapChain;
     Ref<GPUCompositorIntegration> m_compositorIntegration;
     Ref<GPUSurface> m_surface;
 

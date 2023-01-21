@@ -40,7 +40,11 @@ std::optional<SurfaceDescriptor> ConvertToBackingContext::convertToBacking(const
     if (!base)
         return std::nullopt;
 
-    return { { WTFMove(*base) } };
+    auto identifier = convertToBacking(surfaceDescriptor.compositorIntegration);
+    if (!identifier)
+        return std::nullopt;
+
+    return { { WTFMove(*base), identifier } };
 }
 
 std::optional<PAL::WebGPU::SurfaceDescriptor> ConvertFromBackingContext::convertFromBacking(const SurfaceDescriptor& surfaceDescriptor)
@@ -49,7 +53,11 @@ std::optional<PAL::WebGPU::SurfaceDescriptor> ConvertFromBackingContext::convert
     if (!base)
         return std::nullopt;
 
-    return { { WTFMove(*base) } };
+    auto* compositorIntegration = convertCompositorIntegrationFromBacking(surfaceDescriptor.compositorIntegration);
+    if (!compositorIntegration)
+        return std::nullopt;
+
+    return { { WTFMove(*base), *compositorIntegration } };
 }
 
 } // namespace WebKit

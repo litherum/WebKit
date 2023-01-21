@@ -44,6 +44,8 @@ struct SwapChainDescriptor : public ObjectDescriptorBase {
     Vector<PAL::WebGPU::TextureFormat> viewFormats;
     PAL::WebGPU::PredefinedColorSpace colorSpace { PAL::WebGPU::PredefinedColorSpace::SRGB };
     PAL::WebGPU::CanvasCompositingAlphaMode compositingAlphaMode { PAL::WebGPU::CanvasCompositingAlphaMode::Opaque };
+    uint32_t width { 0 };
+    uint32_t height { 0 };
 };
 
 } // namespace WebKit::WebGPU

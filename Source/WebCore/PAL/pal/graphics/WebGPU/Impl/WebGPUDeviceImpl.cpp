@@ -54,7 +54,6 @@
 #include "WebGPUSamplerImpl.h"
 #include "WebGPUShaderModuleDescriptor.h"
 #include "WebGPUShaderModuleImpl.h"
-#include "WebGPUSurfaceDescriptor.h"
 #include "WebGPUSurfaceImpl.h"
 #include "WebGPUSwapChainDescriptor.h"
 #include "WebGPUSwapChainImpl.h"
@@ -151,8 +150,8 @@ Ref<SwapChain> DeviceImpl::createSwapChain(const Surface& surface, const SwapCha
         label.data(),
         m_convertToBackingContext->convertTextureUsageFlagsToBacking(descriptor.usage),
         m_convertToBackingContext->convertToBacking(descriptor.format),
-        0,
-        0,
+        descriptor.width,
+        descriptor.height,
         WGPUPresentMode_Immediate,
     };
 

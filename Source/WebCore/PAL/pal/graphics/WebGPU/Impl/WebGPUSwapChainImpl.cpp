@@ -29,7 +29,6 @@
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
 #include "WebGPUConvertToBackingContext.h"
-#include "WebGPUSurfaceDescriptor.h"
 #include "WebGPUSurfaceImpl.h"
 #include "WebGPUTextureImpl.h"
 #include "WebGPUTextureViewImpl.h"

@@ -65,8 +65,9 @@ void GPUImpl::requestAdapter(const RequestAdapterOptions& options, CompletionHan
 
 Ref<Surface> GPUImpl::createSurface(const SurfaceDescriptor& descriptor)
 {
-    // FIXME: We need to do this regardless of whether or not we think this compositing architecture is the way to go or not.
     auto label = descriptor.label.utf8();
+
+    // FIXME: Do something with descriptor.compositorIntegration.
 
     WGPUSurfaceDescriptorCocoaCustomSurface cocoaSurface {
         {

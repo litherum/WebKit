@@ -40,7 +40,7 @@ std::optional<SwapChainDescriptor> ConvertToBackingContext::convertToBacking(con
     if (!base)
         return std::nullopt;
 
-    return { { WTFMove(*base), swapChainDescriptor.format, swapChainDescriptor.usage, swapChainDescriptor.viewFormats, swapChainDescriptor.colorSpace, swapChainDescriptor.compositingAlphaMode } };
+    return { { WTFMove(*base), swapChainDescriptor.format, swapChainDescriptor.usage, swapChainDescriptor.viewFormats, swapChainDescriptor.colorSpace, swapChainDescriptor.compositingAlphaMode, swapChainDescriptor.width, swapChainDescriptor.height } };
 }
 
 std::optional<PAL::WebGPU::SwapChainDescriptor> ConvertFromBackingContext::convertFromBacking(const SwapChainDescriptor& swapChainDescriptor)
@@ -49,7 +49,7 @@ std::optional<PAL::WebGPU::SwapChainDescriptor> ConvertFromBackingContext::conve
     if (!base)
         return std::nullopt;
 
-    return { { WTFMove(*base), swapChainDescriptor.format, swapChainDescriptor.usage, swapChainDescriptor.viewFormats, swapChainDescriptor.colorSpace, swapChainDescriptor.compositingAlphaMode } };
+    return { { WTFMove(*base), swapChainDescriptor.format, swapChainDescriptor.usage, swapChainDescriptor.viewFormats, swapChainDescriptor.colorSpace, swapChainDescriptor.compositingAlphaMode, swapChainDescriptor.width, swapChainDescriptor.height } };
 }
 
 } // namespace WebKit

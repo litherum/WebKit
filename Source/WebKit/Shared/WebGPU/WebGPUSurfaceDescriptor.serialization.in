@@ -22,5 +22,6 @@
 
 #if ENABLE(GPU_PROCESS)
 [AdditionalEncoder=StreamConnectionEncoder] struct WebKit::WebGPU::SurfaceDescriptor : WebKit::WebGPU::ObjectDescriptorBase {
+    WebKit::WebGPUIdentifier compositorIntegration;
 };
 #endif

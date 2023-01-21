@@ -48,6 +48,8 @@ struct GPUSwapChainDescriptor : public GPUObjectDescriptorBase {
             }),
             WebCore::convertToBacking(colorSpace),
             WebCore::convertToBacking(compositingAlphaMode),
+            width,
+            height,
         };
     }
 
@@ -56,6 +58,8 @@ struct GPUSwapChainDescriptor : public GPUObjectDescriptorBase {
     Vector<GPUTextureFormat> viewFormats;
     GPUPredefinedColorSpace colorSpace { GPUPredefinedColorSpace::SRGB };
     GPUCanvasCompositingAlphaMode compositingAlphaMode { GPUCanvasCompositingAlphaMode::Opaque };
+    uint32_t width { 0 };
+    uint32_t height { 0 };
 };
 
 }
