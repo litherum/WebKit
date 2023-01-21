@@ -48,7 +48,7 @@ Vector<MachSendRight> RemoteCompositorIntegrationProxy::getRenderBuffers()
 {
     auto sendResult = sendSync(Messages::RemoteCompositorIntegration::GetRenderBuffers());
     if (!sendResult)
-        return {};
+        return { };
 
     auto [renderBuffers] = sendResult.takeReply();
     return renderBuffers;

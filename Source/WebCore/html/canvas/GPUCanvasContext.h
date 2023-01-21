@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include <variant>
 
 #include "GPUBasedCanvasRenderingContext.h"
+#include <variant>
 #include <wtf/Ref.h>
 #include <wtf/RefCounted.h>
 #include <wtf/RefPtr.h>
@@ -48,7 +48,7 @@ public:
     using CanvasType = std::variant<RefPtr<HTMLCanvasElement>>;
 #endif
 
-    static std::unique_ptr<GPUCanvasContext> create(CanvasBase&, GPU& gpu);
+    static std::unique_ptr<GPUCanvasContext> create(CanvasBase&, GPU&);
 
     virtual CanvasType canvas() = 0;
     virtual void configure(GPUCanvasConfiguration&&) = 0;

@@ -58,7 +58,7 @@ static RetainPtr<CFNumberRef> toCFNumber(int x)
 Vector<RetainPtr<IOSurfaceRef>> CompositorIntegrationImpl::recreateIOSurfaces(const WGPUSwapChainDescriptor& descriptor)
 {
     m_renderBuffers.clear();
- 
+
     auto createIOSurface = [&]() -> RetainPtr<IOSurfaceRef> {
         unsigned bytesPerElement = 4;
         unsigned bytesPerPixel = 4;
@@ -88,7 +88,7 @@ Vector<RetainPtr<IOSurfaceRef>> CompositorIntegrationImpl::recreateIOSurfaces(co
 
     m_renderBuffers.append(createIOSurface());
     m_renderBuffers.append(createIOSurface());
- 
+
     return m_renderBuffers;
 }
 #endif

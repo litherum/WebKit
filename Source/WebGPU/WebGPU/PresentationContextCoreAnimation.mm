@@ -89,8 +89,7 @@ auto PresentationContextCoreAnimation::Configuration::generateCurrentFrameState(
         nullptr,
         label.data(),
         usage,
-        WGPUTextureDimension_2D,
-        {
+        WGPUTextureDimension_2D, {
             width,
             height,
             1,
