@@ -50,7 +50,6 @@ typedef enum WGPUSTypeExtended {
     WGPUSTypeExtended_TextureDescriptorViewFormats = 0x1D5BC57, // Random
     WGPUSTypeExtended_InstanceCocoaDescriptor = 0x151BBC00, // Random
     WGPUSTypeExtended_SurfaceDescriptorCocoaSurfaceBacking = 0x017E9710, // Random
-    WGPUSTypeExtended_TextureDescriptorCocoaSurfaceBacking = 0xCCE4ED61, // Random
     WGPUSTypeExtended_Force32 = 0x7FFFFFFF
 } WGPUSTypeExtended;
 
@@ -90,12 +89,8 @@ typedef struct WGPUTextureDescriptorViewFormats {
 
 typedef struct WGPUSurfaceDescriptorCocoaCustomSurface {
     WGPUChainedStruct chain;
+    CFArrayRef (^recreateIOSurfaces)(WGPUSwapChainDescriptor const *);
 } WGPUSurfaceDescriptorCocoaCustomSurface;
-
-typedef struct WGPUTextureDescriptorCocoaCustomSurface {
-    WGPUChainedStruct chain;
-    IOSurfaceRef surface;
-} WGPUTextureDescriptorCocoaCustomSurface;
 
 #if !defined(WGPU_SKIP_PROCS)
 

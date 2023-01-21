@@ -27,42 +27,99 @@
 #import "PresentationContextIOSurface.h"
 
 #import "APIConversions.h"
+#import "Texture.h"
+#import "TextureView.h"
+#import <wtf/cocoa/TypeCastsCocoa.h>
+#import <IOSurface/IOSurfaceObjC.h>
 
 namespace WebGPU {
 
-PresentationContextIOSurface::PresentationContextIOSurface(const WGPUSurfaceDescriptor&)
+PresentationContextIOSurface::PresentationContextIOSurface(const WGPUSurfaceDescriptor& descriptor)
 {
+    const WGPUSurfaceDescriptorCocoaCustomSurface& cocoaSurface = *reinterpret_cast<const WGPUSurfaceDescriptorCocoaCustomSurface*>(descriptor.nextInChain);
+    m_recreateIOSurfaces = cocoaSurface.recreateIOSurfaces;
 }
 
 PresentationContextIOSurface::~PresentationContextIOSurface() = default;
 
-void PresentationContextIOSurface::configure(Device&, const WGPUSwapChainDescriptor&)
+void PresentationContextIOSurface::configure(Device& device, const WGPUSwapChainDescriptor& descriptor)
 {
+    m_renderBuffers.clear();
+    m_renderBufferViews.clear();
+    m_currentIndex = 0;
+
+    if (descriptor.nextInChain)
+        return;
+
+    NSArray<IOSurface *> *iosurfaces = bridge_cast(m_recreateIOSurfaces(&descriptor));
+    WGPUTextureDescriptor wgpuTextureDescriptor = {
+         nullptr,
+         descriptor.label,
+         descriptor.usage,
+         WGPUTextureDimension_2D,
+         {
+            descriptor.width,
+            descriptor.height,
+            1,
+         },
+         descriptor.format,
+         1,
+         1,
+    };
+    WGPUTextureViewDescriptor wgpuTextureViewDescriptor = {
+        nullptr,
+        descriptor.label,
+        descriptor.format,
+        WGPUTextureViewDimension_2D,
+        0,
+        1,
+        0,
+        1,
+        WGPUTextureAspect_All,
+    };
+    MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:Texture::pixelFormat(descriptor.format) width:descriptor.width height:descriptor.height mipmapped:NO];
+    textureDescriptor.usage = Texture::usage(descriptor.usage);
+    for (IOSurface *iosurface in iosurfaces) {
+        id<MTLTexture> texture = [device.device() newTextureWithDescriptor:textureDescriptor iosurface:bridge_cast(iosurface) plane:0];
+        auto viewFormats = Vector<WGPUTextureFormat> { Texture::pixelFormat(descriptor.format) };
+        m_renderBuffers.append(Texture::create(texture, wgpuTextureDescriptor, WTFMove(viewFormats), device));
+        m_renderBufferViews.append(TextureView::create(texture, wgpuTextureViewDescriptor, { { descriptor.width, descriptor.height, 1 } }, device));
+    }
+    ASSERT(m_renderBuffers.size() == m_renderBufferViews.size());
 }
 
 void PresentationContextIOSurface::present()
 {
-    nextDrawable();
-}
+    ASSERT(m_renderBuffers.size() == m_renderBufferViews.size());
 
-TextureView* PresentationContextIOSurface::getCurrentTextureView()
-{
-    return nullptr;
+    if (m_renderBuffers.isEmpty())
+        return;
+
+    m_currentIndex = (m_currentIndex + 1) % m_renderBuffers.size();
 }
 
 Texture* PresentationContextIOSurface::getCurrentTexture()
 {
-    return nullptr;
+    ASSERT(m_renderBuffers.size() == m_renderBufferViews.size());
+
+    if (m_renderBuffers.isEmpty()) {
+        // FIXME: This should return an invalid texture view.
+        return nullptr;
+    }
+
+    return m_renderBuffers[m_currentIndex].ptr();
 }
 
-RetainPtr<IOSurfaceRef> PresentationContextIOSurface::nextDrawable()
+TextureView* PresentationContextIOSurface::getCurrentTextureView()
 {
-    // FIXME: wait until a buffer is available
-    auto nextBuffer = m_drawingBuffer;
-    m_drawingBuffer = m_displayBuffer;
-    m_displayBuffer = nextBuffer;
+    ASSERT(m_renderBuffers.size() == m_renderBufferViews.size());
 
-    return m_drawingBuffer;
+    if (m_renderBufferViews.isEmpty()) {
+        // FIXME: This should return an invalid texture view.
+        return nullptr;
+    }
+
+    return m_renderBufferViews[m_currentIndex].ptr();
 }
 
 } // namespace WebGPU

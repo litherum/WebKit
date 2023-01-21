@@ -124,6 +124,9 @@ void GPUCanvasContextCocoa::configure(GPUCanvasConfiguration&& configuration)
 
     auto swapChain = configuration.device->createSwapChain(m_surface, descriptor);
 
+    auto renderBuffers = m_compositorIntegration->getRenderBuffers();
+    ASSERT(!renderBuffers.isEmpty());
+
     m_configuration = {
         *configuration.device,
         swapChain,
@@ -132,6 +135,8 @@ void GPUCanvasContextCocoa::configure(GPUCanvasConfiguration&& configuration)
         configuration.viewFormats,
         configuration.colorSpace,
         configuration.compositingAlphaMode,
+        WTFMove(renderBuffers),
+        0,
     };
 }
 
@@ -168,12 +173,18 @@ RefPtr<GraphicsLayerContentsDisplayDelegate> GPUCanvasContextCocoa::layerContent
 
 void GPUCanvasContextCocoa::prepareForDisplay()
 {
-//#if PLATFORM(COCOA)
-    //m_swapChain->prepareForDisplay([protectedThis = Ref { *this }] (auto sendRight) {
-    //    protectedThis->m_layerContentsDisplayDelegate->setDisplayBuffer(WTFMove(sendRight));
-    //    protectedThis->m_compositingResultsNeedsUpdating = false;
-    //});
-//#endif
+    if (!isConfigured())
+        return;
+
+    ASSERT(m_configuration->frameCount < m_configuration->renderBuffers.size());
+
+    m_configuration->swapChain->present();
+
+    // FIXME: Wait for the results to be fully drawn
+
+    m_layerContentsDisplayDelegate->setDisplayBuffer(m_configuration->renderBuffers[m_configuration->frameCount]);
+    m_compositingResultsNeedsUpdating = false;
+    m_configuration->frameCount = (m_configuration->frameCount + 1) % m_configuration->renderBuffers.size();
 }
 
 void GPUCanvasContextCocoa::markContextChangedAndNotifyCanvasObservers()

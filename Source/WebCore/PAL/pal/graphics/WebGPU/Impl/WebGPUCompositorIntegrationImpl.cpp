@@ -29,6 +29,8 @@
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
 #include "WebGPUConvertToBackingContext.h"
+#include <CoreFoundation/CoreFoundation.h>
+#include <IOSurface/IOSurface.h>
 #include <WebGPU/WebGPUExt.h>
 
 namespace PAL::WebGPU {
@@ -39,6 +41,57 @@ CompositorIntegrationImpl::CompositorIntegrationImpl(ConvertToBackingContext& co
 }
 
 CompositorIntegrationImpl::~CompositorIntegrationImpl() = default;
+
+#if PLATFORM(COCOA)
+Vector<MachSendRight> CompositorIntegrationImpl::getRenderBuffers()
+{
+    return m_renderBuffers.map([] (const auto& renderBuffer) {
+        return MachSendRight::adopt(IOSurfaceCreateMachPort(renderBuffer.get()));
+    });
+}
+
+static RetainPtr<CFNumberRef> toCFNumber(int x)
+{
+    return adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &x));
+}
+
+Vector<RetainPtr<IOSurfaceRef>> CompositorIntegrationImpl::recreateIOSurfaces(const WGPUSwapChainDescriptor& descriptor)
+{
+    m_renderBuffers.clear();
+ 
+    auto createIOSurface = [&]() -> RetainPtr<IOSurfaceRef> {
+        unsigned bytesPerElement = 4;
+        unsigned bytesPerPixel = 4;
+
+        size_t bytesPerRow = IOSurfaceAlignProperty(kIOSurfaceBytesPerRow, descriptor.width * bytesPerPixel);
+        ASSERT(bytesPerRow);
+
+        size_t totalBytes = IOSurfaceAlignProperty(kIOSurfaceAllocSize, descriptor.height * bytesPerRow);
+        ASSERT(totalBytes);
+
+        unsigned pixelFormat = 'BGRA';
+
+        auto options = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 8, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+        CFDictionaryAddValue(options.get(), kIOSurfaceWidth, toCFNumber(descriptor.width).get());
+        CFDictionaryAddValue(options.get(), kIOSurfaceHeight, toCFNumber(descriptor.height).get());
+        CFDictionaryAddValue(options.get(), kIOSurfacePixelFormat, toCFNumber(pixelFormat).get());
+        CFDictionaryAddValue(options.get(), kIOSurfaceBytesPerElement, toCFNumber(bytesPerElement).get());
+        CFDictionaryAddValue(options.get(), kIOSurfaceBytesPerRow, toCFNumber(bytesPerRow).get());
+        CFDictionaryAddValue(options.get(), kIOSurfaceAllocSize, toCFNumber(totalBytes).get());
+#if PLATFORM(IOS_FAMILY)
+        CFDictionaryAddValue(options.get(), kIOSurfaceCacheMode, toCFNumber(kIOMapWriteCombineCache).get());
+#endif
+        CFDictionaryAddValue(options.get(), kIOSurfaceElementHeight, toCFNumber(1).get());
+
+        return adoptCF(IOSurfaceCreate(options.get()));
+    };
+
+    m_renderBuffers.append(createIOSurface());
+    m_renderBuffers.append(createIOSurface());
+ 
+    return m_renderBuffers;
+}
+#endif
 
 } // namespace PAL::WebGPU
 

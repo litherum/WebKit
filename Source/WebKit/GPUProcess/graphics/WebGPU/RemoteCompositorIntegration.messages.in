@@ -24,6 +24,9 @@
 #if ENABLE(GPU_PROCESS)
 
 messages -> RemoteCompositorIntegration NotRefCounted Stream {
+#if PLATFORM(COCOA)
+void GetRenderBuffers() -> (Vector<MachSendRight> renderBuffers) Synchronous NotStreamEncodableReply
+#endif
 }
 
 #endif

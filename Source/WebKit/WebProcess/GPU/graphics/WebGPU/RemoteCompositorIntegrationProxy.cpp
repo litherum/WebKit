@@ -43,6 +43,18 @@ RemoteCompositorIntegrationProxy::RemoteCompositorIntegrationProxy(RemoteGPUProx
 
 RemoteCompositorIntegrationProxy::~RemoteCompositorIntegrationProxy() = default;
 
+#if PLATFORM(COCOA)
+Vector<MachSendRight> RemoteCompositorIntegrationProxy::getRenderBuffers()
+{
+    auto sendResult = sendSync(Messages::RemoteCompositorIntegration::GetRenderBuffers());
+    if (!sendResult)
+        return {};
+
+    auto [renderBuffers] = sendResult.takeReply();
+    return renderBuffers;
+}
+#endif
+
 } // namespace WebKit::WebGPU
 
 #endif // ENABLE(GPU_PROCESS)

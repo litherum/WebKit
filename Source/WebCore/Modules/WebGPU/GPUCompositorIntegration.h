@@ -27,6 +27,7 @@
 
 #include <optional>
 #include <pal/graphics/WebGPU/WebGPUCompositorIntegration.h>
+#include <wtf/MachSendRight.h>
 #include <wtf/Ref.h>
 #include <wtf/RefCounted.h>
 #include <wtf/text/WTFString.h>
@@ -39,6 +40,10 @@ public:
     {
         return adoptRef(*new GPUCompositorIntegration(WTFMove(backing)));
     }
+
+#if PLATFORM(COCOA)
+    Vector<MachSendRight> getRenderBuffers() const;
+#endif
 
     PAL::WebGPU::CompositorIntegration& backing() { return m_backing; }
     const PAL::WebGPU::CompositorIntegration& backing() const { return m_backing; }

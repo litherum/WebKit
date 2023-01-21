@@ -28,7 +28,15 @@
 #if HAVE(WEBGPU_IMPLEMENTATION)
 
 #include "WebGPUCompositorIntegration.h"
+
 #include <WebGPU/WebGPU.h>
+
+#if PLATFORM(COCOA)
+#include <IOSurface/IOSurface.h>
+#include <wtf/MachSendRight.h>
+#include <wtf/RetainPtr.h>
+#include <wtf/Vector.h>
+#endif
 
 namespace PAL::WebGPU {
 
@@ -44,6 +52,10 @@ public:
 
     virtual ~CompositorIntegrationImpl();
 
+#if PLATFORM(COCOA)
+    Vector<RetainPtr<IOSurfaceRef>> recreateIOSurfaces(const WGPUSwapChainDescriptor&);
+#endif
+
 private:
     friend class DowncastConvertToBackingContext;
 
@@ -53,6 +65,12 @@ private:
     CompositorIntegrationImpl(CompositorIntegrationImpl&&) = delete;
     CompositorIntegrationImpl& operator=(const CompositorIntegrationImpl&) = delete;
     CompositorIntegrationImpl& operator=(CompositorIntegrationImpl&&) = delete;
+
+#if PLATFORM(COCOA)
+    Vector<MachSendRight> getRenderBuffers() override;
+
+    Vector<RetainPtr<IOSurfaceRef>> m_renderBuffers;
+#endif
 
     Ref<ConvertToBackingContext> m_convertToBackingContext;
 };

@@ -28,4 +28,11 @@
 
 namespace WebCore {
 
+#if PLATFORM(COCOA)
+Vector<MachSendRight> GPUCompositorIntegration::getRenderBuffers() const
+{
+    return m_backing->getRenderBuffers();
+}
+#endif
+
 }

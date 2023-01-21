@@ -30,11 +30,20 @@
 #include <wtf/RefCounted.h>
 #include <wtf/text/WTFString.h>
 
+#if PLATFORM(COCOA)
+#include <wtf/MachSendRight.h>
+#include <wtf/Vector.h>
+#endif
+
 namespace PAL::WebGPU {
 
 class CompositorIntegration : public RefCounted<CompositorIntegration> {
 public:
     virtual ~CompositorIntegration() = default;
+
+#if PLATFORM(COCOA)
+    virtual Vector<MachSendRight> getRenderBuffers() = 0;
+#endif
 
 protected:
     CompositorIntegration() = default;

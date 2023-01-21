@@ -69,7 +69,7 @@ public:
     {
         return GraphicsLayer::CompositingCoordinatesOrientation::TopDown;
     }
-    void setDisplayBuffer(WTF::MachSendRight&& displayBuffer)
+    void setDisplayBuffer(WTF::MachSendRight& displayBuffer)
     {
         if (!displayBuffer) {
             m_displayBuffer = { };
@@ -138,6 +138,8 @@ private:
         Vector<GPUTextureFormat> viewFormats;
         GPUPredefinedColorSpace colorSpace { GPUPredefinedColorSpace::SRGB };
         GPUCanvasCompositingAlphaMode compositingAlphaMode { GPUCanvasCompositingAlphaMode::Opaque };
+        Vector<MachSendRight> renderBuffers;
+        unsigned frameCount { 0 };
     };
     std::optional<Configuration> m_configuration;
 

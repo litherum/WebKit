@@ -33,6 +33,11 @@
 #include <wtf/Ref.h>
 #include <wtf/text/WTFString.h>
 
+#if PLATFORM(COCOA)
+#include <wtf/MachSendRight.h>
+#include <wtf/Vector.h>
+#endif
+
 namespace PAL::WebGPU {
 class CompositorIntegration;
 }
@@ -72,6 +77,10 @@ private:
     PAL::WebGPU::CompositorIntegration& backing() { return m_backing; }
 
     void didReceiveStreamMessage(IPC::StreamServerConnection&, IPC::Decoder&) final;
+
+#if PLATFORM(COCOA)
+    void getRenderBuffers(CompletionHandler<void(Vector<MachSendRight>&&)>&&);
+#endif
 
     Ref<PAL::WebGPU::CompositorIntegration> m_backing;
     WebGPU::ObjectHeap& m_objectHeap;

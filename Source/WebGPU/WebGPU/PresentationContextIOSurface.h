@@ -26,10 +26,13 @@
 #pragma once
 
 #import "PresentationContext.h"
+#import <Foundation/Foundation.h>
+#import <wtf/Vector.h>
 
 namespace WebGPU {
 
 class Device;
+class Texture;
 class TextureView;
 
 class PresentationContextIOSurface : public PresentationContext {
@@ -48,15 +51,15 @@ public:
     TextureView* getCurrentTextureView() override; // FIXME: This should return a TextureView&.
     Texture* getCurrentTexture() override; // FIXME: This should return a Texture&.
 
-    RetainPtr<IOSurfaceRef> nextDrawable();
-
     bool isPresentationContextIOSurface() const override { return true; }
 
 private:
     PresentationContextIOSurface(const WGPUSurfaceDescriptor&);
 
-    RetainPtr<IOSurfaceRef> m_displayBuffer;
-    RetainPtr<IOSurfaceRef> m_drawingBuffer;
+    CFArrayRef (^m_recreateIOSurfaces)(const WGPUSwapChainDescriptor*);
+    Vector<Ref<Texture>> m_renderBuffers;
+    Vector<Ref<TextureView>> m_renderBufferViews;
+    size_t m_currentIndex { 0 };
 };
 
 } // namespace WebGPU

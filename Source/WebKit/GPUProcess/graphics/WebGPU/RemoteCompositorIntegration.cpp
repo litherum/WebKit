@@ -51,6 +51,13 @@ void RemoteCompositorIntegration::stopListeningForIPC()
     m_streamConnection->stopReceivingMessages(Messages::RemoteCompositorIntegration::messageReceiverName(), m_identifier.toUInt64());
 }
 
+#if PLATFORM(COCOA)
+void RemoteCompositorIntegration::getRenderBuffers(CompletionHandler<void(Vector<MachSendRight>&&)>&& callback)
+{
+    callback(m_backing->getRenderBuffers());
+}
+#endif
+
 } // namespace WebKit
 
 #endif // ENABLE(GPU_PROCESS)

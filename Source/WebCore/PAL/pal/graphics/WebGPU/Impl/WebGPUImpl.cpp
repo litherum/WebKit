@@ -33,6 +33,7 @@
 #include "WebGPUDowncastConvertToBackingContext.h"
 #include "WebGPUSurfaceImpl.h"
 #include "WebGPUSurfaceDescriptor.h"
+#include <CoreFoundation/CoreFoundation.h>
 #include <WebGPU/WebGPUExt.h>
 #include <wtf/BlockPtr.h>
 
@@ -67,13 +68,20 @@ Ref<Surface> GPUImpl::createSurface(const SurfaceDescriptor& descriptor)
 {
     auto label = descriptor.label.utf8();
 
-    // FIXME: Do something with descriptor.compositorIntegration.
+    auto recreateIOSurfaces = makeBlockPtr([compositorIntegration = Ref { m_convertToBackingContext->convertToBacking(descriptor.compositorIntegration) }](const WGPUSwapChainDescriptor* swapChainDescriptor) {
+        auto iosurfaces = compositorIntegration->recreateIOSurfaces(*swapChainDescriptor);
+        CFMutableArrayRef result = CFArrayCreateMutable(kCFAllocatorDefault, iosurfaces.size(), &kCFTypeArrayCallBacks);
+        for (const auto& iosurface : iosurfaces)
+            CFArrayAppendValue(result, iosurface.get());
+        return static_cast<CFArrayRef>(result);
+    });
 
     WGPUSurfaceDescriptorCocoaCustomSurface cocoaSurface {
         {
             nullptr,
             static_cast<WGPUSType>(WGPUSTypeExtended_SurfaceDescriptorCocoaSurfaceBacking),
-        }
+        },
+        recreateIOSurfaces.get(),
     };
 
     WGPUSurfaceDescriptor backingDescriptor {

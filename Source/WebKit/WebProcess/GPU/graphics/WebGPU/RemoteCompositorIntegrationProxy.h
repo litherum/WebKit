@@ -72,6 +72,10 @@ private:
         return root().streamClientConnection().sendSync(WTFMove(message), backing(), defaultSendTimeout);
     }
 
+#if PLATFORM(COCOA)
+    Vector<MachSendRight> getRenderBuffers() override;
+#endif
+
     WebGPUIdentifier m_backing;
     Ref<ConvertToBackingContext> m_convertToBackingContext;
     Ref<RemoteGPUProxy> m_parent;
