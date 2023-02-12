@@ -7504,6 +7504,8 @@
 		1C2C21A727353D2C009ECA32 /* GPUDeviceLost.idl */ = {isa = PBXFileReference; lastKnownFileType = text; path = GPUDeviceLost.idl; sourceTree = "<group>"; };
 		1C3249101C6D6A3B007EDB32 /* FontVariantBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FontVariantBuilder.cpp; sourceTree = "<group>"; };
 		1C3969CF1B74211E002BCFA7 /* FontCacheCoreText.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FontCacheCoreText.cpp; sourceTree = "<group>"; };
+		1C436D112999889400C59A5E /* UnrealizedCoreTextFont.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnrealizedCoreTextFont.cpp; sourceTree = "<group>"; };
+		1C436D122999889400C59A5E /* UnrealizedCoreTextFont.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UnrealizedCoreTextFont.h; sourceTree = "<group>"; };
 		1C43DE6822AB4B8A001527D9 /* LocalCurrentTraitCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalCurrentTraitCollection.h; sourceTree = "<group>"; };
 		1C43DE6A22AB4B8A001527D9 /* LocalCurrentTraitCollection.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LocalCurrentTraitCollection.mm; sourceTree = "<group>"; };
 		1C4674FD26F4843600B61273 /* FontPalette.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FontPalette.h; sourceTree = "<group>"; };
@@ -30785,6 +30787,8 @@
 				E4E8B4EA216B79E500B8834D /* SystemFontDatabaseCoreText.h */,
 				526724F21CB2FDF60075974D /* TextTrackRepresentationCocoa.h */,
 				526724F11CB2FDF60075974D /* TextTrackRepresentationCocoa.mm */,
+				1C436D112999889400C59A5E /* UnrealizedCoreTextFont.cpp */,
+				1C436D122999889400C59A5E /* UnrealizedCoreTextFont.h */,
 				CDF994FF24C28136002EA062 /* VideoTrackPrivateWebM.cpp */,
 				CDF994FE24C28136002EA062 /* VideoTrackPrivateWebM.h */,
 				CD6FE5B724BCE645009FCDA4 /* VP9UtilitiesCocoa.h */,
