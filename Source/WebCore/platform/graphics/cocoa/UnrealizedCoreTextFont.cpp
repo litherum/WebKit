@@ -64,9 +64,13 @@ CGFloat UnrealizedCoreTextFont::getSize() const
 RetainPtr<CTFontRef> UnrealizedCoreTextFont::realize() const
 {
     return WTF::switchOn(m_baseFont, [this](const RetainPtr<CTFontRef>& font) {
+        if (!CFDictionaryGetCount(m_attributes.get()))
+            return font;
         auto modification = adoptCF(CTFontDescriptorCreateWithAttributes(m_attributes.get()));
         return adoptCF(CTFontCreateCopyWithAttributes(font.get(), getSize(), nullptr, modification.get()));
     }, [this](const RetainPtr<CTFontDescriptorRef>& fontDescriptor) {
+        if (!CFDictionaryGetCount(m_attributes.get()))
+            return adoptCF(CTFontCreateWithFontDescriptor(fontDescriptor.get(), getSize(), nullptr));
         auto updatedFontDescriptor = adoptCF(CTFontDescriptorCreateCopyWithAttributes(fontDescriptor.get(), m_attributes.get()));
         return adoptCF(CTFontCreateWithFontDescriptor(updatedFontDescriptor.get(), getSize(), nullptr));
     });

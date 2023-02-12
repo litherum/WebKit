@@ -37,11 +37,13 @@ public:
     UnrealizedCoreTextFont(RetainPtr<CTFontRef>&& baseFont)
         : m_baseFont(WTFMove(baseFont))
     {
+        ASSERT(baseFont);
     }
 
     UnrealizedCoreTextFont(RetainPtr<CTFontDescriptorRef>&& baseFont)
         : m_baseFont(WTFMove(baseFont))
     {
+        ASSERT(baseFont);
     }
 
     template <typename T>
@@ -50,7 +52,7 @@ public:
         functor(m_attributes.get());
     }
 
-    void setSize(CGSize size)
+    void setSize(CGFloat size)
     {
         CFDictionarySetValue(m_attributes.get(), kCTFontSizeAttribute, adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberCGFloatType, &size)).get());
     }
