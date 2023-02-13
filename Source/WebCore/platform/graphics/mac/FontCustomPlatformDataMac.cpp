@@ -51,7 +51,8 @@ FontPlatformData FontCustomPlatformData::fontPlatformData(const FontDescription&
     FontOrientation orientation = fontDescription.orientation();
     FontWidthVariant widthVariant = fontDescription.widthVariant();
 
-    auto font = preparePlatformFont(WTFMove(unrealizedFont), fontDescription, fontCreationContext);
+    unrealizedFont.modifyFromContext(fontDescription, fontCreationContext);
+    auto font = unrealizedFont.realize();
     ASSERT(font);
     FontPlatformData platformData(font.get(), size, bold, italic, orientation, widthVariant, fontDescription.textRenderingMode(), &creationData);
 

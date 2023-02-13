@@ -32,31 +32,37 @@
 
 namespace WebCore {
 
+class FontCreationContext;
+class FontDescription;
+
 class UnrealizedCoreTextFont {
 public:
     UnrealizedCoreTextFont(RetainPtr<CTFontRef>&& baseFont)
         : m_baseFont(WTFMove(baseFont))
     {
-        ASSERT(baseFont);
     }
 
     UnrealizedCoreTextFont(RetainPtr<CTFontDescriptorRef>&& baseFont)
         : m_baseFont(WTFMove(baseFont))
     {
-        ASSERT(baseFont);
     }
 
     template <typename T>
     void modify(T&& functor)
     {
-        functor(m_attributes.get());
+        if (static_cast<bool>(*this))
+            functor(m_attributes.get());
     }
 
     void setSize(CGFloat size)
     {
-        CFDictionarySetValue(m_attributes.get(), kCTFontSizeAttribute, adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberCGFloatType, &size)).get());
+        if (static_cast<bool>(*this))
+            CFDictionarySetValue(m_attributes.get(), kCTFontSizeAttribute, adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberCGFloatType, &size)).get());
     }
 
+    operator bool() const;
+
+    void modifyFromContext(const FontDescription& fontDescription, const FontCreationContext& fontCreationContext, bool applyWeightWidthSlopeVariations = true);
     RetainPtr<CTFontRef> realize() const;
 
 private:

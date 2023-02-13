@@ -50,34 +50,6 @@
 
 namespace WebCore {
 
-static inline void appendTrueTypeFeature(CFMutableArrayRef features, int type, int selector)
-{
-    auto typeNumber = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &type));
-    auto selectorNumber = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &selector));
-    CFTypeRef featureKeys[] = { kCTFontFeatureTypeIdentifierKey, kCTFontFeatureSelectorIdentifierKey };
-    CFTypeRef featureValues[] = { typeNumber.get(), selectorNumber.get() };
-    auto feature = adoptCF(CFDictionaryCreate(kCFAllocatorDefault, featureKeys, featureValues, std::size(featureKeys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
-    CFArrayAppendValue(features, feature.get());
-}
-
-static inline bool tagEquals(FontTag tag, const char comparison[4])
-{
-    return equalIgnoringASCIICase(tag.data(), comparison, 4);
-}
-
-static inline void appendOpenTypeFeature(CFMutableArrayRef features, const FontFeature& feature)
-{
-    auto featureKey = adoptCF(CFStringCreateWithBytes(kCFAllocatorDefault, reinterpret_cast<const UInt8*>(feature.tag().data()), feature.tag().size() * sizeof(FontTag::value_type), kCFStringEncodingASCII, false));
-    int rawFeatureValue = feature.value();
-    auto featureValue = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &rawFeatureValue));
-    CFTypeRef featureDictionaryKeys[] = { kCTFontOpenTypeFeatureTag, kCTFontOpenTypeFeatureValue };
-    CFTypeRef featureDictionaryValues[] = { featureKey.get(), featureValue.get() };
-    auto featureDictionary = adoptCF(CFDictionaryCreate(kCFAllocatorDefault, featureDictionaryKeys, featureDictionaryValues, std::size(featureDictionaryValues), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
-    CFArrayAppendValue(features, featureDictionary.get());
-}
-
-typedef HashMap<FontTag, float, FourCharacterTagHash, FourCharacterTagHashTraits> VariationsMap;
-
 static inline bool fontNameIsSystemFont(CFStringRef fontName)
 {
     return CFStringGetLength(fontName) > 0 && CFStringGetCharacterAtIndex(fontName, 0) == '.';
@@ -282,72 +254,6 @@ struct FontType {
     bool aatShaping { false };
 };
 
-static void addLightPalette(CFMutableDictionaryRef attributes)
-{
-    CFIndex light = kCTFontPaletteLight;
-    auto number = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberCFIndexType, &light));
-    CFDictionaryAddValue(attributes, kCTFontPaletteAttribute, number.get());
-}
-
-static void addDarkPalette(CFMutableDictionaryRef attributes)
-{
-    CFIndex dark = kCTFontPaletteDark;
-    auto number = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberCFIndexType, &dark));
-    CFDictionaryAddValue(attributes, kCTFontPaletteAttribute, number.get());
-}
-
-static void addAttributesForCustomFontPalettes(CFMutableDictionaryRef attributes, std::optional<FontPaletteIndex> basePalette, const Vector<FontPaletteValues::OverriddenColor>& overrideColors)
-{
-    if (basePalette) {
-        switch (basePalette->type) {
-        case FontPaletteIndex::Type::Light:
-            addLightPalette(attributes);
-            break;
-        case FontPaletteIndex::Type::Dark:
-            addDarkPalette(attributes);
-            break;
-        case FontPaletteIndex::Type::Integer: {
-            int64_t rawIndex = basePalette->integer; // There is no kCFNumberUIntType.
-            auto number = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt64Type, &rawIndex));
-            CFDictionaryAddValue(attributes, kCTFontPaletteAttribute, number.get());
-            break;
-        }
-        }
-    }
-
-    if (!overrideColors.isEmpty()) {
-        auto overrideDictionary = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
-        for (const auto& pair : overrideColors) {
-            const auto& color = pair.second;
-            int64_t rawIndex = pair.first; // There is no kCFNumberUIntType.
-            auto number = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt64Type, &rawIndex));
-            auto colorObject = cachedCGColor(color);
-            CFDictionarySetValue(overrideDictionary.get(), number.get(), colorObject.get());
-        }
-        if (CFDictionaryGetCount(overrideDictionary.get()))
-            CFDictionaryAddValue(attributes, kCTFontPaletteColorsAttribute, overrideDictionary.get());
-    }
-}
-
-static void addAttributesForFontPalettes(CFMutableDictionaryRef attributes, const FontPalette& fontPalette, const FontPaletteValues* fontPaletteValues)
-{
-    switch (fontPalette.type) {
-    case FontPalette::Type::Normal:
-        break;
-    case FontPalette::Type::Light:
-        addLightPalette(attributes);
-        break;
-    case FontPalette::Type::Dark:
-        addDarkPalette(attributes);
-        break;
-    case FontPalette::Type::Custom: {
-        if (fontPaletteValues)
-            addAttributesForCustomFontPalettes(attributes, fontPaletteValues->basePalette(), fontPaletteValues->overrideColors());
-        break;
-    }
-    }
-}
-
 static std::optional<bool>& overrideEnhanceTextLegibility()
 {
     static NeverDestroyed<std::optional<bool>> overrideEnhanceTextLegibility;
@@ -368,196 +274,6 @@ static bool& platformShouldEnhanceTextLegibility()
 static inline bool shouldEnhanceTextLegibility()
 {
     return overrideEnhanceTextLegibility().value_or(platformShouldEnhanceTextLegibility());
-}
-
-static RetainPtr<CTFontRef> preparePlatformFont(CTFontRef originalFont, const FontDescription& fontDescription, const FontCreationContext& fontCreationContext, bool applyWeightWidthSlopeVariations)
-{
-    if (!originalFont)
-        return originalFont;
-
-    FontType fontType { originalFont };
-
-    auto fontOpticalSizing = fontDescription.opticalSizing();
-
-    auto defaultValues = defaultVariationValues(originalFont, ShouldLocalizeAxisNames::No);
-
-    auto fontSelectionRequest = fontDescription.fontSelectionRequest();
-    auto fontStyleAxis = fontDescription.fontStyleAxis();
-
-    bool forceOpticalSizingOn = fontOpticalSizing == FontOpticalSizing::Enabled && fontType.variationType == FontType::VariationType::TrueTypeGX && defaultValues.contains({{'o', 'p', 's', 'z'}});
-    bool forceVariations = defaultValues.contains({{'w', 'g', 'h', 't'}}) || defaultValues.contains({{'w', 'd', 't', 'h'}}) || (fontStyleAxis == FontStyleAxis::ital && defaultValues.contains({{'i', 't', 'a', 'l'}})) || (fontStyleAxis == FontStyleAxis::slnt && defaultValues.contains({{'s', 'l', 'n', 't'}}));
-    const auto& variations = fontDescription.variationSettings();
-
-    const auto& features = fontDescription.featureSettings();
-    const auto& variantSettings = fontDescription.variantSettings();
-    auto textRenderingMode = fontDescription.textRenderingMode();
-    auto shouldDisableLigaturesForSpacing = fontDescription.shouldDisableLigaturesForSpacing();
-    bool dontNeedToApplyFontPalettes = fontDescription.fontPalette().type == FontPalette::Type::Normal;
-
-    // We might want to check fontType.trackingType == FontType::TrackingType::Manual here, but in order to maintain compatibility with the rest of the system, we don't.
-    bool noFontFeatureSettings = features.isEmpty();
-    bool noFontVariationSettings = !forceVariations && variations.isEmpty();
-    bool textRenderingModeIsAuto = textRenderingMode == TextRenderingMode::AutoTextRendering;
-    bool variantSettingsIsNormal = variantSettings.isAllNormal();
-    bool dontNeedToApplyOpticalSizing = fontOpticalSizing == FontOpticalSizing::Enabled && !forceOpticalSizingOn;
-    bool fontFaceDoesntSpecifyFeatures = !fontCreationContext.fontFaceFeatures() || fontCreationContext.fontFaceFeatures()->isEmpty();
-    if (noFontFeatureSettings && noFontVariationSettings && textRenderingModeIsAuto && variantSettingsIsNormal && dontNeedToApplyOpticalSizing && fontFaceDoesntSpecifyFeatures && !shouldDisableLigaturesForSpacing && dontNeedToApplyFontPalettes)
-        return originalFont;
-
-    // This algorithm is described at https://drafts.csswg.org/css-fonts-4/#feature-variation-precedence
-    FeaturesMap featuresToBeApplied;
-    VariationsMap variationsToBeApplied;
-
-    bool needsConversion = fontType.variationType == FontType::VariationType::TrueTypeGX;
-
-    auto applyVariation = [&](const FontTag& tag, float value) {
-        variationsToBeApplied.set(tag, value);
-    };
-
-    auto applyFeature = [&](const FontTag& tag, int value) {
-        // AAT doesn't differentiate between liga and clig. We need to make sure they always agree.
-        featuresToBeApplied.set(tag, value);
-        if (fontType.aatShaping) {
-            if (tag == fontFeatureTag("liga"))
-                featuresToBeApplied.set(fontFeatureTag("clig"), value);
-            else if (tag == fontFeatureTag("clig"))
-                featuresToBeApplied.set(fontFeatureTag("liga"), value);
-        }
-    };
-
-    // Step 1: CoreText handles default features (such as required ligatures).
-
-    // Step 2: font-weight, font-stretch, and font-style
-    // The system font is somewhat magical. Don't mess with its variations.
-    if (applyWeightWidthSlopeVariations
-#if USE(NON_VARIABLE_SYSTEM_FONT)
-        && !fontIsSystemFont(originalFont)
-#endif
-    ) {
-        float weight = fontSelectionRequest.weight;
-        float width = fontSelectionRequest.width;
-        float slope = fontSelectionRequest.slope.value_or(normalItalicValue());
-        if (auto weightValue = fontCreationContext.fontFaceCapabilities().weight)
-            weight = std::max(std::min(weight, static_cast<float>(weightValue->maximum)), static_cast<float>(weightValue->minimum));
-        if (auto widthValue = fontCreationContext.fontFaceCapabilities().width)
-            width = std::max(std::min(width, static_cast<float>(widthValue->maximum)), static_cast<float>(widthValue->minimum));
-        if (auto slopeValue = fontCreationContext.fontFaceCapabilities().weight)
-            slope = std::max(std::min(slope, static_cast<float>(slopeValue->maximum)), static_cast<float>(slopeValue->minimum));
-        if (shouldEnhanceTextLegibility() && fontIsSystemFont(originalFont)) {
-            auto ctWeight = denormalizeCTWeight(weight);
-            ctWeight = CTFontGetAccessibilityBoldWeightOfWeight(ctWeight);
-            weight = normalizeCTWeight(ctWeight);
-        }
-        if (needsConversion) {
-            weight = denormalizeGXWeight(weight);
-            width = denormalizeVariationWidth(width);
-            slope = denormalizeSlope(slope);
-        }
-        applyVariation({{'w', 'g', 'h', 't'}}, weight);
-        applyVariation({{'w', 'd', 't', 'h'}}, width);
-        if (fontStyleAxis == FontStyleAxis::ital)
-            applyVariation({{'i', 't', 'a', 'l'}}, 1);
-        else
-            applyVariation({{'s', 'l', 'n', 't'}}, slope);
-    }
-
-    // FIXME: Implement Step 5: font-named-instance
-
-    // FIXME: Implement Step 6: the font-variation-settings descriptor inside @font-face
-
-    // Step 7: Consult with font-feature-settings inside @font-face
-    if (fontCreationContext.fontFaceFeatures()) {
-        for (auto& fontFaceFeature : *fontCreationContext.fontFaceFeatures())
-            applyFeature(fontFaceFeature.tag(), fontFaceFeature.value());
-    }
-
-    // FIXME: Move font-optical-sizing handling here. It should be step 9.
-
-    // Step 10: Font-variant
-    for (auto& newFeature : computeFeatureSettingsFromVariants(variantSettings, fontCreationContext.fontFeatureValues()))
-        applyFeature(newFeature.key, newFeature.value);
-
-    // Step 11: Other properties
-    if (textRenderingMode == TextRenderingMode::OptimizeSpeed) {
-        applyFeature(fontFeatureTag("liga"), 0);
-        applyFeature(fontFeatureTag("clig"), 0);
-        applyFeature(fontFeatureTag("dlig"), 0);
-        applyFeature(fontFeatureTag("hlig"), 0);
-        applyFeature(fontFeatureTag("calt"), 0);
-    }
-    if (shouldDisableLigaturesForSpacing) {
-        applyFeature(fontFeatureTag("liga"), 0);
-        applyFeature(fontFeatureTag("clig"), 0);
-        applyFeature(fontFeatureTag("dlig"), 0);
-        applyFeature(fontFeatureTag("hlig"), 0);
-        // Core Text doesn't disable calt when letter-spacing is applied, so we won't either.
-    }
-
-    // Step 13: Font-feature-settings
-    for (auto& newFeature : features)
-        applyFeature(newFeature.tag(), newFeature.value());
-
-    // Step 12: font-variation-settings
-    for (auto& newVariation : variations)
-        applyVariation(newVariation.tag(), newVariation.value());
-
-    auto attributes = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
-    if (!featuresToBeApplied.isEmpty()) {
-        auto featureArray = adoptCF(CFArrayCreateMutable(kCFAllocatorDefault, features.size(), &kCFTypeArrayCallBacks));
-        for (auto& p : featuresToBeApplied) {
-            auto feature = FontFeature(p.key, p.value);
-
-            // CoreText does not map hlig and hist for TrueType fonts.
-            if (fontType.aatShaping && (tagEquals(feature.tag(), "hlig") || tagEquals(feature.tag(), "hist"))) {
-                if (feature.enabled())
-                    appendTrueTypeFeature(featureArray.get(), kLigaturesType, kHistoricalLigaturesOnSelector);
-                else if (tagEquals(feature.tag(), "hlig"))
-                    appendTrueTypeFeature(featureArray.get(), kLigaturesType, kHistoricalLigaturesOffSelector);
-                continue;
-            }
-
-            appendOpenTypeFeature(featureArray.get(), feature);
-        }
-        CFDictionaryAddValue(attributes.get(), kCTFontFeatureSettingsAttribute, featureArray.get());
-    }
-    if (!variationsToBeApplied.isEmpty()) {
-        auto variationDictionary = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
-        for (auto& p : variationsToBeApplied) {
-            long long bitwiseTag = p.key[0] << 24 | p.key[1] << 16 | p.key[2] << 8 | p.key[3];
-            auto tagNumber = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberLongLongType, &bitwiseTag));
-            auto valueNumber = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberFloatType, &p.value));
-            CFDictionarySetValue(variationDictionary.get(), tagNumber.get(), valueNumber.get());
-        }
-        CFDictionaryAddValue(attributes.get(), kCTFontVariationAttribute, variationDictionary.get());
-    }
-
-    // Step 9: font-optical-sizing
-    // FIXME: Apply this before font-variation-settings
-    if (forceOpticalSizingOn || textRenderingMode == TextRenderingMode::OptimizeLegibility) {
-#if HAVE(CORETEXT_AUTO_OPTICAL_SIZING)
-        CFDictionaryAddValue(attributes.get(), kCTFontOpticalSizeAttribute, CFSTR("auto"));
-#else
-        auto size = CTFontGetSize(originalFont);
-        auto sizeNumber = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberCGFloatType, &size));
-        CFDictionaryAddValue(attributes.get(), kCTFontOpticalSizeAttribute, sizeNumber.get());
-#endif
-    } else if (fontOpticalSizing == FontOpticalSizing::Disabled) {
-#if HAVE(CORETEXT_AUTO_OPTICAL_SIZING)
-        CFDictionaryAddValue(attributes.get(), kCTFontOpticalSizeAttribute, CFSTR("none"));
-#endif
-    }
-
-    addAttributesForFontPalettes(attributes.get(), fontDescription.fontPalette(), fontCreationContext.fontPaletteValues());
-
-    addAttributesForInstalledFonts(attributes.get(), fontDescription.shouldAllowUserInstalledFonts());
-
-    auto descriptor = adoptCF(CTFontDescriptorCreateWithAttributes(attributes.get()));
-    return adoptCF(CTFontCreateCopyWithAttributes(originalFont, CTFontGetSize(originalFont), nullptr, descriptor.get()));
-}
-
-RetainPtr<CTFontRef> preparePlatformFont(UnrealizedCoreTextFont&& originalFont, const FontDescription& fontDescription, const FontCreationContext& fontCreationContext, bool applyWeightWidthSlopeVariations)
-{
-    return preparePlatformFont(originalFont.realize().get(), fontDescription, fontCreationContext, applyWeightWidthSlopeVariations);
 }
 
 RefPtr<Font> FontCache::similarFont(const FontDescription& description, const String& family)
@@ -1049,12 +765,14 @@ static RetainPtr<CTFontRef> fontWithFamily(FontDatabase& fontDatabase, const Ato
         unrealizedFont->modify([allowUserInstalledFonts = fontDescription.shouldAllowUserInstalledFonts()](CFMutableDictionaryRef attributes) {
             addAttributesForInstalledFonts(attributes, allowUserInstalledFonts);
         });
-        return preparePlatformFont(WTFMove(*unrealizedFont), fontDescription, fontCreationContext, true);
+        unrealizedFont->modifyFromContext(fontDescription, fontCreationContext);
+        return unrealizedFont->realize();
     }
     auto fontLookup = platformFontLookupWithFamily(fontDatabase, family, fontDescription.fontSelectionRequest());
     UnrealizedCoreTextFont unrealizedFont = { WTFMove(fontLookup.result) };
     unrealizedFont.setSize(size);
-    return preparePlatformFont(WTFMove(unrealizedFont), fontDescription, fontCreationContext, !fontLookup.createdFromPostScriptName);
+    unrealizedFont.modifyFromContext(fontDescription, fontCreationContext, !fontLookup.createdFromPostScriptName);
+    return unrealizedFont.realize();
 }
 
 #if PLATFORM(MAC)
@@ -1193,7 +911,9 @@ RefPtr<Font> FontCache::systemFallbackForCharacters(const FontDescription& descr
         m_fontNamesRequiringSystemFallbackForPrewarming.add(fullName);
 
     auto result = lookupFallbackFont(platformData.font(), description.weight(), description.computedLocale(), description.shouldAllowUserInstalledFonts(), characters, length);
-    result = preparePlatformFont(UnrealizedCoreTextFont { WTFMove(result) }, description, { });
+    UnrealizedCoreTextFont unrealizedFont { WTFMove(result) };
+    unrealizedFont.modifyFromContext(description, { });
+    result = unrealizedFont.realize();
 
     if (!result)
         return lastResortFallbackFont(description);
