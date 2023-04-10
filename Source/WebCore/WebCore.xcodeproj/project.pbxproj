@@ -7600,6 +7600,23 @@
 		1C2C21A527353D1F009ECA32 /* GPUDeviceError.idl */ = {isa = PBXFileReference; lastKnownFileType = text; path = GPUDeviceError.idl; sourceTree = "<group>"; };
 		1C2C21A727353D2C009ECA32 /* GPUDeviceLost.idl */ = {isa = PBXFileReference; lastKnownFileType = text; path = GPUDeviceLost.idl; sourceTree = "<group>"; };
 		1C3249101C6D6A3B007EDB32 /* FontVariantBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FontVariantBuilder.cpp; sourceTree = "<group>"; };
+		1C38F27F29E3B27C008795CC /* BarcodeDetectorInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BarcodeDetectorInterface.h; sourceTree = "<group>"; };
+		1C38F28029E3B28A008795CC /* BarcodeDetectorOptionsInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BarcodeDetectorOptionsInterface.h; sourceTree = "<group>"; };
+		1C38F28129E3B2A2008795CC /* BarcodeFormatInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BarcodeFormatInterface.h; sourceTree = "<group>"; };
+		1C38F28229E3B2AD008795CC /* DetectedBarcodeInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetectedBarcodeInterface.h; sourceTree = "<group>"; };
+		1C38F28329E3B2BC008795CC /* DetectedFaceInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetectedFaceInterface.h; sourceTree = "<group>"; };
+		1C38F28429E3B2C5008795CC /* DetectedTextInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetectedTextInterface.h; sourceTree = "<group>"; };
+		1C38F28529E3B2D0008795CC /* FaceDetectorInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FaceDetectorInterface.h; sourceTree = "<group>"; };
+		1C38F28629E3B2DB008795CC /* FaceDetectorOptionsInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FaceDetectorOptionsInterface.h; sourceTree = "<group>"; };
+		1C38F28729E3B2E4008795CC /* LandmarkInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LandmarkInterface.h; sourceTree = "<group>"; };
+		1C38F28829E3B2EC008795CC /* LandmarkTypeInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LandmarkTypeInterface.h; sourceTree = "<group>"; };
+		1C38F28929E3B305008795CC /* TextDetectorInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TextDetectorInterface.h; sourceTree = "<group>"; };
+		1C38F28C29E3B497008795CC /* BarcodeDetectorImplementation.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = BarcodeDetectorImplementation.mm; sourceTree = "<group>"; };
+		1C38F28D29E3B497008795CC /* BarcodeDetectorImplementation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BarcodeDetectorImplementation.h; sourceTree = "<group>"; };
+		1C38F28E29E3B4D7008795CC /* FaceDetectorImplementation.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = FaceDetectorImplementation.mm; sourceTree = "<group>"; };
+		1C38F28F29E3B4D7008795CC /* FaceDetectorImplementation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FaceDetectorImplementation.h; sourceTree = "<group>"; };
+		1C38F29029E3B4E1008795CC /* TextDetectorImplementation.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = TextDetectorImplementation.mm; sourceTree = "<group>"; };
+		1C38F29129E3B4E1008795CC /* TextDetectorImplementation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TextDetectorImplementation.h; sourceTree = "<group>"; };
 		1C3969CF1B74211E002BCFA7 /* FontCacheCoreText.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FontCacheCoreText.cpp; sourceTree = "<group>"; };
 		1C436D112999889400C59A5E /* UnrealizedCoreTextFont.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnrealizedCoreTextFont.cpp; sourceTree = "<group>"; };
 		1C436D122999889400C59A5E /* UnrealizedCoreTextFont.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UnrealizedCoreTextFont.h; sourceTree = "<group>"; };
@@ -21642,6 +21659,45 @@
 			path = WebGPU;
 			sourceTree = "<group>";
 		};
+		1C38F27E29E3B234008795CC /* Interfaces */ = {
+			isa = PBXGroup;
+			children = (
+				1C38F27F29E3B27C008795CC /* BarcodeDetectorInterface.h */,
+				1C38F28029E3B28A008795CC /* BarcodeDetectorOptionsInterface.h */,
+				1C38F28129E3B2A2008795CC /* BarcodeFormatInterface.h */,
+				1C38F28229E3B2AD008795CC /* DetectedBarcodeInterface.h */,
+				1C38F28329E3B2BC008795CC /* DetectedFaceInterface.h */,
+				1C38F28429E3B2C5008795CC /* DetectedTextInterface.h */,
+				1C38F28529E3B2D0008795CC /* FaceDetectorInterface.h */,
+				1C38F28629E3B2DB008795CC /* FaceDetectorOptionsInterface.h */,
+				1C38F28729E3B2E4008795CC /* LandmarkInterface.h */,
+				1C38F28829E3B2EC008795CC /* LandmarkTypeInterface.h */,
+				1C38F28929E3B305008795CC /* TextDetectorInterface.h */,
+			);
+			path = Interfaces;
+			sourceTree = "<group>";
+		};
+		1C38F28A29E3B42A008795CC /* Implementation */ = {
+			isa = PBXGroup;
+			children = (
+				1C38F28B29E3B440008795CC /* Cocoa */,
+			);
+			path = Implementation;
+			sourceTree = "<group>";
+		};
+		1C38F28B29E3B440008795CC /* Cocoa */ = {
+			isa = PBXGroup;
+			children = (
+				1C38F28D29E3B497008795CC /* BarcodeDetectorImplementation.h */,
+				1C38F28C29E3B497008795CC /* BarcodeDetectorImplementation.mm */,
+				1C38F28F29E3B4D7008795CC /* FaceDetectorImplementation.h */,
+				1C38F28E29E3B4D7008795CC /* FaceDetectorImplementation.mm */,
+				1C38F29129E3B4E1008795CC /* TextDetectorImplementation.h */,
+				1C38F29029E3B4E1008795CC /* TextDetectorImplementation.mm */,
+			);
+			path = Cocoa;
+			sourceTree = "<group>";
+		};
 		1C5B71702905D07D00973EF5 /* image-decoders */ = {
 			isa = PBXGroup;
 			children = (
@@ -21810,6 +21866,8 @@
 		1CDDA49329E1231C00DC5FB1 /* ShapeDetection */ = {
 			isa = PBXGroup;
 			children = (
+				1C38F28A29E3B42A008795CC /* Implementation */,
+				1C38F27E29E3B234008795CC /* Interfaces */,
 				1CDDA4A529E126BF00DC5FB1 /* BarcodeDetector.cpp */,
 				1CDDA4A629E126BF00DC5FB1 /* BarcodeDetector.h */,
 				1CDDA49929E1239B00DC5FB1 /* BarcodeDetector.idl */,
