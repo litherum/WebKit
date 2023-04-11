@@ -130,6 +130,10 @@ set(WebKit_MESSAGES_IN_FILES
     GPUProcess/GPUConnectionToWebProcess
     GPUProcess/GPUProcess
 
+    GPUProcess/ShapeDetection/RemoteBarcodeDetector
+    GPUProcess/ShapeDetection/RemoteFaceDetector
+    GPUProcess/ShapeDetection/RemoteTextDetector
+
     GPUProcess/graphics/RemoteDisplayListRecorder
     GPUProcess/graphics/RemoteGraphicsContextGL
     GPUProcess/graphics/RemoteRenderingBackend

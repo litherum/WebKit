@@ -36,3 +36,17 @@ enum class LandmarkType : uint8_t {
 };
 
 } // namespace WebCore::ShapeDetection
+
+namespace WTF {
+
+template<> struct EnumTraits<WebCore::ShapeDetection::LandmarkType> {
+    using values = EnumValues<
+        WebCore::ShapeDetection::LandmarkType,
+        WebCore::ShapeDetection::LandmarkType::Mouth,
+        WebCore::ShapeDetection::LandmarkType::Eye,
+        WebCore::ShapeDetection::LandmarkType::Nose
+    >;
+};
+
+} // namespace WTF
+

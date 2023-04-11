@@ -59,6 +59,7 @@
 #include <wtf/MonotonicTime.h>
 #include <wtf/Seconds.h>
 #include <wtf/URL.h>
+#include <wtf/Vector.h>
 
 #if ENABLE(WIRELESS_PLAYBACK_TARGET)
 #include "MediaPlaybackTargetContext.h"
@@ -91,6 +92,15 @@ class HTMLModelElement;
 OBJC_CLASS NSResponder;
 
 namespace WebCore {
+
+namespace ShapeDetection {
+class BarcodeDetector;
+struct BarcodeDetectorOptions;
+enum class BarcodeFormat : uint8_t;
+class FaceDetector;
+struct FaceDetectorOptions;
+class TextDetector;
+}
 
 class AccessibilityObject;
 class ColorChooser;
@@ -369,6 +379,11 @@ public:
 #endif
 
     virtual RefPtr<PAL::WebGPU::GPU> createGPUForWebGPU() const { return nullptr; }
+
+    virtual RefPtr<ShapeDetection::BarcodeDetector> createBarcodeDetector(const ShapeDetection::BarcodeDetectorOptions&) const { return nullptr; }
+    virtual void getBarcodeDetectorSupportedFormats(CompletionHandler<void(Vector<ShapeDetection::BarcodeFormat>&&)>&& completionHandler) const { completionHandler({ }); }
+    virtual RefPtr<ShapeDetection::FaceDetector> createFaceDetector(const ShapeDetection::FaceDetectorOptions&) const { return nullptr; }
+    virtual RefPtr<ShapeDetection::TextDetector> createTextDetector() const { return nullptr; }
 
     // Pass nullptr as the GraphicsLayer to detatch the root layer.
     virtual void attachRootGraphicsLayer(LocalFrame&, GraphicsLayer*) = 0;

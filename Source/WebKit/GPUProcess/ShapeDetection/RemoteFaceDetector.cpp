@@ -23,32 +23,29 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://wicg.github.io/shape-detection-api/text.html#textdetector
+#include "config.h"
+#include "RemoteFaceDetector.h"
 
-// FIXME: https://bugs.webkit.org/show_bug.cgi?id=232548 This shouldn't need to be duplicated here.
-typedef (HTMLImageElement
-#if defined(ENABLE_VIDEO) && ENABLE_VIDEO
-    or HTMLVideoElement
-#endif
-    or HTMLCanvasElement
-    or ImageBitmap
-#if defined(ENABLE_OFFSCREEN_CANVAS) && ENABLE_OFFSCREEN_CANVAS
-    or OffscreenCanvas
-#endif
-    or CSSStyleImageValue
-#if defined(ENABLE_WEB_CODECS) && ENABLE_WEB_CODECS
-    or WebCodecsVideoFrame
-#endif
-) CanvasImageSource;
+#if ENABLE(GPU_PROCESS)
 
-typedef (CanvasImageSource or Blob or ImageData) ImageBitmapSource;
+#include <WebCore/FaceDetectorInterface.h>
 
-[
-    EnabledBySetting=ShapeDetection,
-    Exposed=(Window,Worker),
-    SecureContext
-]
-interface TextDetector {
-    [CallWith=CurrentScriptExecutionContext] constructor();
-    Promise<sequence<DetectedText>> detect(ImageBitmapSource image);
-};
+namespace WebKit {
+
+RemoteFaceDetector::RemoteFaceDetector(Ref<WebCore::ShapeDetection::FaceDetector>&& faceDetector, ShapeDetection::ObjectHeap& objectHeap, ShapeDetectionIdentifier identifier)
+    : m_backing(WTFMove(faceDetector))
+    , m_objectHeap(objectHeap)
+    , m_identifier(identifier)
+{
+}
+
+RemoteFaceDetector::~RemoteFaceDetector() = default;
+
+void RemoteFaceDetector::detect(CompletionHandler<void(Vector<WebCore::ShapeDetection::DetectedFace>&&)>&& completionHandler)
+{
+    m_backing->detect(WTFMove(completionHandler));
+}
+
+} // namespace WebKit
+
+#endif // ENABLE(GPU_PROCESS)
