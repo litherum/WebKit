@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -650,6 +650,17 @@
 		1C7A6EB526F5D8F50096D8C7 /* FontPalette.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C4674FD26F4843600B61273 /* FontPalette.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1C81B95A0E97330800266E07 /* InspectorController.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C81B9560E97330800266E07 /* InspectorController.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1C81B95C0E97330800266E07 /* InspectorClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C81B9580E97330800266E07 /* InspectorClient.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		1C9F4C1429E529660015819E /* DetectedFaceInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C38F28329E3B2BC008795CC /* DetectedFaceInterface.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		1C9F4C1529E529660015819E /* BarcodeDetectorInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C38F27F29E3B27C008795CC /* BarcodeDetectorInterface.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		1C9F4C1629E529660015819E /* BarcodeDetectorOptionsInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C38F28029E3B28A008795CC /* BarcodeDetectorOptionsInterface.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		1C9F4C1729E529660015819E /* DetectedBarcodeInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C38F28229E3B2AD008795CC /* DetectedBarcodeInterface.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		1C9F4C1829E529660015819E /* LandmarkInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C38F28729E3B2E4008795CC /* LandmarkInterface.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		1C9F4C1929E529660015819E /* LandmarkTypeInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C38F28829E3B2EC008795CC /* LandmarkTypeInterface.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		1C9F4C1A29E529660015819E /* BarcodeFormatInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C38F28129E3B2A2008795CC /* BarcodeFormatInterface.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		1C9F4C1B29E529660015819E /* FaceDetectorInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C38F28529E3B2D0008795CC /* FaceDetectorInterface.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		1C9F4C1C29E529660015819E /* TextDetectorInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C38F28929E3B305008795CC /* TextDetectorInterface.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		1C9F4C1D29E529660015819E /* FaceDetectorOptionsInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C38F28629E3B2DB008795CC /* FaceDetectorOptionsInterface.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		1C9F4C1E29E529660015819E /* DetectedTextInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C38F28429E3B2C5008795CC /* DetectedTextInterface.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1CAF34810A6C405200ABE06E /* WebScriptObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CAF347E0A6C405200ABE06E /* WebScriptObject.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1CAF34820A6C405200ABE06E /* WebScriptObject.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1CAF347F0A6C405200ABE06E /* WebScriptObject.mm */; };
 		1CAF34830A6C405200ABE06E /* WebScriptObjectPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CAF34800A6C405200ABE06E /* WebScriptObjectPrivate.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -664,6 +675,9 @@
 		1CEAA53226F336FC00868507 /* CSSFontPaletteValuesOverrideColorsValue.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CEAA53126F331C100868507 /* CSSFontPaletteValuesOverrideColorsValue.h */; };
 		1CFAE3230A6D6A3F0032593D /* libobjc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CFAE3220A6D6A3F0032593D /* libobjc.dylib */; };
 		1CFD5D7E284DBE7F00089667 /* SystemFontDatabase.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C4C77DF284DA83900BD0936 /* SystemFontDatabase.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		1CFDE7EE29E79BA8006A2292 /* FaceDetectorImplementation.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C38F28F29E3B4D7008795CC /* FaceDetectorImplementation.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		1CFDE7EF29E79BA8006A2292 /* TextDetectorImplementation.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C38F29129E3B4E1008795CC /* TextDetectorImplementation.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		1CFDE7F029E79BA8006A2292 /* BarcodeDetectorImplementation.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C38F28D29E3B497008795CC /* BarcodeDetectorImplementation.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1D0026A42374D62400CA6CDF /* JSPictureInPictureWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 1D0026A22374D62300CA6CDF /* JSPictureInPictureWindow.h */; };
 		1D2C82B7236A3F6A0055D6C5 /* PictureInPictureSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = 1D2C82B6236A3F6A0055D6C5 /* PictureInPictureSupport.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1D2F8E03234474EF00993B68 /* DocumentPictureInPicture.h in Headers */ = {isa = PBXBuildFile; fileRef = 1DEF06DD233D2E1C00EE228D /* DocumentPictureInPicture.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -36031,6 +36045,10 @@
 				417BA338299564E6007AEAB4 /* BackgroundFetchUIOptions.h in Headers */,
 				E444B0A928C8B19A00CA560E /* BackgroundPainter.h in Headers */,
 				512B678E294B88C8000C0760 /* BadgeClient.h in Headers */,
+				1CFDE7F029E79BA8006A2292 /* BarcodeDetectorImplementation.h in Headers */,
+				1C9F4C1529E529660015819E /* BarcodeDetectorInterface.h in Headers */,
+				1C9F4C1629E529660015819E /* BarcodeDetectorOptionsInterface.h in Headers */,
+				1C9F4C1A29E529660015819E /* BarcodeFormatInterface.h in Headers */,
 				BC124EE80C2641CD009E2349 /* BarProp.h in Headers */,
 				460BB6161D0A1BF000221812 /* Base64Utilities.h in Headers */,
 				83198FBF24A160DD00420B05 /* BaseAudioContext.h in Headers */,
@@ -36702,6 +36720,9 @@
 				BC2CCA102655DDB200B8C035 /* DestinationColorSpace.h in Headers */,
 				411223C52603567D00B0A0B6 /* DetachedRTCDataChannel.h in Headers */,
 				A7C9ABF91357A3BF00F5503F /* DetailsMarkerControl.h in Headers */,
+				1C9F4C1729E529660015819E /* DetectedBarcodeInterface.h in Headers */,
+				1C9F4C1429E529660015819E /* DetectedFaceInterface.h in Headers */,
+				1C9F4C1E29E529660015819E /* DetectedTextInterface.h in Headers */,
 				A1ED778D1BE3294000DC1791 /* Device.h in Headers */,
 				CCC2B51415F613060048CDD6 /* DeviceClient.h in Headers */,
 				CCC2B51615F613060048CDD6 /* DeviceController.h in Headers */,
@@ -36951,6 +36972,9 @@
 				8A8AFFF0283BE23E005221FE /* EXTTextureCompressionRGTC.h in Headers */,
 				7728694F14F8882500F484DC /* EXTTextureFilterAnisotropic.h in Headers */,
 				8A054533283CF17F00F498E7 /* EXTTextureNorm16.h in Headers */,
+				1CFDE7EE29E79BA8006A2292 /* FaceDetectorImplementation.h in Headers */,
+				1C9F4C1B29E529660015819E /* FaceDetectorInterface.h in Headers */,
+				1C9F4C1D29E529660015819E /* FaceDetectorOptionsInterface.h in Headers */,
 				41A0829C22935F3D008426E0 /* FeaturePolicy.h in Headers */,
 				A75E8B890E1DE2D6007F2481 /* FEBlend.h in Headers */,
 				A75E8B8B0E1DE2D6007F2481 /* FEColorMatrix.h in Headers */,
@@ -38547,6 +38571,8 @@
 				BC5EBA110E823E4700B25965 /* KeyframeList.h in Headers */,
 				E15FF7D518C9553800FE4C87 /* KeypressCommand.h in Headers */,
 				A456FA2711AD4A830020B420 /* LabelsNodeList.h in Headers */,
+				1C9F4C1829E529660015819E /* LandmarkInterface.h in Headers */,
+				1C9F4C1929E529660015819E /* LandmarkTypeInterface.h in Headers */,
 				419BD1B828E599FE0089D7B7 /* LatencyMode.h in Headers */,
 				0FEC120C22BF2CD2004E9D35 /* LayerAncestorClippingStack.h in Headers */,
 				580371641A66F1D300BAF519 /* LayerFragment.h in Headers */,
@@ -40337,6 +40363,8 @@
 				142B97CA13138943008BEF4B /* TextControlInnerElements.h in Headers */,
 				582DE3251C30C85400BE02A8 /* TextDecorationPainter.h in Headers */,
 				1C73A71521857587004CCEA5 /* TextDecorationThickness.h in Headers */,
+				1CFDE7EF29E79BA8006A2292 /* TextDetectorImplementation.h in Headers */,
+				1C9F4C1C29E529660015819E /* TextDetectorInterface.h in Headers */,
 				BC4A533B256064E10028C592 /* TextDirection.h in Headers */,
 				BC4A53252560555F0028C592 /* TextDirectionSubmenuInclusionBehavior.h in Headers */,
 				97BC84B412371180000C6161 /* TextDocument.h in Headers */,

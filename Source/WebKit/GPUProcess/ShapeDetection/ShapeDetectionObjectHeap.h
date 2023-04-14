@@ -23,32 +23,61 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://wicg.github.io/shape-detection-api/text.html#textdetector
+#pragma once
 
-// FIXME: https://bugs.webkit.org/show_bug.cgi?id=232548 This shouldn't need to be duplicated here.
-typedef (HTMLImageElement
-#if defined(ENABLE_VIDEO) && ENABLE_VIDEO
-    or HTMLVideoElement
-#endif
-    or HTMLCanvasElement
-    or ImageBitmap
-#if defined(ENABLE_OFFSCREEN_CANVAS) && ENABLE_OFFSCREEN_CANVAS
-    or OffscreenCanvas
-#endif
-    or CSSStyleImageValue
-#if defined(ENABLE_WEB_CODECS) && ENABLE_WEB_CODECS
-    or WebCodecsVideoFrame
-#endif
-) CanvasImageSource;
+#if ENABLE(GPU_PROCESS)
 
-typedef (CanvasImageSource or Blob or ImageData) ImageBitmapSource;
+#include "ScopedActiveMessageReceiveQueue.h"
+#include "ShapeDetectionIdentifier.h"
+#include <functional>
+#include <variant>
+#include <wtf/HashMap.h>
+#include <wtf/Ref.h>
 
-[
-    EnabledBySetting=ShapeDetection,
-    Exposed=(Window,Worker),
-    SecureContext
-]
-interface TextDetector {
-    [CallWith=CurrentScriptExecutionContext] constructor();
-    Promise<sequence<DetectedText>> detect(ImageBitmapSource image);
+namespace WebCore::ShapeDetection {
+class BarcodeDetector;
+class FaceDetector;
+class TextDetector;
+}
+
+namespace WebKit {
+class RemoteBarcodeDetector;
+class RemoteFaceDetector;
+class RemoteTextDetector;
+}
+
+namespace WebKit::ShapeDetection {
+
+class ObjectHeap final : public RefCounted<ObjectHeap> {
+    WTF_MAKE_FAST_ALLOCATED;
+public:
+    static Ref<ObjectHeap> create()
+    {
+        return adoptRef(*new ObjectHeap);
+    }
+
+    ~ObjectHeap();
+
+    void addObject(ShapeDetectionIdentifier, RemoteBarcodeDetector&);
+    void addObject(ShapeDetectionIdentifier, RemoteFaceDetector&);
+    void addObject(ShapeDetectionIdentifier, RemoteTextDetector&);
+
+    void removeObject(ShapeDetectionIdentifier);
+
+    void clear();
+
+private:
+    ObjectHeap();
+
+    using Object = std::variant<
+        std::monostate,
+        Ref<RemoteBarcodeDetector>,
+        Ref<RemoteFaceDetector>,
+        Ref<RemoteTextDetector>
+    >;
+    HashMap<ShapeDetectionIdentifier, Object> m_objects;
 };
+
+} // namespace WebKit::ShapeDetection
+
+#endif // ENABLE(GPU_PROCESS)

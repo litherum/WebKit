@@ -23,32 +23,50 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://wicg.github.io/shape-detection-api/text.html#textdetector
+#include "config.h"
+#include "ShapeDetectionObjectHeap.h"
 
-// FIXME: https://bugs.webkit.org/show_bug.cgi?id=232548 This shouldn't need to be duplicated here.
-typedef (HTMLImageElement
-#if defined(ENABLE_VIDEO) && ENABLE_VIDEO
-    or HTMLVideoElement
-#endif
-    or HTMLCanvasElement
-    or ImageBitmap
-#if defined(ENABLE_OFFSCREEN_CANVAS) && ENABLE_OFFSCREEN_CANVAS
-    or OffscreenCanvas
-#endif
-    or CSSStyleImageValue
-#if defined(ENABLE_WEB_CODECS) && ENABLE_WEB_CODECS
-    or WebCodecsVideoFrame
-#endif
-) CanvasImageSource;
+#if ENABLE(GPU_PROCESS)
 
-typedef (CanvasImageSource or Blob or ImageData) ImageBitmapSource;
+#include "RemoteBarcodeDetector.h"
+#include "RemoteFaceDetector.h"
+#include "RemoteTextDetector.h"
 
-[
-    EnabledBySetting=ShapeDetection,
-    Exposed=(Window,Worker),
-    SecureContext
-]
-interface TextDetector {
-    [CallWith=CurrentScriptExecutionContext] constructor();
-    Promise<sequence<DetectedText>> detect(ImageBitmapSource image);
-};
+namespace WebKit::ShapeDetection {
+
+ObjectHeap::ObjectHeap() = default;
+
+ObjectHeap::~ObjectHeap() = default;
+
+void ObjectHeap::addObject(ShapeDetectionIdentifier identifier, RemoteBarcodeDetector& barcodeDetector)
+{
+    auto result = m_objects.add(identifier, barcodeDetector);
+    ASSERT_UNUSED(result, result.isNewEntry);
+}
+
+void ObjectHeap::addObject(ShapeDetectionIdentifier identifier, RemoteFaceDetector& faceDetector)
+{
+    auto result = m_objects.add(identifier, faceDetector);
+    ASSERT_UNUSED(result, result.isNewEntry);
+}
+
+void ObjectHeap::addObject(ShapeDetectionIdentifier identifier, RemoteTextDetector& textDetector)
+{
+    auto result = m_objects.add(identifier, textDetector);
+    ASSERT_UNUSED(result, result.isNewEntry);
+}
+
+void ObjectHeap::removeObject(ShapeDetectionIdentifier identifier)
+{
+    auto result = m_objects.remove(identifier);
+    ASSERT_UNUSED(result, result);
+}
+
+void ObjectHeap::clear()
+{
+    m_objects.clear();
+}
+
+} // namespace WebKit::ShapeDetection
+
+#endif // ENABLE(GPU_PROCESS)

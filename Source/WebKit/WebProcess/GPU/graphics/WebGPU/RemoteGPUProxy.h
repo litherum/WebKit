@@ -109,7 +109,7 @@ private:
 
     WebGPUIdentifier m_backing;
     Ref<WebGPU::ConvertToBackingContext> m_convertToBackingContext;
-    GPUProcessConnection* m_gpuProcessConnection;
+    GPUProcessConnection* m_gpuProcessConnection; // FIXME: Why is this a raw pointer?
     bool m_didInitialize { false };
     bool m_lost { false };
     RefPtr<IPC::StreamClientConnection> m_streamConnection;
