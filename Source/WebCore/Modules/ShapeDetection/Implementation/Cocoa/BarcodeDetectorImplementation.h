@@ -26,6 +26,9 @@
 #pragma once
 
 #include "BarcodeDetectorInterface.h"
+#include <wtf/HashFunctions.h>
+#include <wtf/HashSet.h>
+#include <wtf/HashTraits.h>
 
 namespace WebCore::ShapeDetection {
 
@@ -43,6 +46,8 @@ public:
 
     WEBCORE_EXPORT static void getSupportedFormats(CompletionHandler<void(Vector<BarcodeFormat>&&)>&&);
 
+    using BarcodeFormatSet = HashSet<BarcodeFormat, WTF::IntHash<BarcodeFormat>, WTF::StrongEnumHashTraits<BarcodeFormat>>;
+
 private:
     WEBCORE_EXPORT BarcodeDetectorImpl(const BarcodeDetectorOptions&);
 
@@ -52,6 +57,8 @@ private:
     BarcodeDetectorImpl& operator=(BarcodeDetectorImpl&&) = delete;
 
     void detect(Ref<ImageBuffer>&&, CompletionHandler<void(Vector<DetectedBarcode>&&)>&&) final;
+
+    std::optional<BarcodeFormatSet> m_requestedBarcodeFormatSet;
 };
 
 } // namespace WebCore::ShapeDetection

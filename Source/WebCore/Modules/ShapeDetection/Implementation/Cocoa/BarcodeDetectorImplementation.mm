@@ -26,25 +26,200 @@
 #include "config.h"
 #include "BarcodeDetectorImplementation.h"
 
+#include "BarcodeDetectorOptionsInterface.h"
 #include "BarcodeFormatInterface.h"
 #include "DetectedBarcodeInterface.h"
+#include "ImageBuffer.h"
+#include "NativeImage.h"
+#include <Vision/Vision.h>
+#include <optional>
+#include <wtf/RetainPtr.h>
 
 namespace WebCore::ShapeDetection {
 
-BarcodeDetectorImpl::BarcodeDetectorImpl(const BarcodeDetectorOptions&)
+static BarcodeFormat convertSymbology(VNBarcodeSymbology symbology)
+{
+    if (symbology == VNBarcodeSymbologyAztec)
+        return BarcodeFormat::Aztec;
+    if (symbology == VNBarcodeSymbologyCodabar)
+        return BarcodeFormat::Codabar;
+    if (symbology == VNBarcodeSymbologyCode39)
+        return BarcodeFormat::Code_39;
+    if (symbology == VNBarcodeSymbologyCode39Checksum)
+        return BarcodeFormat::Code_39;
+    if (symbology == VNBarcodeSymbologyCode39FullASCII)
+        return BarcodeFormat::Code_39;
+    if (symbology == VNBarcodeSymbologyCode39FullASCIIChecksum)
+        return BarcodeFormat::Code_39;
+    if (symbology == VNBarcodeSymbologyCode93)
+        return BarcodeFormat::Code_93;
+    if (symbology == VNBarcodeSymbologyCode93i)
+        return BarcodeFormat::Code_93;
+    if (symbology == VNBarcodeSymbologyCode128)
+        return BarcodeFormat::Code_128;
+    if (symbology == VNBarcodeSymbologyDataMatrix)
+        return BarcodeFormat::Data_matrix;
+    if (symbology == VNBarcodeSymbologyEAN8)
+        return BarcodeFormat::Ean_8;
+    if (symbology == VNBarcodeSymbologyEAN13)
+        return BarcodeFormat::Ean_13;
+    if (symbology == VNBarcodeSymbologyGS1DataBar)
+        return BarcodeFormat::Unknown;
+    if (symbology == VNBarcodeSymbologyGS1DataBarExpanded)
+        return BarcodeFormat::Unknown;
+    if (symbology == VNBarcodeSymbologyGS1DataBarLimited)
+        return BarcodeFormat::Unknown;
+    if (symbology == VNBarcodeSymbologyI2of5)
+        return BarcodeFormat::Itf;
+    if (symbology == VNBarcodeSymbologyI2of5Checksum)
+        return BarcodeFormat::Itf;
+    if (symbology == VNBarcodeSymbologyITF14)
+        return BarcodeFormat::Itf;
+    if (symbology == VNBarcodeSymbologyMicroPDF417)
+        return BarcodeFormat::Pdf417;
+    if (symbology == VNBarcodeSymbologyMicroQR)
+        return BarcodeFormat::Qr_code;
+    if (symbology == VNBarcodeSymbologyPDF417)
+        return BarcodeFormat::Pdf417;
+    if (symbology == VNBarcodeSymbologyQR)
+        return BarcodeFormat::Qr_code;
+    if (symbology == VNBarcodeSymbologyUPCE)
+        return BarcodeFormat::Upc_e;
+    return BarcodeFormat::Unknown;
+}
+
+static Vector<VNBarcodeSymbology> convertBarcodeFormat(BarcodeFormat barcodeFormat)
+{
+    switch (barcodeFormat) {
+    case BarcodeFormat::Aztec:
+        return { VNBarcodeSymbologyAztec };
+    case BarcodeFormat::Code_128:
+        return { VNBarcodeSymbologyCode128 };
+    case BarcodeFormat::Code_39:
+        return { VNBarcodeSymbologyCode39, VNBarcodeSymbologyCode39Checksum, VNBarcodeSymbologyCode39FullASCII, VNBarcodeSymbologyCode39FullASCIIChecksum };
+    case BarcodeFormat::Code_93:
+        return { VNBarcodeSymbologyCode93, VNBarcodeSymbologyCode93i };
+    case BarcodeFormat::Codabar:
+        return { VNBarcodeSymbologyCodabar };
+    case BarcodeFormat::Data_matrix:
+        return { VNBarcodeSymbologyDataMatrix };
+    case BarcodeFormat::Ean_13:
+        return { VNBarcodeSymbologyEAN13 };
+    case BarcodeFormat::Ean_8:
+        return { VNBarcodeSymbologyEAN8 };
+    case BarcodeFormat::Itf:
+        return { VNBarcodeSymbologyI2of5, VNBarcodeSymbologyI2of5Checksum, VNBarcodeSymbologyITF14 };
+    case BarcodeFormat::Pdf417:
+        return { VNBarcodeSymbologyMicroPDF417, VNBarcodeSymbologyPDF417 };
+    case BarcodeFormat::Qr_code:
+        return { VNBarcodeSymbologyMicroQR, VNBarcodeSymbologyQR };
+    case BarcodeFormat::Unknown:
+        return { VNBarcodeSymbologyGS1DataBar, VNBarcodeSymbologyGS1DataBarExpanded, VNBarcodeSymbologyGS1DataBarLimited };
+    case BarcodeFormat::Upc_a:
+        return { };
+    case BarcodeFormat::Upc_e:
+        return { VNBarcodeSymbologyUPCE };
+    }
+}
+
+static std::optional<BarcodeDetectorImpl::BarcodeFormatSet> convertRequestedBarcodeFormatSet(const Vector<BarcodeFormat>& formats)
+{
+    // FIXME: "formats" is supposed to be optional
+
+    BarcodeDetectorImpl::BarcodeFormatSet result;
+    result.reserveInitialCapacity(formats.size());
+    for (auto format : formats)
+        result.add(format);
+    return result;
+}
+
+BarcodeDetectorImpl::BarcodeDetectorImpl(const BarcodeDetectorOptions& barcodeDetectorOptions)
+    : m_requestedBarcodeFormatSet(convertRequestedBarcodeFormatSet(barcodeDetectorOptions.formats))
 {
 }
 
 BarcodeDetectorImpl::~BarcodeDetectorImpl() = default;
 
-void BarcodeDetectorImpl::getSupportedFormats(CompletionHandler<void(Vector<BarcodeFormat>&&)>&& completionHandler)
+static RetainPtr<VNDetectBarcodesRequest> request()
 {
-    completionHandler({ });
+    // It's important that both getSupportedFormats() and detect() use a VNDetectBarcodesRequest that is
+    // configured the same way. This function is intended to make sure both VNDetectBarcodesRequests are
+    // configured accordingly.
+    return adoptNS([VNDetectBarcodesRequest new]);
 }
 
-void BarcodeDetectorImpl::detect(Ref<ImageBuffer>&&, CompletionHandler<void(Vector<DetectedBarcode>&&)>&& completionHandler)
+void BarcodeDetectorImpl::getSupportedFormats(CompletionHandler<void(Vector<BarcodeFormat>&&)>&& completionHandler)
 {
-    completionHandler({ });
+    NSError *error = nil;
+    NSArray<VNBarcodeSymbology> *supportedSymbologies = [request() supportedSymbologiesAndReturnError:&error];
+
+    BarcodeFormatSet barcodeFormatsSet;
+    barcodeFormatsSet.reserveInitialCapacity(supportedSymbologies.count);
+    for (VNBarcodeSymbology symbology in supportedSymbologies)
+        barcodeFormatsSet.add(convertSymbology(symbology));
+
+    Vector<BarcodeFormat> barcodeFormatsVector;
+    barcodeFormatsVector.reserveInitialCapacity(barcodeFormatsSet.size());
+    for (auto barcodeFormat : barcodeFormatsSet)
+        barcodeFormatsVector.uncheckedAppend(barcodeFormat);
+
+    std::sort(std::begin(barcodeFormatsVector), std::end(barcodeFormatsVector));
+
+    completionHandler(WTFMove(barcodeFormatsVector));
+}
+
+void BarcodeDetectorImpl::detect(Ref<ImageBuffer>&& imageBuffer, CompletionHandler<void(Vector<DetectedBarcode>&&)>&& completionHandler)
+{
+    auto nativeImage = imageBuffer->copyNativeImage();
+    if (!nativeImage) {
+        completionHandler({ });
+        return;
+    }
+
+    auto platformImage = nativeImage->platformImage();
+    if (!platformImage) {
+        completionHandler({ });
+        return;
+    }
+
+    auto request = ShapeDetection::request();
+
+    if (m_requestedBarcodeFormatSet) {
+        NSMutableSet<VNBarcodeSymbology> *requestedSymbologies = [NSMutableSet setWithCapacity:m_requestedBarcodeFormatSet->size()];
+        for (auto barcodeFormat : *m_requestedBarcodeFormatSet) {
+            for (auto symbology : convertBarcodeFormat(barcodeFormat)) {
+                [requestedSymbologies addObject:symbology];
+            }
+        }
+        request.get().symbologies = requestedSymbologies.allObjects;
+    }
+
+    auto imageRequestHandler = adoptNS([[VNImageRequestHandler alloc] initWithCGImage:platformImage.get() options:@{}]);
+
+    NSError *error = nil;
+    auto result = [imageRequestHandler performRequests:@[request.get()] error:&error];
+    if (!result || error) {
+        completionHandler({ });
+        return;
+    }
+
+    Vector<DetectedBarcode> results;
+    results.reserveInitialCapacity(request.get().results.count);
+    for (VNBarcodeObservation *observation in request.get().results) {
+        results.uncheckedAppend({
+            observation.boundingBox,
+            observation.payloadStringValue,
+            convertSymbology(observation.symbology),
+            {
+                observation.topLeft,
+                observation.topRight,
+                observation.bottomRight,
+                observation.bottomLeft,
+            },
+        });
+    }
+
+    completionHandler(WTFMove(results));
 }
 
 } // namespace WebCore::ShapeDetection

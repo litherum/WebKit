@@ -27,6 +27,9 @@
 #include "TextDetectorImplementation.h"
 
 #include "DetectedTextInterface.h"
+#include "ImageBuffer.h"
+#include "NativeImage.h"
+#include <Vision/Vision.h>
 
 namespace WebCore::ShapeDetection {
 
@@ -34,9 +37,47 @@ TextDetectorImpl::TextDetectorImpl() = default;
 
 TextDetectorImpl::~TextDetectorImpl() = default;
 
-void TextDetectorImpl::detect(Ref<ImageBuffer>&&, CompletionHandler<void(Vector<DetectedText>&&)>&& completionHandler)
+void TextDetectorImpl::detect(Ref<ImageBuffer>&& imageBuffer, CompletionHandler<void(Vector<DetectedText>&&)>&& completionHandler)
 {
-    completionHandler({ });
+    auto nativeImage = imageBuffer->copyNativeImage();
+    if (!nativeImage) {
+        completionHandler({ });
+        return;
+    }
+
+    auto platformImage = nativeImage->platformImage();
+    if (!platformImage) {
+        completionHandler({ });
+        return;
+    }
+
+    auto request = adoptNS([VNRecognizeTextRequest new]);
+
+    auto imageRequestHandler = adoptNS([[VNImageRequestHandler alloc] initWithCGImage:platformImage.get() options:@{}]);
+
+    NSError *error = nil;
+    auto result = [imageRequestHandler performRequests:@[request.get()] error:&error];
+    if (!result || error) {
+        completionHandler({ });
+        return;
+    }
+
+    Vector<DetectedText> results;
+    results.reserveInitialCapacity(request.get().results.count);
+    for (VNRecognizedTextObservation *observation in request.get().results) {
+        results.uncheckedAppend({
+            observation.boundingBox,
+            [observation topCandidates:1][0].string,
+            {
+                observation.topLeft,
+                observation.topRight,
+                observation.bottomRight,
+                observation.bottomLeft,
+            },
+        });
+    }
+
+    completionHandler(WTFMove(results));
 }
 
 } // namespace WebCore::ShapeDetection

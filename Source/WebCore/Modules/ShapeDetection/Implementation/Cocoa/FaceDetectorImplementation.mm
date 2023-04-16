@@ -27,19 +27,85 @@
 #include "FaceDetectorImplementation.h"
 
 #include "DetectedFaceInterface.h"
+#include "FaceDetectorOptionsInterface.h"
+#include "ImageBuffer.h"
 #include "LandmarkInterface.h"
+#include "NativeImage.h"
+#include <Vision/Vision.h>
 
 namespace WebCore::ShapeDetection {
 
-FaceDetectorImpl::FaceDetectorImpl(const FaceDetectorOptions&)
+FaceDetectorImpl::FaceDetectorImpl(const FaceDetectorOptions& faceDetectorOptions)
+    : m_maxDetectedFaces(faceDetectorOptions.maxDetectedFaces)
 {
 }
 
 FaceDetectorImpl::~FaceDetectorImpl() = default;
 
-void FaceDetectorImpl::detect(Ref<ImageBuffer>&&, CompletionHandler<void(Vector<DetectedFace>&&)>&& completionHandler)
+static Vector<FloatPoint> convertLandmark(VNFaceLandmarkRegion2D *landmark)
 {
-    completionHandler({ });
+    Vector<FloatPoint> result;
+    result.reserveInitialCapacity(landmark.pointCount);
+    for (NSUInteger i = 0; i < landmark.pointCount; ++i)
+        result.uncheckedAppend(landmark.normalizedPoints[i]);
+    return result;
+}
+
+static Vector<Landmark> convertLandmarks(VNFaceLandmarks2D *landmarks)
+{
+    return {
+        {
+            convertLandmark(landmarks.leftEye),
+            WebCore::ShapeDetection::LandmarkType::Eye,
+        },
+        {
+            convertLandmark(landmarks.rightEye),
+            WebCore::ShapeDetection::LandmarkType::Eye,
+        },
+        {
+            convertLandmark(landmarks.nose),
+            WebCore::ShapeDetection::LandmarkType::Nose,
+        },
+    };
+}
+
+void FaceDetectorImpl::detect(Ref<ImageBuffer>&& imageBuffer, CompletionHandler<void(Vector<DetectedFace>&&)>&& completionHandler)
+{
+    auto nativeImage = imageBuffer->copyNativeImage();
+    if (!nativeImage) {
+        completionHandler({ });
+        return;
+    }
+
+    auto platformImage = nativeImage->platformImage();
+    if (!platformImage) {
+        completionHandler({ });
+        return;
+    }
+
+    auto request = adoptNS([VNDetectFaceLandmarksRequest new]);
+
+    auto imageRequestHandler = adoptNS([[VNImageRequestHandler alloc] initWithCGImage:platformImage.get() options:@{}]);
+
+    NSError *error = nil;
+    auto result = [imageRequestHandler performRequests:@[request.get()] error:&error];
+    if (!result || error) {
+        completionHandler({ });
+        return;
+    }
+
+    Vector<DetectedFace> results;
+    results.reserveInitialCapacity(std::min<size_t>(m_maxDetectedFaces, request.get().results.count));
+    for (VNFaceObservation *observation in request.get().results) {
+        results.uncheckedAppend({
+            observation.boundingBox,
+            { convertLandmarks(observation.landmarks) },
+        });
+        if (results.size() >= m_maxDetectedFaces)
+            break;
+    }
+
+    completionHandler(WTFMove(results));
 }
 
 } // namespace WebCore::ShapeDetection

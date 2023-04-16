@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -650,6 +650,7 @@
 		1C7A6EB526F5D8F50096D8C7 /* FontPalette.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C4674FD26F4843600B61273 /* FontPalette.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1C81B95A0E97330800266E07 /* InspectorController.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C81B9560E97330800266E07 /* InspectorController.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1C81B95C0E97330800266E07 /* InspectorClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C81B9580E97330800266E07 /* InspectorClient.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		1C9C477E29EBB26D00BA1562 /* Vision.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C9C477D29EBB26C00BA1562 /* Vision.framework */; };
 		1C9F4C1429E529660015819E /* DetectedFaceInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C38F28329E3B2BC008795CC /* DetectedFaceInterface.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1C9F4C1529E529660015819E /* BarcodeDetectorInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C38F27F29E3B27C008795CC /* BarcodeDetectorInterface.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1C9F4C1629E529660015819E /* BarcodeDetectorOptionsInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C38F28029E3B28A008795CC /* BarcodeDetectorOptionsInterface.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -7976,6 +7977,7 @@
 		1C9078E42751FDA9004EF165 /* JSGPUImageCopyTexture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSGPUImageCopyTexture.h; sourceTree = "<group>"; };
 		1C9078E52751FDAA004EF165 /* JSGPUComputePassTimestampWrite.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = JSGPUComputePassTimestampWrite.cpp; sourceTree = "<group>"; };
 		1C9078E72751FF12004EF165 /* JSGPUVertexStepMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSGPUVertexStepMode.h; sourceTree = "<group>"; };
+		1C9C477D29EBB26C00BA1562 /* Vision.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Vision.framework; path = System/Library/Frameworks/Vision.framework; sourceTree = SDKROOT; };
 		1CA3F63129B3EB9C0074CB15 /* JPEGXLImageDecoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = JPEGXLImageDecoder.cpp; sourceTree = "<group>"; };
 		1CA3F63229B3EB9C0074CB15 /* JxlDecoderPtr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JxlDecoderPtr.h; sourceTree = "<group>"; };
 		1CA3F63329B3EB9C0074CB15 /* JPEGXLImageDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPEGXLImageDecoder.h; sourceTree = "<group>"; };
@@ -19609,6 +19611,7 @@
 				379919B21200DE5000EA041C /* libz.dylib in Frameworks */,
 				A88AD52F09524B92001DD196 /* QuartzCore.framework in Frameworks */,
 				5FE1D292178FD1F3001AA3C3 /* Security.framework in Frameworks */,
+				1C9C477E29EBB26D00BA1562 /* Vision.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -20288,6 +20291,7 @@
 				574F55E2204F3CBF002948C6 /* LocalAuthentication.framework */,
 				A85D7A2F0879EBA9006A9172 /* QuartzCore.framework */,
 				5FE1D291178FD1F3001AA3C3 /* Security.framework */,
+				1C9C477D29EBB26C00BA1562 /* Vision.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
