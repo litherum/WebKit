@@ -32,6 +32,7 @@
 #include "RemoteRenderingBackendProxy.h"
 #include "RemoteTextDetectorMessages.h"
 #include "WebProcess.h"
+#include <WebCore/ImageBuffer.h>
 
 namespace WebKit::ShapeDetection {
 
@@ -55,14 +56,14 @@ RemoteTextDetectorProxy::~RemoteTextDetectorProxy()
     m_remoteRenderingBackendProxy->streamConnection().send(Messages::RemoteRenderingBackend::ReleaseRemoteTextDetector(m_backing), m_remoteRenderingBackendProxy->renderingBackendIdentifier(), Seconds::infinity());
 }
 
-void RemoteTextDetectorProxy::detect(CompletionHandler<void(Vector<WebCore::ShapeDetection::DetectedText>&&)>&& completionHandler)
+void RemoteTextDetectorProxy::detect(Ref<WebCore::ImageBuffer>&& imageBuffer, CompletionHandler<void(Vector<WebCore::ShapeDetection::DetectedText>&&)>&& completionHandler)
 {
     if (!m_remoteRenderingBackendProxy) {
         completionHandler({ });
         return;
     }
 
-    m_remoteRenderingBackendProxy->streamConnection().sendWithAsyncReply(Messages::RemoteTextDetector::Detect(), WTFMove(completionHandler), m_backing, Seconds::infinity());
+    m_remoteRenderingBackendProxy->streamConnection().sendWithAsyncReply(Messages::RemoteTextDetector::Detect(imageBuffer->renderingResourceIdentifier()), WTFMove(completionHandler), m_backing, Seconds::infinity());
 }
 
 } // namespace WebKit::WebGPU

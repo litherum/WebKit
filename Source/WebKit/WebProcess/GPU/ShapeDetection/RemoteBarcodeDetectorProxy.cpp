@@ -32,6 +32,7 @@
 #include "RemoteBarcodeDetectorMessages.h"
 #include "RemoteRenderingBackendProxy.h"
 #include "WebProcess.h"
+#include <WebCore/ImageBuffer.h>
 
 namespace WebKit::ShapeDetection {
 
@@ -60,14 +61,14 @@ void RemoteBarcodeDetectorProxy::getSupportedFormats(RemoteRenderingBackendProxy
     remoteRenderingBackendProxy.streamConnection().sendWithAsyncReply(Messages::RemoteRenderingBackend::GetRemoteBarcodeDetectorSupportedFormats(), WTFMove(completionHandler), remoteRenderingBackendProxy.renderingBackendIdentifier(), Seconds::infinity());
 }
 
-void RemoteBarcodeDetectorProxy::detect(CompletionHandler<void(Vector<WebCore::ShapeDetection::DetectedBarcode>&&)>&& completionHandler)
+void RemoteBarcodeDetectorProxy::detect(Ref<WebCore::ImageBuffer>&& imageBuffer, CompletionHandler<void(Vector<WebCore::ShapeDetection::DetectedBarcode>&&)>&& completionHandler)
 {
     if (!m_remoteRenderingBackendProxy) {
         completionHandler({ });
         return;
     }
 
-    m_remoteRenderingBackendProxy->streamConnection().sendWithAsyncReply(Messages::RemoteBarcodeDetector::Detect(), WTFMove(completionHandler), m_backing, Seconds::infinity());
+    m_remoteRenderingBackendProxy->streamConnection().sendWithAsyncReply(Messages::RemoteBarcodeDetector::Detect(imageBuffer->renderingResourceIdentifier()), WTFMove(completionHandler), m_backing, Seconds::infinity());
 }
 
 } // namespace WebKit::WebGPU

@@ -32,6 +32,7 @@
 #include "RemoteFaceDetectorMessages.h"
 #include "RemoteRenderingBackendProxy.h"
 #include "WebProcess.h"
+#include <WebCore/ImageBuffer.h>
 
 namespace WebKit::ShapeDetection {
 
@@ -55,14 +56,14 @@ RemoteFaceDetectorProxy::~RemoteFaceDetectorProxy()
     m_remoteRenderingBackendProxy->streamConnection().send(Messages::RemoteRenderingBackend::ReleaseRemoteFaceDetector(m_backing), m_remoteRenderingBackendProxy->renderingBackendIdentifier(), Seconds::infinity());
 }
 
-void RemoteFaceDetectorProxy::detect(CompletionHandler<void(Vector<WebCore::ShapeDetection::DetectedFace>&&)>&& completionHandler)
+void RemoteFaceDetectorProxy::detect(Ref<WebCore::ImageBuffer>&& imageBuffer, CompletionHandler<void(Vector<WebCore::ShapeDetection::DetectedFace>&&)>&& completionHandler)
 {
     if (!m_remoteRenderingBackendProxy) {
         completionHandler({ });
         return;
     }
 
-    m_remoteRenderingBackendProxy->streamConnection().sendWithAsyncReply(Messages::RemoteFaceDetector::Detect(), WTFMove(completionHandler), m_backing, Seconds::infinity());
+    m_remoteRenderingBackendProxy->streamConnection().sendWithAsyncReply(Messages::RemoteFaceDetector::Detect(imageBuffer->renderingResourceIdentifier()), WTFMove(completionHandler), m_backing, Seconds::infinity());
 }
 
 } // namespace WebKit::WebGPU
