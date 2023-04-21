@@ -93,6 +93,7 @@ if (!defined $executablePathAge || !defined $buildTimestampAge || $executablePat
         "WAKScrollView" => 1,
         "WAKView" => 1,
         "WAKWindow" => 1,
+        "_TtC7WebCore26TextDetectorImplementation" => 1,
     );
     my @realBadNames;
     for my $className (@badNames) {

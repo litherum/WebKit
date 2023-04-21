@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -650,6 +650,7 @@
 		1C7A6EB526F5D8F50096D8C7 /* FontPalette.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C4674FD26F4843600B61273 /* FontPalette.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1C81B95A0E97330800266E07 /* InspectorController.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C81B9560E97330800266E07 /* InspectorController.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1C81B95C0E97330800266E07 /* InspectorClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C81B9580E97330800266E07 /* InspectorClient.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		1C9F2D6F29F24AA6004F24CE /* TextDetectorImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9F2D6E29F24AA6004F24CE /* TextDetectorImplementation.swift */; };
 		1C9F4C1429E529660015819E /* DetectedFaceInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C38F28329E3B2BC008795CC /* DetectedFaceInterface.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1C9F4C1529E529660015819E /* BarcodeDetectorInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C38F27F29E3B27C008795CC /* BarcodeDetectorInterface.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1C9F4C1629E529660015819E /* BarcodeDetectorOptionsInterface.h in Headers */ = {isa = PBXBuildFile; fileRef = 1C38F28029E3B28A008795CC /* BarcodeDetectorOptionsInterface.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -7978,6 +7979,8 @@
 		1C9078E42751FDA9004EF165 /* JSGPUImageCopyTexture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSGPUImageCopyTexture.h; sourceTree = "<group>"; };
 		1C9078E52751FDAA004EF165 /* JSGPUComputePassTimestampWrite.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = JSGPUComputePassTimestampWrite.cpp; sourceTree = "<group>"; };
 		1C9078E72751FF12004EF165 /* JSGPUVertexStepMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSGPUVertexStepMode.h; sourceTree = "<group>"; };
+		1C9F2D6E29F24AA6004F24CE /* TextDetectorImplementation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextDetectorImplementation.swift; sourceTree = "<group>"; };
+		1C9F2D8929F25A91004F24CE /* WebCore-bridging-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WebCore-bridging-header.h"; sourceTree = "<group>"; };
 		1CA3F63129B3EB9C0074CB15 /* JPEGXLImageDecoder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = JPEGXLImageDecoder.cpp; sourceTree = "<group>"; };
 		1CA3F63229B3EB9C0074CB15 /* JxlDecoderPtr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JxlDecoderPtr.h; sourceTree = "<group>"; };
 		1CA3F63329B3EB9C0074CB15 /* JPEGXLImageDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JPEGXLImageDecoder.h; sourceTree = "<group>"; };
@@ -20227,6 +20230,7 @@
 				A1E0866C248AABC800E496D9 /* DerivedSources-output.xcfilelist */,
 				93F19B1908245E59001E9ABC /* Info.plist */,
 				A1E0866D248AABC900E496D9 /* UnifiedSources-output.xcfilelist */,
+				1C9F2D8929F25A91004F24CE /* WebCore-bridging-header.h */,
 				971145FE14EF006E00674FD9 /* Modules */,
 				29A812040FBB9B4100510293 /* accessibility */,
 				71025EC11F99F096004A250C /* animation */,
@@ -21713,6 +21717,7 @@
 				1C38F28E29E3B4D7008795CC /* FaceDetectorImplementation.mm */,
 				1C38F29129E3B4E1008795CC /* TextDetectorImplementation.h */,
 				1C38F29029E3B4E1008795CC /* TextDetectorImplementation.mm */,
+				1C9F2D6E29F24AA6004F24CE /* TextDetectorImplementation.swift */,
 			);
 			path = Cocoa;
 			sourceTree = "<group>";
@@ -41017,6 +41022,9 @@
 						CreatedOnToolsVersion = 10.1;
 						ProvisioningStyle = Automatic;
 					};
+					93F198A508245E59001E9ABC = {
+						LastSwiftMigration = 1430;
+					};
 				};
 			};
 			buildConfigurationList = 149C284308902B11008A9EFC /* Build configuration list for PBXProject "WebCore" */;
@@ -41499,6 +41507,7 @@
 				C1692DD223D23ABD006E88F7 /* SystemBattery.mm in Sources */,
 				329C0C2328BD96D600F187D2 /* TagName.cpp in Sources */,
 				CE88EE262414467B007F29C2 /* TextAlternativeWithRange.mm in Sources */,
+				1C9F2D6F29F24AA6004F24CE /* TextDetectorImplementation.swift in Sources */,
 				BE39137129B267F500FA5D4F /* TextTransformCocoa.cpp in Sources */,
 				51DF6D800B92A18E00C2DC85 /* ThreadCheck.mm in Sources */,
 				538EC8031F96AF81004D22A8 /* UnifiedSource1-mm.mm in Sources */,
@@ -42215,7 +42224,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1CDD45E50BA9C84600F90147 /* WebCore.xcconfig */;
 			buildSettings = {
-				BUILD_VARIANTS = normal;
 			};
 			name = Production;
 		};

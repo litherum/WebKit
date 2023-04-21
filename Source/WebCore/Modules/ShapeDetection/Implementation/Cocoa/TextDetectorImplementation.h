@@ -26,10 +26,19 @@
 #pragma once
 
 #include "TextDetectorInterface.h"
+#include <objc/runtime.h>
+#include <wtf/RetainPtr.h>
 
 namespace WebCore::ShapeDetection {
 
-class TextDetectorImpl final : public TextDetector {
+#define _CXX_INTEROP_STRINGIFY(_x) #_x
+
+#define SWIFT_SHARED_REFERENCE(_retain, _release)                                \
+  __attribute__((swift_attr("import_reference")))                          \
+  __attribute__((swift_attr(_CXX_INTEROP_STRINGIFY(retain:_retain))))      \
+  __attribute__((swift_attr(_CXX_INTEROP_STRINGIFY(release:_release))))
+
+class SWIFT_SHARED_REFERENCE(retainTextDetectorImpl, releaseTextDetectorImpl) TextDetectorImpl final : public TextDetector {
     WTF_MAKE_FAST_ALLOCATED;
 public:
     static Ref<TextDetectorImpl> create()
@@ -48,6 +57,11 @@ private:
     TextDetectorImpl& operator=(TextDetectorImpl&&) = delete;
 
     void detect(Ref<ImageBuffer>&&, CompletionHandler<void(Vector<DetectedText>&&)>&&) final;
+
+    RetainPtr<id> m_implementation;
 };
 
 } // namespace WebCore::ShapeDetection
+
+void retainTextDetectorImpl(WebCore::ShapeDetection::TextDetectorImpl*);
+void releaseTextDetectorImpl(WebCore::ShapeDetection::TextDetectorImpl*);

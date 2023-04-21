@@ -23,34 +23,14 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "config.h"
-#import "TextDetectorImplementation.h"
+import Foundation
 
-#import "DetectedTextInterface.h"
-#import "WebCore-Swift.h"
+public class TextDetectorImplementation : NSObject {
+    override public init() {
+        super.init()
+    }
 
-namespace WebCore::ShapeDetection {
-
-TextDetectorImpl::TextDetectorImpl()
-    : m_implementation(adoptNS([TextDetectorImplementation new]))
-{
-}
-
-TextDetectorImpl::~TextDetectorImpl() = default;
-
-void TextDetectorImpl::detect(Ref<ImageBuffer>&&, CompletionHandler<void(Vector<DetectedText>&&)>&& completionHandler)
-{
-    completionHandler({ });
-}
-
-} // namespace WebCore::ShapeDetection
-
-void retainTextDetectorImpl(WebCore::ShapeDetection::TextDetectorImpl* textDetector)
-{
-    textDetector->ref();
-}
-
-void releaseTextDetectorImpl(WebCore::ShapeDetection::TextDetectorImpl* textDetector)
-{
-    textDetector->ref();
+    @objc public func detect() {
+        let shapeDetector = WebCore.ShapeDetection.TextDetectorImpl.create()
+    }
 }
