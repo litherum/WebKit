@@ -34,7 +34,10 @@ using LocaleIDBuffer = std::array<char, 33>;
 TextBreakIterator::Backing TextBreakIterator::mapModeToBackingIterator(StringView string, const UChar* priorContext, unsigned priorContextLength, TextBreakIterator::Mode mode, const AtomString& locale)
 {
     return switchOn(mode, [string, priorContext, priorContextLength, &locale](TextBreakIterator::LineMode lineMode) -> TextBreakIterator::Backing {
-        return TextBreakIteratorICU(string, priorContext, priorContextLength, TextBreakIteratorICU::LineMode { lineMode.behavior }, locale);
+        if (lineMode.behavior == TextBreakIterator::LineMode::Behavior::Default)
+            return TextBreakIteratorCF(string, { priorContext, priorContextLength }, TextBreakIteratorCF::Mode::LineBreak, locale);
+        else
+            return TextBreakIteratorICU(string, priorContext, priorContextLength, TextBreakIteratorICU::LineMode { lineMode.behavior }, locale);
     }, [string, priorContext, priorContextLength, &locale](TextBreakIterator::CaretMode) -> TextBreakIterator::Backing {
         return TextBreakIteratorCF(string, { priorContext, priorContextLength }, TextBreakIteratorCF::Mode::ComposedCharacter, locale);
     }, [string, priorContext, priorContextLength, &locale](TextBreakIterator::DeleteMode) -> TextBreakIterator::Backing {
