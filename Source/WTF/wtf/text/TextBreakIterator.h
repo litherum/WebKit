@@ -22,6 +22,7 @@
 #pragma once
 
 #include <mutex>
+#include <optional>
 #include <variant>
 #include <wtf/NeverDestroyed.h>
 #include <wtf/text/StringView.h>
@@ -289,35 +290,27 @@ public:
     {
     }
 
-    ~LazyLineBreakIterator()
-    {
-        if (m_iterator)
-            releaseLineBreakIterator(m_iterator);
-    }
-
     StringView stringView() const { return m_stringView; }
     LineBreakIteratorMode mode() const { return m_mode; }
 
-    UBreakIterator* get()
+    CachedTextBreakIterator& get()
     {
         const UChar* priorContext = m_priorContext.characters();
         if (!m_iterator) {
-            m_iterator = acquireLineBreakIterator(m_stringView, m_locale, priorContext, m_priorContext.length(), m_mode);
+            m_iterator = CachedTextBreakIterator(m_stringView, priorContext, m_priorContext.length(), WTF::TextBreakIterator::LineMode { m_mode }, m_locale);
             m_cachedPriorContext = priorContext;
         } else if (priorContext != m_cachedPriorContext) {
             resetStringAndReleaseIterator(m_stringView, m_locale, m_mode);
             return get();
         }
-        return m_iterator;
+        return *m_iterator;
     }
 
     void resetStringAndReleaseIterator(StringView stringView, const AtomString& locale, LineBreakIteratorMode mode)
     {
-        if (m_iterator)
-            releaseLineBreakIterator(m_iterator);
         m_stringView = stringView;
         m_locale = locale;
-        m_iterator = nullptr;
+        m_iterator = std::nullopt;
         m_cachedPriorContext = nullptr;
         m_mode = mode;
     }
@@ -335,7 +328,7 @@ public:
 private:
     StringView m_stringView;
     AtomString m_locale;
-    UBreakIterator* m_iterator { nullptr };
+    std::optional<CachedTextBreakIterator> m_iterator;
     const UChar* m_cachedPriorContext { nullptr };
     LineBreakIteratorMode m_mode { LineBreakIteratorMode::Default };
     PriorContext m_priorContext;
