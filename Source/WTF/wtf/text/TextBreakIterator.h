@@ -176,32 +176,41 @@ public:
 
     ~CachedTextBreakIterator()
     {
-        TextBreakIteratorCache::singleton().put(WTFMove(m_backing));
+        if (m_backing)
+            TextBreakIteratorCache::singleton().put(WTFMove(*m_backing));
     }
 
     CachedTextBreakIterator() = delete;
     CachedTextBreakIterator(const CachedTextBreakIterator&) = delete;
-    CachedTextBreakIterator(CachedTextBreakIterator&&) = default;
+    CachedTextBreakIterator(CachedTextBreakIterator&& other)
+        : m_backing(std::exchange(other.m_backing, { }))
+    {
+        other.m_backing = std::nullopt;
+    }
     CachedTextBreakIterator& operator=(const CachedTextBreakIterator&) = delete;
-    CachedTextBreakIterator& operator=(CachedTextBreakIterator&&) = default;
+    CachedTextBreakIterator& operator=(CachedTextBreakIterator&& other)
+    {
+        m_backing = std::exchange(other.m_backing, { });
+        return *this;
+    }
 
     std::optional<unsigned> preceding(unsigned location) const
     {
-        return m_backing.preceding(location);
+        return m_backing->preceding(location);
     }
 
     std::optional<unsigned> following(unsigned location) const
     {
-        return m_backing.following(location);
+        return m_backing->following(location);
     }
 
     bool isBoundary(unsigned location) const
     {
-        return m_backing.isBoundary(location);
+        return m_backing->isBoundary(location);
     }
 
 private:
-    TextBreakIterator m_backing;
+    std::optional<TextBreakIterator> m_backing;
 };
 
 // Note: The returned iterator is good only until you get another iterator, with the exception of acquireLineBreakIterator.
