@@ -4365,3 +4365,8 @@ webkit.org/b/256189 [ Debug ] ipc/wait-for-video-output-will-change.html [ Crash
 
 webkit.org/256217 [ Debug ] imported/w3c/web-platform-tests/background-fetch/port-blocking.https.window.html [ Pass Crash ]
 webkit.org/b/258328 [ Debug ] imported/w3c/web-platform-tests/webcodecs/videoFrame-construction.crossOriginSource.sub.html [ Pass Failure ]
+
+# These tests are only expected to work on some ports.
+fast/dom/non-visual-mode.html [ Pass ]
+fast/images/non-visual-mode.html [ Pass ]
+fast/text/non-visual-mode.html [ Pass ]

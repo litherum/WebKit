@@ -6549,3 +6549,8 @@ imported/w3c/web-platform-tests/css/css-overflow/overflow-auto-scrollbar-gutter-
 webkit.org/b/257336 imported/w3c/web-platform-tests/css/css-tables/visibility-collapse-row-003-dynamic.html [ Pass Failure ]
 
 webkit.org/b/257904 http/tests/site-isolation/basic-iframe.html [ Skip ]
+
+# These tests are only expected to work on some ports.
+fast/dom/non-visual-mode.html [ Pass ImageOnlyFailure ]
+fast/images/non-visual-mode.html [ Pass ImageOnlyFailure ]
+fast/text/non-visual-mode.html [ Pass ImageOnlyFailure ]

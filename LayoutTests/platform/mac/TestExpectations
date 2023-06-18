@@ -2731,3 +2731,8 @@ webkit.org/b/258181 [ Monterey+ Debug ] inspector/debugger/async-stack-trace-tru
 [ arm64 ] imported/w3c/web-platform-tests/webaudio/the-audio-api/the-audioworklet-interface/audioworklet-denormals.https.window.html [ Failure ]
 [ Debug ] fast/editing/document-leak-altered-text-field.html [ Pass Crash ]
 [ Debug ] media/modern-media-controls/pip-support/pip-support-enabled.html [ Pass Crash ]
+
+# These tests are only expected to work on some ports.
+fast/dom/non-visual-mode.html [ Pass ]
+fast/images/non-visual-mode.html [ Pass ]
+fast/text/non-visual-mode.html [ Pass ]
