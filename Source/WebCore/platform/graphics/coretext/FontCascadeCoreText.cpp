@@ -455,7 +455,10 @@ const Font* FontCascade::fontForCombiningCharacterSequence(StringView stringView
     if (!triedBaseCharacterFont && baseCharacterGlyphData.font && baseCharacterGlyphData.font->canRenderCombiningCharacterSequence(stringView))
         return baseCharacterGlyphData.font;
 
-    return Font::systemFallback();
+    // FIXME: FontCascadeFonts::glyphDataForSystemFallback() does a bunch of extra work in addition to this.
+    // FIXME: The emoji policy needs to react if the cluster already has an emoji/text variation selector
+    auto emojiPolicy = resolveEmojiPolicy(FontVariantEmoji::Normal, baseCharacter);
+    return primaryFont().systemFallbackFontForCharacterCluster(stringView, fontDescription(), emojiPolicy, fonts()->isForPlatformFont() ? IsForPlatformFont::Yes : IsForPlatformFont::No).get();
 }
 
 ResolvedEmojiPolicy FontCascade::resolveEmojiPolicy(FontVariantEmoji fontVariantEmoji, UChar32 character)

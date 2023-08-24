@@ -31,6 +31,7 @@
 #include "SurrogatePairAwareTextIterator.h"
 #include <algorithm>
 #include <wtf/MathExtras.h>
+#include <wtf/Scope.h>
 
 namespace WebCore {
 
@@ -196,9 +197,6 @@ static void addToGlyphBuffer(GlyphBuffer& glyphBuffer, Glyph glyph, const Font& 
     glyphBuffer.add(glyph, font, width, currentCharacterIndex);
 
     // These 0 glyphs are needed by shapers if the source text has surrogate pairs.
-    // However, CTFontTransformGlyphs() can't delete these 0 glyphs from the shaped text,
-    // so we shouldn't add them in the first place if we're using that shaping routine.
-    // Any other shaping routine should delete these glyphs from the shaped text.
     if (!U_IS_BMP(character))
         glyphBuffer.add(0, font, 0, currentCharacterIndex + 1);
 }
@@ -369,7 +367,6 @@ template <typename TextIterator>
 inline void WidthIterator::advanceInternal(TextIterator& textIterator, GlyphBuffer& glyphBuffer)
 {
     // The core logic here needs to match FontCascade::widthForSimpleText()
-    FloatRect bounds;
     auto fontDescription = m_font.fontDescription();
     const Font& primaryFont = m_font.primaryFont();
     AdvanceInternalState advanceInternalState(glyphBuffer, primaryFont, textIterator.currentIndex());
@@ -379,18 +376,26 @@ inline void WidthIterator::advanceInternal(TextIterator& textIterator, GlyphBuff
     float width = 0;
     unsigned clusterLength = 0;
     // We are iterating in string order, not glyph order. Compare this to ComplexTextController::adjustGlyphsAndAdvances()
+    const auto* charactersConsumed = textIterator.remainingCharacters();
     if (!textIterator.consume(character, clusterLength))
         return;
 
-    const GlyphData& glyphData = m_font.glyphDataForCharacter(character, false, FontVariant::NormalVariant);
-    advanceInternalState.updateFont(glyphData.font ? glyphData.font : &primaryFont);
+    const Font* fontForCluster = m_font.fontForCombiningCharacterSequence({ charactersConsumed, clusterLength });
+    advanceInternalState.updateFont(fontForCluster ? fontForCluster : &primaryFont);
     auto capitalizedCharacter = capitalized(character);
     if (shouldSynthesizeSmallCaps(smallCapsState.dontSynthesizeSmallCaps, advanceInternalState.font, character, capitalizedCharacter, smallCapsState.fontVariantCaps, smallCapsState.engageAllSmallCapsProcessing))
         smallCapsState.setSmallCapsData(advanceInternalState.font, true, fontDescription);
     advanceInternalState.rangeFont = fontForRange(advanceInternalState.font, smallCapsState, smallCapsState.isSmallCaps);
     advanceInternalState.nextRangeFont = advanceInternalState.rangeFont;
 
+    charactersConsumed = textIterator.remainingCharacters();
     while (textIterator.consume(character, clusterLength)) {
+        auto updateCharactersConsumed = makeScopeExit([&] {
+            charactersConsumed = textIterator.remainingCharacters();
+        });
+
+        StringView clusterView(charactersConsumed, clusterLength);
+        auto clusterCodePoints = clusterView.codePoints();
         // FIXME: Should we replace unpaired surrogates with the object replacement character?
         // Should we do this before or after shaping? What does a shaper do with an unpaired surrogate?
         m_containsTabs |= character == tabCharacter;
@@ -411,8 +416,8 @@ inline void WidthIterator::advanceInternal(TextIterator& textIterator, GlyphBuff
             continue;
         }
 #endif
-        const GlyphData& glyphData = m_font.glyphDataForCharacter(character, false, FontVariant::NormalVariant);
-        advanceInternalState.updateFont(glyphData.font ? glyphData.font : &primaryFont);
+        fontForCluster = m_font.fontForCombiningCharacterSequence({ charactersConsumed, clusterLength });
+        advanceInternalState.updateFont(fontForCluster ? fontForCluster : &primaryFont);
         smallCapsState.shouldSynthesizeCharacter = shouldSynthesizeSmallCaps(smallCapsState.dontSynthesizeSmallCaps, advanceInternalState.font, character, capitalizedCharacter, smallCapsState.fontVariantCaps, smallCapsState.engageAllSmallCapsProcessing);
         updateCharacterAndSmallCapsIfNeeded(smallCapsState, capitalizedCharacter, characterToWrite);
         if (rtl())
@@ -423,10 +428,18 @@ inline void WidthIterator::advanceInternal(TextIterator& textIterator, GlyphBuff
         if (resetFontRangeIfNeeded(advanceInternalState, smallCapsState, fontDescription, textIterator))
             continue;
 
-        Glyph glyph;
-        glyph = advanceInternalState.nextRangeFont->glyphForCharacter(characterToWrite);
+        Vector<Glyph, 1> glyphs;
+        {
+            glyphs.reserveInitialCapacity(clusterLength);
+            glyphs.uncheckedAppend(advanceInternalState.nextRangeFont->glyphForCharacter(characterToWrite));
+            auto iterator = clusterCodePoints.begin();
+            ++iterator;
+            for (; iterator != clusterCodePoints.end(); ++iterator)
+                glyphs.uncheckedAppend(advanceInternalState.nextRangeFont->glyphForCharacter(*iterator));
+            ASSERT(glyphs.size() > 0);
+        }
 
-        if (!glyph && !characterMustDrawSomething) {
+        if (!glyphs[0] && !characterMustDrawSomething) {
             commitCurrentFontRange(advanceInternalState);
 
             addToGlyphBuffer(advanceInternalState.glyphBuffer, deletedGlyph, primaryFont, 0, advanceInternalState.currentCharacterIndex, characterToWrite);
@@ -437,34 +450,51 @@ inline void WidthIterator::advanceInternal(TextIterator& textIterator, GlyphBuff
             continue;
         }
 
-        width = advanceInternalState.nextRangeFont->widthForGlyph(glyph, Font::SyntheticBoldInclusion::Exclude); // We apply synthetic bold after shaping, in applyCSSVisibilityRules().
+        width = 0;
+        Vector<float, 1> widths;
+        widths.reserveInitialCapacity(glyphs.size());
+        for (auto glyph : glyphs) {
+            auto glyphWidth = advanceInternalState.nextRangeFont->widthForGlyph(glyph, Font::SyntheticBoldInclusion::Exclude); // We apply synthetic bold after shaping, in applyCSSVisibilityRules().
+            width += glyphWidth;
+            widths.uncheckedAppend(glyphWidth);
+        }
+        ASSERT(widths.size() > 0);
         advanceInternalState.widthOfCurrentFontRange += width;
 
         if (FontCascade::treatAsSpace(characterToWrite))
             advanceInternalState.charactersTreatedAsSpace.constructAndAppend(advanceInternalState.currentCharacterIndex, characterToWrite == space, characterToWrite == tabCharacter ? width : advanceInternalState.nextRangeFont->spaceWidth(Font::SyntheticBoldInclusion::Exclude));
 
-        if (m_accountForGlyphBounds) {
-            bounds = advanceInternalState.nextRangeFont->boundsForGlyph(glyph);
-            if (!advanceInternalState.currentCharacterIndex)
-                m_firstGlyphOverflow = std::max<float>(0, -bounds.x());
+        if (m_forTextEmphasis && !FontCascade::canReceiveTextEmphasis(characterToWrite))
+            std::fill(std::begin(glyphs), std::end(glyphs), deletedGlyph);
+
+        {
+            ASSERT(glyphs.size() == widths.size());
+            addToGlyphBuffer(glyphBuffer, glyphs[0], *advanceInternalState.nextRangeFont, widths[0], advanceInternalState.currentCharacterIndex, characterToWrite);
+            auto iterator = clusterCodePoints.begin();
+            GlyphBufferStringOffset stringOffset = advanceInternalState.currentCharacterIndex + (U_IS_SUPPLEMENTARY(*iterator) ? 2 : 1);
+            ++iterator;
+            for (size_t i = 1; iterator != clusterCodePoints.end(); ++iterator, ++i) {
+                addToGlyphBuffer(glyphBuffer, glyphs[i], *advanceInternalState.nextRangeFont, widths[i], stringOffset, *iterator);
+                stringOffset += U_IS_SUPPLEMENTARY(*iterator) ? 2 : 1;
+            }
+            ASSERT(stringOffset == textIterator.currentIndex() + advanceLength);
         }
 
-        if (m_forTextEmphasis && !FontCascade::canReceiveTextEmphasis(characterToWrite))
-            glyph = deletedGlyph;
+        if (m_accountForGlyphBounds) {
+            // FIXME: It's bogus to do this calculation here. This has to be done after shaping. It also has to incorporate glyph origins.
+            auto bounds = advanceInternalState.nextRangeFont->boundsForGlyph(glyphs[0]);
+            if (!advanceInternalState.currentCharacterIndex)
+                m_firstGlyphOverflow = std::max(0.0f, -bounds.x());
+            m_maxGlyphBoundingBoxY = std::max(m_maxGlyphBoundingBoxY, bounds.maxY());
+            m_minGlyphBoundingBoxY = std::min(m_minGlyphBoundingBoxY, bounds.y());
+            m_lastGlyphOverflow = std::max(0.0f, bounds.maxX() - width); // This is a pessimization. We are calculating the maximum rightward overflow for all the glyphs. The last glyph's rightward overflow will necessarily be less than or equal to this.
+        }
 
-        addToGlyphBuffer(glyphBuffer, glyph, *advanceInternalState.nextRangeFont, width, advanceInternalState.currentCharacterIndex, characterToWrite);
-
-        // Advance past the character we just dealt with.
+        // Advance past the cluster we just dealt with.
         textIterator.advance(advanceLength);
         advanceInternalState.currentCharacterIndex = textIterator.currentIndex();
 
         m_runWidthSoFar += width;
-
-        if (m_accountForGlyphBounds) {
-            m_maxGlyphBoundingBoxY = std::max(m_maxGlyphBoundingBoxY, bounds.maxY());
-            m_minGlyphBoundingBoxY = std::min(m_minGlyphBoundingBoxY, bounds.y());
-            m_lastGlyphOverflow = std::max<float>(0, bounds.maxX() - width);
-        }
     }
     advanceInternalState.rangeFont = advanceInternalState.nextRangeFont;
     commitCurrentFontRange(advanceInternalState);
@@ -791,11 +821,7 @@ void WidthIterator::advance(unsigned offset, GlyphBuffer& glyphBuffer)
         Latin1TextIterator textIterator(m_run.data8(m_currentCharacterIndex), m_currentCharacterIndex, offset, length);
         advanceInternal(textIterator, glyphBuffer);
     } else {
-#if USE(CLUSTER_AWARE_WIDTH_ITERATOR)
         ComposedCharacterClusterTextIterator textIterator(m_run.data16(m_currentCharacterIndex), m_currentCharacterIndex, offset, length);
-#else
-        SurrogatePairAwareTextIterator textIterator(m_run.data16(m_currentCharacterIndex), m_currentCharacterIndex, offset, length);
-#endif
         advanceInternal(textIterator, glyphBuffer);
     }
 
