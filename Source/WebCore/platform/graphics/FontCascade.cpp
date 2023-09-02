@@ -1197,7 +1197,7 @@ void FontCascade::drawEmphasisMarks(GraphicsContext& context, const GlyphBuffer&
 
 float FontCascade::floatWidthForSimpleText(const TextRun& run, HashSet<const Font*>* fallbackFonts, GlyphOverflow* glyphOverflow) const
 {
-    WidthIterator it(*this, run, fallbackFonts, glyphOverflow);
+    WidthIterator it(*this, run, fallbackFonts, glyphOverflow, false, true);
     GlyphBuffer glyphBuffer;
     it.advance(run.length(), glyphBuffer);
     it.finalize(glyphBuffer);

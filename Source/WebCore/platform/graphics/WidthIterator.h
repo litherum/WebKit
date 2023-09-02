@@ -45,7 +45,7 @@ using CharactersTreatedAsSpace = Vector<OriginalAdvancesForCharacterTreatedAsSpa
 struct WidthIterator {
     WTF_MAKE_FAST_ALLOCATED;
 public:
-    WidthIterator(const FontCascade&, const TextRun&, HashSet<const Font*>* fallbackFonts = nullptr, bool accountForGlyphBounds = false, bool forTextEmphasis = false);
+    WidthIterator(const FontCascade&, const TextRun&, HashSet<const Font*>* fallbackFonts = nullptr, bool accountForGlyphBounds = false, bool forTextEmphasis = false, bool mayUseNaturalWritingDirection = false);
 
     void advance(unsigned to, GlyphBuffer&);
     bool advanceOneCharacter(float& width, GlyphBuffer&);
@@ -117,6 +117,7 @@ private:
     bool m_enableKerning { false };
     bool m_requiresShaping { false };
     bool m_forTextEmphasis { false };
+    bool m_mayUseNaturalWritingDirection { false };
 };
 
 } // namespace WebCore

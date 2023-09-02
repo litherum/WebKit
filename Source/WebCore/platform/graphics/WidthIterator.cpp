@@ -30,6 +30,7 @@
 #include "Latin1TextIterator.h"
 #include "SurrogatePairAwareTextIterator.h"
 #include <algorithm>
+#include <unicode/ubidi.h>
 #include <wtf/MathExtras.h>
 #include <wtf/Scope.h>
 
@@ -37,7 +38,7 @@ namespace WebCore {
 
 using namespace WTF::Unicode;
 
-WidthIterator::WidthIterator(const FontCascade& font, const TextRun& run, HashSet<const Font*>* fallbackFonts, bool accountForGlyphBounds, bool forTextEmphasis)
+WidthIterator::WidthIterator(const FontCascade& font, const TextRun& run, HashSet<const Font*>* fallbackFonts, bool accountForGlyphBounds, bool forTextEmphasis, bool mayUseNaturalWritingDirection)
     : m_font(font)
     , m_run(run)
     , m_fallbackFonts(fallbackFonts)
@@ -48,6 +49,7 @@ WidthIterator::WidthIterator(const FontCascade& font, const TextRun& run, HashSe
     , m_enableKerning(font.enableKerning())
     , m_requiresShaping(font.requiresShaping())
     , m_forTextEmphasis(forTextEmphasis)
+    , m_mayUseNaturalWritingDirection(mayUseNaturalWritingDirection)
 {
     // FIXME: Should we clamp m_expansion so it can never be negative?
 
@@ -821,8 +823,29 @@ void WidthIterator::advance(unsigned offset, GlyphBuffer& glyphBuffer)
         Latin1TextIterator textIterator(m_run.data8(m_currentCharacterIndex), m_currentCharacterIndex, offset, length);
         advanceInternal(textIterator, glyphBuffer);
     } else {
-        ComposedCharacterClusterTextIterator textIterator(m_run.data16(m_currentCharacterIndex), m_currentCharacterIndex, offset, length);
-        advanceInternal(textIterator, glyphBuffer);
+        if (!m_mayUseNaturalWritingDirection || m_run.directionalOverride()) {
+            ComposedCharacterClusterTextIterator textIterator(m_run.data16(m_currentCharacterIndex), m_currentCharacterIndex, offset, length);
+            advanceInternal(textIterator, glyphBuffer);
+        } else {
+            UErrorCode errorCode = U_ZERO_ERROR;
+            UBiDi* bidi = ubidi_openSized(offset - m_currentCharacterIndex, 0, &errorCode);
+            ASSERT(U_SUCCESS(errorCode));
+            ubidi_setPara(bidi, m_run.data16(m_currentCharacterIndex), offset - m_currentCharacterIndex, ltr() ? UBIDI_DEFAULT_LTR : UBIDI_DEFAULT_RTL, nullptr, &errorCode);
+            ASSERT(U_SUCCESS(errorCode));
+            int32_t runCount = ubidi_countRuns(bidi, &errorCode);
+            ASSERT(U_SUCCESS(errorCode));
+            int32_t logicalPosition = 0;
+            for (int32_t i = 0; i < runCount; ++i) {
+                UBiDiLevel level = 0;
+                int32_t logicalLimit = 0;
+                ubidi_getLogicalRun(bidi, logicalPosition, &logicalLimit, &level);
+                ComposedCharacterClusterTextIterator textIterator(m_run.data16(m_currentCharacterIndex), m_currentCharacterIndex, m_currentCharacterIndex + logicalLimit - logicalPosition, length);
+                m_direction = (level % 2 == 0) ? TextDirection::LTR : TextDirection::RTL;
+                advanceInternal(textIterator, glyphBuffer);
+                logicalPosition = logicalLimit;
+            }
+            m_direction = m_run.direction();
+        }
     }
 
     // In general, we have to apply spacing after shaping, because shaping requires its input to be unperturbed (see https://bugs.webkit.org/show_bug.cgi?id=215052).
