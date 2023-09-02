@@ -553,35 +553,10 @@ float TextUtil::hangableStopOrCommaEndWidth(const InlineTextItem& inlineTextItem
 
 bool TextUtil::canUseSimplifiedTextMeasuring(StringView textContent, const RenderStyle& style, const RenderStyle* firstLineStyle)
 {
-    ASSERT(textContent.is8Bit() || FontCascade::characterRangeCodePath(textContent.characters16(), textContent.length()) == FontCascade::CodePath::Simple);
-    // FIXME: All these checks should be more fine-grained at the inline item level.
-    auto& fontCascade = style.fontCascade();
-    if (fontCascade.wordSpacing() || fontCascade.letterSpacing())
-        return false;
-
-    // Additional check on the font codepath.
-    auto run = TextRun { textContent };
-    run.setCharacterScanForCodePath(false);
-    if (fontCascade.codePath(run) != FontCascade::CodePath::Simple)
-        return false;
-
-    if (firstLineStyle && fontCascade != firstLineStyle->fontCascade())
-        return false;
-
-    auto& primaryFont = fontCascade.primaryFont();
-    if (primaryFont.syntheticBoldOffset())
-        return false;
-
-    auto whitespaceIsCollapsed = style.collapseWhiteSpace();
-    for (unsigned i = 0; i < textContent.length(); ++i) {
-        auto character = textContent[i];
-        if (!WidthIterator::characterCanUseSimplifiedTextMeasuring(character, whitespaceIsCollapsed))
-            return false;
-        auto glyphData = fontCascade.glyphDataForCharacter(character, false);
-        if (!glyphData.isValid() || glyphData.font != &primaryFont)
-            return false;
-    }
-    return true;
+    UNUSED_PARAM(textContent);
+    UNUSED_PARAM(style);
+    UNUSED_PARAM(firstLineStyle);
+    return false;
 }
 
 }
